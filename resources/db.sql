@@ -4,7 +4,7 @@ USE app;
 ----------------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `usuarios` (
-    	`ID` int NOT NULL AUTO_INCREMENT,
+    `ID` int NOT NULL AUTO_INCREMENT,
 	`email` varchar(200) NOT NULL UNIQUE,
 	`password` varchar(200) NOT NULL,
 	`nombre` varchar(50) NOT NULL,
@@ -13,11 +13,12 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 	`fechaNac` dattetime NOT NULL,
 	`fechaReg` datettime NOT NULL DEFAULT NOW(),
 	`telefono` int,
+	`residencia` 
 
 	
 
 
-    	PRIMARY KEY (`ID`)
+    PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 DELETE FROM `usuarios`;
@@ -27,30 +28,49 @@ DELETE FROM `usuarios`;
 ----------------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `alojamientos` (
-    	`ID` int NOT NULL AUTO_INCREMENT,
+    `ID` int NOT NULL AUTO_INCREMENT,
 	`usuarioID` int NOT NULL,
 	`titulo` varchar(70) NOT NULL,
-	`descripcion` varchar(200) NOT NULL,
+	`descripcion` varchar(800) NOT NULL,
+	`precio` smallint NOT NULL,
+	`descuento` float NOT NULL default 0.0,
+
+	`viajeros` tinyint NOT NULL default 1,
+	`habitaciones` tinyint NOT NULL default 1,
+	`camas` tinyint NOT NULL default 1,
+	`aseos` tinyint NOT NULL default 1,
+
 
 	
 	
-    	CONSTRAINT FK_UsuarioAlojamiento FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
-    	PRIMARY KEY (`ID`)
+    CONSTRAINT FK_UsuarioAlojamiento FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
+    PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 DELETE FROM `alojamientos`;
 
+CREATE TABLE IF NOT EXISTS `alojamientos_img` (
+    `ID` int NOT NULL AUTO_INCREMENT,
+	`alojamientoID` int NOT NULL,
+	`nombre` varchar(300) NOT NULL,
+
+    CONSTRAINT FK_AlojamientoImagen FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID),
+    PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+DELETE FROM `alojamientos_img`;
+
 ----------------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `favoritos` (
-    	`ID` int NOT NULL AUTO_INCREMENT,
+    `ID` int NOT NULL AUTO_INCREMENT,
 	`usuarioID` int NOT NULL,
 	`alojamientoID` int NOT NULL,
 
 
-    	CONSTRAINT FK_UsuarioFavorito FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
-    	CONSTRAINT FK_AlojamientoFavorito FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID),
-    	PRIMARY KEY (`ID`)
+    CONSTRAINT FK_UsuarioFavorito FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
+    CONSTRAINT FK_AlojamientoFavorito FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID),
+    PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 DELETE FROM `favoritos`;
@@ -58,7 +78,7 @@ DELETE FROM `favoritos`;
 ----------------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `valoraciones` (
-    	`ID` int NOT NULL AUTO_INCREMENT,
+    `ID` int NOT NULL AUTO_INCREMENT,
 	`usuarioID` int NOT NULL,
 	`alojamientoID` int NOT NULL,
 	`mensaje` varchar(300) NOT NULL,
@@ -69,9 +89,9 @@ CREATE TABLE IF NOT EXISTS `valoraciones` (
 	`valLimpieza` float NOT NULL,
 	`valCalidad` float NOT NULL,
 
-    	CONSTRAINT FK_UsuarioValoracion FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
-    	CONSTRAINT FK_AlojamientoValoracion FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID),
-    	PRIMARY KEY (`ID`)
+    CONSTRAINT FK_UsuarioValoracion FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
+    CONSTRAINT FK_AlojamientoValoracion FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID),
+    PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 DELETE FROM `valoraciones`;
