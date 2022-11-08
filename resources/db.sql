@@ -10,10 +10,10 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 	`nombre` varchar(50) NOT NULL,
 	`apellidos` varchar(50) NOT NULL,
 	`genero` tinyint NOT NULL DEFAULT 0,
-	`fechaNac` dattetime NOT NULL,
+	`fechaNac` date NOT NULL,
 	`fechaReg` datettime NOT NULL DEFAULT NOW(),
-	`telefono` int,
-	`residencia` 
+	`telefono` varchar(20) NOT NULL,
+	`residencia` varchar(200),
 
 	
 
@@ -22,8 +22,9 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 DELETE FROM `usuarios`;
----INSERT INTO `usuarios` (`email`, `password`, `nombre`, `apellidos`, `fechaNac`) VALUES
-	();
+---INSERT INTO `usuarios` (`email`, `password`, `nombre`, `apellidos`, `fechaNac`, `telefono`) VALUES
+	('manolo@app-tfg.com', 'manolo25', 'Manolo', 'Garcia Sanchez', '10-05-1990', '+34'),	
+	('sara@app-tfg.com', 'sarita99', 'Sara', 'Lopez', '20-07-1997', '+35');
 
 ----------------------------------------------------------------------------------
 
