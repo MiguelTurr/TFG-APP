@@ -1,0 +1,13 @@
+.header {
+    position: sticky;   
+    top: 0; 
+ }
+
+.derecha {
+    text-align: right;
+    vertical-align: middle;
+}
+
+.logo {
+    vertical-align: middle;
+}

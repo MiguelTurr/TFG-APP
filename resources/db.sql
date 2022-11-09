@@ -36,14 +36,21 @@ CREATE TABLE IF NOT EXISTS `alojamientos` (
 	`precio` smallint NOT NULL,
 	`descuento` float NOT NULL default 0.0,
 
+	`ubicacion` varchar(200) NOT NULL,
+
 	`viajeros` tinyint NOT NULL default 1,
 	`habitaciones` tinyint NOT NULL default 1,
 	`camas` tinyint NOT NULL default 1,
 	`aseos` tinyint NOT NULL default 1,
 
+	`horaEntrada` time NOT NULL,
+	`horaSalida` time NOT NULL,
 
+	`puedeFumar` tinyint NOT NULL default 0,
+	`puedeFiestas` tinyint NOT NULL default 0,
 	
-	
+	`servicios` int NOT NULL,
+
     CONSTRAINT FK_UsuarioAlojamiento FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
     PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

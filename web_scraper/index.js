@@ -5,6 +5,7 @@ const http = require('https');
 
 //
 
+const max_usurios = 5;
 const scroll_max = 1;
 const scroll_timer_time = 2000;
 const render_time = scroll_max * scroll_timer_time;
@@ -13,8 +14,6 @@ const url = 'https://www.airbnb.es/';
 var casas = 0;
 
 scapHome();
-
-// AÑADIR SERVICIOS Y NORMAS AL SCRAP_DATA
 
 //
 
@@ -283,13 +282,44 @@ function scrapFile(data) {
 
     var str = '';
 
+    str += Math.floor(Math.random() * max_usurios) + '|';
     str += data.titulo+ '|';
     str += data.descripcion+ '|';
-    str += data.ubicacion+ '|';
     str += data.precio+ '|';
+    str += data.ubicacion+ '|';
     str += data.personas+ '|' +data.habitaciones+ '|' +data.camas+ '|' +data.bathroom+ '|';
-    str += data.normas.hora_llegada+ '|' +data.normas.hora_salida;
-    str += '\n';
+
+    // NORMAS
+
+    var hora_llegada = data.normas.hora_llegada;
+    var hora_salida = data.normas.hora_salida;
+
+    if(hora_llegada == '') {
+        hora_llegada = '12:00';
+    }
+
+    if(hora_salida == '') {
+        hora_salida = '13:00';
+    }
+
+    str += hora_llegada+ '|' +hora_salida+ '|';
+    str += data.normas.fumar+ '|' +data.normas.fiestas+ '|';
+
+    // SERVICIOS
+
+    var servicios_final = 0;
+    
+    servicios_final |= servicios.cocina << 8;
+    servicios_final |= servicios.wifi << 7;
+    servicios_final |= servicios.animales << 6;
+    servicios_final |= servicios.aparcamiento << 5;
+    servicios_final |= servicios.piscina << 4;
+    servicios_final |= servicios.lavadora << 3;
+    servicios_final |= servicios.aire_acondicionado << 2;
+    servicios_final |= servicios.calefaccion << 1;
+    servicios_final |= servicios.television;
+
+    str += servicios_final+ '\n';
 
     //
 
@@ -304,7 +334,12 @@ function scrapFile(data) {
 
 function scrapIMG(img) {
 
-    fs.appendFile('./scrap_img.txt', img+ '\n', error => {
+    var str = '';
+
+    str += (casas + 1)+ ',';
+    str += img+ '\n';
+
+    fs.appendFile('./scrap_img.txt', str, error => {
 
         if (error) {
             console.log(error);
