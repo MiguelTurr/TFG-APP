@@ -8,12 +8,13 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 	`email` varchar(200) NOT NULL UNIQUE,
 	`password` varchar(200) NOT NULL,
 	`nombre` varchar(50) NOT NULL,
-	`apellidos` varchar(50) NOT NULL,
+	`apellidos` varchar(90) NOT NULL,
 	`genero` tinyint NOT NULL DEFAULT 0,
 	`fechaNac` date NOT NULL,
 	`fechaReg` datettime NOT NULL DEFAULT NOW(),
 	`telefono` varchar(20) NOT NULL,
 	`residencia` varchar(200),
+	`img-perfil` varchar(100) NOT NULL default 'default.png',
 
 	
 

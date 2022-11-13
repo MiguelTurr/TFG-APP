@@ -4,6 +4,13 @@ const mysql = require("./mysql_module.js");
 
 //
 
+server.use(express.json({limit: '50mb'}));
+server.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+server.use(express.json());
+
+//
+
 const hostname = 'localhost';
 const port = 8000;
 
@@ -54,4 +61,19 @@ server.get('/prueba', (req, res) => {
                 }
             ]
         });
+});
+
+server.post('/registrar', (req, res) => {
+
+    console.log(req.body);
+
+    res.json({ prueba: 'ss' });
+});
+
+server.post('/login', (req, res) => {
+
+});
+
+server.post('/validar', (req, res) => {
+
 });

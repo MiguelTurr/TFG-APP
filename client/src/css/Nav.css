@@ -1,13 +1,42 @@
 .header {
     position: sticky;   
     top: 0; 
+    background-color: rgb(24, 24, 24);
  }
 
-.derecha {
+ .header-separador {
+    color: white;
+    border-width: 2px;
+    margin-right: 10px;
+    margin-left: 10px;
+ }
+
+ .logo {
+    text-align: left !important;
+ }
+
+ /*
+
+ */
+
+.user-col {
     text-align: right;
-    vertical-align: middle;
 }
 
-.logo {
-    vertical-align: middle;
+.user-boton {
+    border-radius: 50px !important;
+}
+
+.user-img {
+    max-height: 28px;
+}
+
+/*
+
+*/
+
+.container-filtros {
+    color: white;
+    text-align: center;
+    font-size: 10px;
 }

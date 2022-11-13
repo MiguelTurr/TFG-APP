@@ -31,7 +31,7 @@ function Home() {
                                 className="img-fluid"
                                 src={x.url}/>
 
-                            <div className="container bg-danger mb-2 text-center text-white">
+                            <div className="container bg-warning mb-3 text-center text-white">
 
                                 {x.nombre}
                             </div>

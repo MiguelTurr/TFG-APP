@@ -8,3 +8,24 @@ OBTENER LATITUD Y LONGITUD A PARTIR DE DIRECCIÓN
 
 fast for holidays
 ff-hs
+
+Validacion de registro / he olvidado la contraseña
+Filtros (favoritos / reomendados / filtros generales / filtros avanzados / ver en MAPA)
+
+
+https://developers.google.com/maps/documentation/javascript/overview
+https://developers.google.com/maps/documentation/javascript/geocoding
+
+https://www.npmjs.com/package/selenium-webdriver
+
+https://react-bootstrap.netlify.app/components/dropdowns/#rb-docs-content
+
+https://www.w3schools.com/nodejs/nodejs_email.asp
+
+PREFIJOS TELEFONOS
+https://gist.github.com/anubhavshrimal/75f6183458db8c453306f93521e93d37
+
+https://raw.githubusercontent.com/russ666/all-countries-and-cities-json/master/countries.json
+
+
+https://stackoverflow.com/questions/48669646/how-to-add-or-remove-a-classname-when-screen-size-change-in-react
