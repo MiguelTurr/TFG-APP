@@ -30,6 +30,10 @@ const Login = ({ mostrar, funcionCerrar, funcionLogin }) => {
                             <Button type="submit" variant="success">
                                 Iniciar sesión
                             </Button>
+
+                            <hr/>
+                            
+                            <a className="text-center" href="/">¿Has olvidado tu contraseña?</a>
                         </div>
 
                     </Form>

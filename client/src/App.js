@@ -1,8 +1,9 @@
 import Nav from './components/Nav';
-import Footer from './components/Footer';
 import Home from './components/Home';
 import Ayuda from './components/Ayuda';
+import Buscar from './components/Buscar';
 import RegistroValidar from './components/RegistroValidar';
+import Cookies from './components/Cookies';
 
 import './css/App.css';
 
@@ -21,10 +22,11 @@ function App() {
           <Route path="/" element={ <Home /> }/>
           <Route path="/ayuda" element={ <Ayuda /> }/>
           <Route path="/validar/:id" element={ <RegistroValidar /> }/>
+          <Route path="/buscar" element={ <Buscar /> }/>
 
         </Routes>
-
-        <Footer />  
+        
+        <Cookies/>
       </div>
       
     </Router>

@@ -1,20 +1,32 @@
 const express = require('express');
-const server = express();
+const cors = require('cors');
 const mysql = require("./services/mysql.js");
 const email = require("./services/email.js");
+
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+
 const bcrypt = require('bcrypt');
 const randomstring = require("randomstring");
 
+const { bcrypt_salt, cookie_secret } = require('./services/config.js');
+
 //
+
+const server = express();
 
 server.use(express.json({limit: '50mb'}));
 server.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 server.use(express.json());
+server.use(cookieParser(
+    //secret: your_secret,
+));
 
-//
-
-const saltRounds = 10;
+server.use(cors({
+    origin: ['http://localhost:3000'],
+    methods: ['GET', 'POST']
+}));
 
 //
 
@@ -29,9 +41,31 @@ server.listen(port, function() {
 
 //
 
+const comprobarToken = (req, _, next) => {
+
+    const token = req.cookies.token;
+
+    if(token) {
+        const decoded = jwt.verify(token, cookie_secret);
+        req.userId = decoded.id;
+    }
+
+    next();
+};
+
+//
+
+server.get('/cookies', (req, res) => {
+
+});
+
+server.get('/cookies/aceptar', (req, res) => {
+    res.status(200).cookie('cookiesAceptadas', true, { httpOnly: false, expires: new Date(2147483647222222), secure: false, sameSite: true }).end();
+});
+
 server.post('/registrar', async (req, res) => {
 
-    const passwordHash = await bcrypt.hash(req.body.password, saltRounds);
+    const passwordHash = await bcrypt.hash(req.body.password, bcrypt_salt);
 
     const validarEmail = randomstring.generate({
         length: 50,
@@ -121,8 +155,18 @@ server.post('/login', (req, res) => {
             return;
         }
 
-        res.status(201).json({ respuesta: 'correcto' });
+        const id = result[0].ID;
+        const token = jwt.sign({ id }, cookie_secret);
+
+        res.status(201)
+        .cookie('token', token, { httpOnly: true, expires: new Date(Date.now() + 10000000), secure: true })
+        .json({ respuesta: 'correcto', autorizacion: true });
     });
+});
+
+server.post('/logout', comprobarToken, (req, res) => {
+    res.status(200).clearCookie("token");
+    res.end();
 });
 
 server.post('/noPassword', (req, res) => {
@@ -157,9 +201,10 @@ server.post('/noPassword', (req, res) => {
             charset: 'alphanumeric',
         });
 
-        const passwordHash = await bcrypt.hash(nuevaPassword, saltRounds);
+        const passwordHash = await bcrypt.hash(nuevaPassword, bcrypt_salt);
+        const nuevoReset = fechaHoy + 86400000;
 
-        mysql.query("UPDATE usuarios SET password=? WHERE email=? LIMIT 1", passwordHash, email, function(err) {
+        mysql.query("UPDATE usuarios SET password=?,passReset=? WHERE email=? LIMIT 1", passwordHash, nuevoReset, email, function(err) {
 
             if(err) {
                 console.log(err);
@@ -227,59 +272,81 @@ server.get('/validar/:id', (req, res) => {
 
 //
 
-server.get('/prueba', (req, res) => {
+server.get('/prueba', comprobarToken, (req, res) => {
 
-    res.json( { 
-        "usuarios": 
-            [ 
-                {
-                    nombre: 'usuario1', 
-                    url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                    precio: 200,
-                    lugar: 'León, España'
-                },
-                {
-                    nombre: 'usuario2',
-                    url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                    precio: 200,
-                    lugar: 'León, España'
-                },
-                {
-                    nombre: 'usuario3',
-                    url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                    precio: 200,
-                    lugar: 'León, España'
-                },
-                {
-                    nombre: 'usuario4',
-                    url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                    precio: 200,
-                    lugar: 'León, España'
-                },
-                {
-                    nombre: 'usuario5',
-                    url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                    precio: 200,
-                    lugar: 'León, España'
-                },
-                {
-                    nombre: 'usuario6',
-                    url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                    precio: 200,
-                    lugar: 'León, España'
-                },
-                {
-                    nombre: 'usuario7',
-                    url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                    precio: 200,
-                    lugar: 'León, España'
-                },
-                {
-                    nombre: 'usuario8',
-                    url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                    precio: 200,
-                    lugar: 'León, España'
-                }
-            ]
-        });
+    //var queryStr = '';
+
+    if(req.userId == undefined) {
+
+        res.json( { 
+            "usuarios": 
+                [ 
+                    {
+                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
+                        precio: 50,
+                        lugar: 'Zamora, España'
+                    },
+                    {
+                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
+                        precio: 10,
+                        lugar: 'León, México'
+                    }
+                ]
+            });
+    } else {
+
+        res.json( { 
+            "usuarios": 
+                [ 
+                    {
+                        nombre: 'usuario1', 
+                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
+                        precio: 200,
+                        lugar: 'León, España'
+                    },
+                    {
+                        nombre: 'usuario2',
+                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
+                        precio: 200,
+                        lugar: 'León, España'
+                    },
+                    {
+                        nombre: 'usuario3',
+                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
+                        precio: 200,
+                        lugar: 'León, España'
+                    },
+                    {
+                        nombre: 'usuario4',
+                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
+                        precio: 200,
+                        lugar: 'León, España'
+                    },
+                    {
+                        nombre: 'usuario5',
+                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
+                        precio: 200,
+                        lugar: 'León, España'
+                    },
+                    {
+                        nombre: 'usuario6',
+                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
+                        precio: 200,
+                        lugar: 'León, España'
+                    },
+                    {
+                        nombre: 'usuario7',
+                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
+                        precio: 200,
+                        lugar: 'León, España'
+                    },
+                    {
+                        nombre: 'usuario8',
+                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
+                        precio: 200,
+                        lugar: 'León, España'
+                    }
+                ]
+            });
+    }
 });

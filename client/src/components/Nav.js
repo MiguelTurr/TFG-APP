@@ -3,10 +3,12 @@ import '../css/Nav.css';
 
 import LoginModal from './LoginModal';
 import RegistroModal from './RegistroModal';
+import userLogin from '../js/autorizado';
 
 import Logo from '../img/logo.png';
 import Fav from '../img/favoritos.png';
 import Sugerencias from '../img/sugerencias.png';
+import NoProfileImg from '../img/no-profile-img.png';
 
 import Button from 'react-bootstrap/Button';
 import DropdownButton from 'react-bootstrap/DropdownButton';
@@ -16,6 +18,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
 function Nav() {
+
+    const { autorizado, setAutorizado } = userLogin();
 
     //
 
@@ -164,11 +168,46 @@ function Nav() {
 
         } else {
             alert('Login correcto');
+            setAutorizado(true);
+
+            window.location.reload(false);
+        }
+    };
+
+    // LOGOUT
+
+    const cerrarSesion = async () => {
+
+        const data = await fetch('/logout', { 
+            method: 'POST',
+            
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        console.log(data.status);
+
+        if(data.status == 200) {
+            
+            alert('Logout correcto');
+            setAutorizado(false);
+
+            window.location.reload(false);
         }
     };
 
     // BUSCAR
 
+    const buscarLugar = () => {
+        const lugar = document.getElementById('buscar-lugar').value;
+
+        if(lugar == '') {
+            return alert('Escribe un lugar para visitar');
+        }
+
+        window.location.href = '/buscar?place=' +lugar;
+    };
 
     //
 
@@ -193,8 +232,9 @@ function Nav() {
                 <div className="col-sm-4 mt-3">
 
                     <div className="input-group">
-                        <input type="text" className="form-control" placeholder="Escribe un lugar" aria-label="Recipient's username"/>
-                        <Button variant="warning" size="sm">
+                        <input type="text" className="form-control" id='buscar-lugar' placeholder="Escribe un lugar" aria-label="Lugar para visitar"/>
+
+                        <Button className="color-boton" size="sm" onClick={buscarLugar}>
                             <FontAwesomeIcon icon={faSearch} />
                         </Button>
                     </div>
@@ -206,21 +246,34 @@ function Nav() {
                     <DropdownButton
                         className="user-boton"
                         size="sm"
-                        variant="warning"
                         title={
                             <>
                                 <img className="img-fluid rounded-pill user-img" 
-                                    src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png"
+                                    src={NoProfileImg}
                                     alt="Imagen de perfil del usuario"
                                 />
                                 &nbsp;&nbsp;&nbsp;
                             </>
                         } 
                     >
-                        <Dropdown.Item eventKey="1" onClick={mostrarRegistro}>Regístrate</Dropdown.Item>
-                        <Dropdown.Item eventKey="2" onClick={mostrarLogin}>Inicia sesión</Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item eventKey="3" href="/ayuda">Ayuda</Dropdown.Item>
+                        {autorizado === false &&
+                            <>
+                                <Dropdown.Item eventKey="1" onClick={mostrarRegistro}>Regístrate</Dropdown.Item>
+                                <Dropdown.Item eventKey="2" onClick={mostrarLogin}>Inicia sesión</Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item eventKey="3" href="/ayuda">Ayuda</Dropdown.Item>
+                            </>
+                        }
+
+                        {autorizado == true &&
+                            <>
+                                <Dropdown.Item eventKey="1" href="/perfil">Perfil</Dropdown.Item>
+                                <Dropdown.Item eventKey="2" href="/ayuda">Ayuda</Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item eventKey="3" onClick={cerrarSesion}>Cerrar sesión</Dropdown.Item>
+                            </>
+                        }
+
                     </DropdownButton>
                 </div>
             </div>
@@ -238,7 +291,7 @@ function Nav() {
 
                 <div className="col">
                     
-                    <Button variant="warning" size="sm">
+                    <Button className="color-boton" size="sm">
                         <img
                             className="img-fluid"
                             src={Fav}
@@ -252,7 +305,7 @@ function Nav() {
 
                 <div className="col">
                     
-                    <Button variant="warning" size="sm">
+                    <Button className="color-boton" size="sm">
                         <img
                             className="img-fluid"
                             src={Sugerencias}
@@ -264,9 +317,9 @@ function Nav() {
                     </Button>
                 </div>
 
-                <div className="col-sm-7">
+                <div className="col">
 
-                    <h1>
+                    <h1 style={{color: 'black'}}>
                         Filtros
                     </h1>
                     
@@ -274,7 +327,7 @@ function Nav() {
                 
                 <div className="col">
                     
-                    <Button variant="warning" size="sm">
+                    <Button className="color-boton" size="sm">
                         <img
                             className="img-fluid"
                             src={Fav}
@@ -288,7 +341,7 @@ function Nav() {
 
                 <div className="col">
                     
-                    <Button variant="warning" size="sm">
+                    <Button className="color-boton" size="sm">
                         <img
                             className="img-fluid"
                             src={Sugerencias}
