@@ -3,7 +3,7 @@ import '../css/Home.css';
 
 function Ayuda() {
     return (
-        <div>
+        <div className='container-fluid'>
             <h1>
                 AYUDA
             </h1>

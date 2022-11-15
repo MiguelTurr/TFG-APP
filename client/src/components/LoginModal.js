@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
-const Login = ({ mostrar, funcionCerrar }) => {
+const Login = ({ mostrar, funcionCerrar, funcionLogin }) => {
     return (
         <Modal fullscreen={true} show={mostrar} onHide={funcionCerrar}>
 
@@ -15,19 +15,19 @@ const Login = ({ mostrar, funcionCerrar }) => {
             <Modal.Body>
                 <div className="container">
 
-                    <Form>
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form onSubmit={funcionLogin}>
+                        <Form.Group className="mb-3" controlId="log-email">
                             <Form.Label>Correo electrónico</Form.Label>
                             <Form.Control type="email" placeholder="Escribe correo" />
                         </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="formBasicPassword">
+                        <Form.Group className="mb-3" controlId="log-password">
                             <Form.Label>Contraseña</Form.Label>
                             <Form.Control type="password" placeholder="Escribe contraseña" />
                         </Form.Group>
                     
                         <div className="d-grid gap-2">
-                            <Button variant="success btn-block" onClick={funcionCerrar}>
+                            <Button type="submit" variant="success">
                                 Iniciar sesión
                             </Button>
                         </div>

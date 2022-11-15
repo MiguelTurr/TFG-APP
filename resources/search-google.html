@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <script
+        type="text/javascript"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initAutocomplete&libraries=places"
+        defer
+    ></script>
+</head>
+<body>
+
+    <input type="text" id="prueba" style="width: 100%;"></input>
+    <button onClick="prueba()">BOTON</button>
+
+    <script>
+        var autocomplete;
+
+        function initAutocomplete() {
+            autocomplete = new google.maps.places.Autocomplete(document.getElementById('prueba'), {
+                fields: ['geometry']
+            });
+        }
+
+        function prueba() {
+            console.log(autocomplete.getPlace().geometry.location.lat());
+            console.log(autocomplete.getPlace().geometry.location.lng());
+        }
+    </script>
+    
+</body>
+</html>

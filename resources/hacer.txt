@@ -3,27 +3,42 @@ INSERTAR MAPA HTML
 
 OBTENER LATITUD Y LONGITUD A PARTIR DE DIRECCIÓN
 
-
+COOOKIES / he olvidado la contraseña / almacenar userid
 
 
 fast for holidays
 ff-hs
 
-Validacion de registro / he olvidado la contraseña
-Filtros (favoritos / reomendados / filtros generales / filtros avanzados / ver en MAPA)
+Filtros (favoritos / reomendados / filtros generales / filtros avanzados / ver en MAPA) - comparar
 
-
+GOOGLE MAPS API
 https://developers.google.com/maps/documentation/javascript/overview
 https://developers.google.com/maps/documentation/javascript/geocoding
+https://developers.google.com/maps/documentation/javascript/place-autocomplete
+https://www.npmjs.com/package/@react-google-maps/api
 
+SELENIUM
 https://www.npmjs.com/package/selenium-webdriver
 
 https://react-bootstrap.netlify.app/components/dropdowns/#rb-docs-content
 
+FONT AWESOME
+https://fontawesome.com/v5/docs/web/use-with/react
+
+EMAIL
 https://www.w3schools.com/nodejs/nodejs_email.asp
 
 PREFIJOS TELEFONOS
 https://gist.github.com/anubhavshrimal/75f6183458db8c453306f93521e93d37
+
+ENCRIPTAR PASSWORD
+https://www.npmjs.com/package/bcrypt
+
+HTML CODES
+https://kb.iu.edu/d/bfrc
+
+RANDOM STRING
+https://www.npmjs.com/package/randomstring
 
 https://raw.githubusercontent.com/russ666/all-countries-and-cities-json/master/countries.json
 

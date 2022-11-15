@@ -34,9 +34,22 @@ const Registro = ({ mostrar, funcionCerrar, funcionRegistro }) => {
                                         <Form.Control type="text" placeholder="Escribe apellidos" />
                                     </Form.Group>
 
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Género</Form.Label>
+                                        <Form.Select aria-label="Seleccion genero" id="reg-genero">
+                                            <option value="0">Hombre</option>
+                                            <option value="1">Mujer</option>
+                                        </Form.Select>
+                                    </Form.Group>
+
                                     <Form.Group className="mb-3" controlId="reg-email">
                                         <Form.Label>Correo electrónico</Form.Label>
                                         <Form.Control type="email" placeholder="Escribe correo" />
+                                    </Form.Group>
+
+                                    <Form.Group className="mb-3" controlId="reg-fechaNac">
+                                        <Form.Label>Fecha nacimiento</Form.Label>
+                                        <Form.Control type="date"/>
                                     </Form.Group>
 
                                 </div>
@@ -53,24 +66,24 @@ const Registro = ({ mostrar, funcionCerrar, funcionRegistro }) => {
                                         <Form.Control type="password" placeholder="Escribe contraseña" />
                                     </Form.Group>
                                 
-                                <Form.Group className="mb-3">
+                                    <Form.Group className="mb-3">
 
-                                    <Form.Label>Número teléfono</Form.Label>
-                                    <div className="input-group mb-3">
+                                        <Form.Label>Número teléfono</Form.Label>
+                                        <div className="input-group mb-3">
 
-                                        <Form.Select aria-label="Seleccion prefijo telefono" id="reg-prefijo">
-                                            {
-                                                phonePrefix.map((x, index) => {
-                                                    return <option key={index} value={x.dial_code}>
-                                                        {x.name} {x.dial_code}
-                                                    </option>
-                                                })
-                                            }
-                                        </Form.Select>
-                                        <Form.Control type="text" placeholder="Escribe número" id="reg-telefono"/>
-                                    </div>
-                                    
-                                </Form.Group>
+                                            <Form.Select aria-label="Seleccion prefijo telefono" id="reg-prefijo">
+                                                {
+                                                    phonePrefix.map((x, index) => {
+                                                        return <option key={index} value={x.dial_code}>
+                                                            {x.name} {x.dial_code}
+                                                        </option>
+                                                    })
+                                                }
+                                            </Form.Select>
+                                            <Form.Control type="number" placeholder="Escribe número" id="reg-telefono"/>
+                                        </div>
+                                        
+                                    </Form.Group>
                                 </div>
                             </div>
 

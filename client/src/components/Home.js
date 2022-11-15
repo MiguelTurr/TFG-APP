@@ -2,6 +2,9 @@ import React from 'react';
 import '../css/Home.css';
 import { useEffect, useState } from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faStar, faLocationDot } from '@fortawesome/free-solid-svg-icons'
+
 function Home() {
 
     useEffect( () => {
@@ -31,9 +34,25 @@ function Home() {
                                 className="img-fluid"
                                 src={x.url}/>
 
-                            <div className="container bg-warning mb-3 text-center text-white">
+                            <div className="container bg-warning mb-3">
 
-                                {x.nombre}
+                                <div className="row">
+
+                                    <div className="col">
+
+                                        <p>
+                                            <FontAwesomeIcon icon={faLocationDot} />&nbsp;<strong>{x.lugar}</strong>
+                                            <br/>
+                                            <strong>{x.precio}€</strong> por noche
+                                        </p>
+                                    </div>
+
+                                    <div className="col derecha-casa">
+                                        <FontAwesomeIcon icon={faStar} />&nbsp;
+                                        3,5
+                                    </div>
+
+                                </div>
                             </div>
 
                         </div>

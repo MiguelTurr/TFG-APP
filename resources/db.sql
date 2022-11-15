@@ -5,15 +5,18 @@ USE app;
 
 CREATE TABLE IF NOT EXISTS `usuarios` (
     `ID` int NOT NULL AUTO_INCREMENT,
+	`activo` tinyint NOT NULL default 0,
+	`verificacion` char(50) NOT NULL,
 	`email` varchar(200) NOT NULL UNIQUE,
-	`password` varchar(200) NOT NULL,
+	`password` varchar(70) NOT NULL,
+	`passReset` int NOT NULL default 0,
 	`nombre` varchar(50) NOT NULL,
 	`apellidos` varchar(90) NOT NULL,
 	`genero` tinyint NOT NULL DEFAULT 0,
 	`fechaNac` date NOT NULL,
-	`fechaReg` datettime NOT NULL DEFAULT NOW(),
+	`fechaReg` datetime NOT NULL DEFAULT NOW(),
 	`telefono` varchar(20) NOT NULL,
-	`residencia` varchar(200),
+	`residencia` text,
 	`img-perfil` varchar(100) NOT NULL default 'default.png',
 
 	
@@ -23,9 +26,9 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 DELETE FROM `usuarios`;
----INSERT INTO `usuarios` (`email`, `password`, `nombre`, `apellidos`, `fechaNac`, `telefono`) VALUES
-	('manolo@app-tfg.com', 'manolo25', 'Manolo', 'Garcia Sanchez', '10-05-1990', '+34'),	
-	('sara@app-tfg.com', 'sarita99', 'Sara', 'Lopez', '20-07-1997', '+35');
+---INSERT INTO `usuarios` (`activo`, `vertificacion`, `email`, `password`, `nombre`, `apellidos`, `fechaNac`, `telefono`) VALUES
+	(1, '', 'manolo@app-tfg.com', 'manolo25', 'Manolo', 'Garcia Sanchez', '10-05-1990', '+34'),	
+	(1, '', 'sara@app-tfg.com', 'sarita99', 'Sara', 'Lopez', '20-07-1997', '+35');
 
 ----------------------------------------------------------------------------------
 

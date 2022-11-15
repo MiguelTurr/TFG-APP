@@ -12,6 +12,9 @@ import Button from 'react-bootstrap/Button';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSearch } from '@fortawesome/free-solid-svg-icons'
+
 function Nav() {
 
     //
@@ -36,31 +39,61 @@ function Nav() {
         event.preventDefault()
 
         const nombre = document.getElementById('reg-nombre').value;
-
-        if(nombre === '') {
+        if(nombre.length < 2) {
             alert('Escribe un nombre');
             return;
         }
 
-        //const apellidos = document.getElementById('reg-apellidos').value;
+        const apellidos = document.getElementById('reg-apellidos').value;
+        if(apellidos === '') {
+            return alert('Escribe un apellido');
+        }
 
-        var prefijo = document.getElementById('reg-prefijo').value;
-        var numero = document.getElementById('reg-telefono').value;
+        const email = document.getElementById('reg-email').value;
+        if(email === '') {
+            return alert('Escribe un correo electrónico');
+        }
 
-        var telefono = prefijo+ ' ' +numero;
-        
-        console.log(telefono)
+        const fechaNac = document.getElementById('reg-fechaNac').value;
+        const fechaHoy = new Date().getTime();
+        const fechaFinal = (fechaHoy - new Date(fechaNac).getTime()) / (1000 * 60 * 60 * 24 * 365);
+
+        if(fechaFinal < 18) {
+            return alert('Debes tener más de 18 años');
+        }
+
+        const password = document.getElementById('reg-password').value;
+        if(password.length < 5) {
+            return alert('La contraseña debe tener al menos 5 caracteres');
+        }
+
+        const passwordRepite = document.getElementById('reg-password-2').value;
+        if(password !== passwordRepite) {
+            return alert('La contraseña no coincide');
+        }
+
+        const numero = document.getElementById('reg-telefono').value;
+        if(numero === '') {
+            return alert('Escribe un número');
+        }
+
+        const prefijo = document.getElementById('reg-prefijo').value;
+        const genero = document.getElementById('reg-genero').value;
+
+        //
 
         const data = await fetch('/registrar', { 
             method: 'POST',
 
             body: JSON.stringify({ 
-                nombre: document.getElementById('reg-nombre').value,
-                apellidos: 'Lopez Sanches',
-                email: 'asas@hotmail.com',
-                password: '1212121',
-                telefono: telefono
-
+                nombre: nombre,
+                apellidos: apellidos,
+                email: email,
+                password: password,
+                telefono: prefijo+ ' ' +numero,
+                genero: genero,
+                fechaNac: fechaNac,
+                residencia: 'León, Castilla y León, España'
             }),
             
             headers: {
@@ -70,8 +103,15 @@ function Nav() {
 
         const items = await data.json();
 
-        console.log(data);
-        console.log(items);
+        if(items.respuesta == 'err_db') {
+            alert('ERROR DB');
+
+        } else if(items.respuesta == 'err_email') {
+            alert('DUPLICADO EMAIL');
+
+        } else {
+            alert('VERIFICA CORREO');
+        }
     };
 
     // LOGIN
@@ -80,6 +120,52 @@ function Nav() {
 
     const mostrarLogin = () => setShowLogin(true);
     const cerrarLogin = () => setShowLogin(false);
+
+    const enviarLogin = async (event) => {
+        event.preventDefault();
+        
+        const email = document.getElementById('log-email').value;
+
+        if(email === '') {
+            alert('Escribe un correo');
+            return;
+        }
+
+        const password = document.getElementById('log-password').value;
+
+        if(password === '') {
+            alert('Escribe una contraseña');
+            return;
+        }
+
+        const data = await fetch('/login', { 
+            method: 'POST',
+
+            body: JSON.stringify({ 
+                email: email,
+                password: password
+            }),
+            
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        const items = await data.json();
+
+        if(items.respuesta == 'err_db') {
+            alert('ERROR DB');
+
+        } else if(items.respuesta == 'err_datos') {
+            alert('ERROR DATOS');
+
+        } else if(items.respuesta == 'err_validado') {
+            alert('VALIDA EL CORREO');
+
+        } else {
+            alert('Login correcto');
+        }
+    };
 
     // BUSCAR
 
@@ -108,7 +194,9 @@ function Nav() {
 
                     <div className="input-group">
                         <input type="text" className="form-control" placeholder="Escribe un lugar" aria-label="Recipient's username"/>
-                        <Button variant="warning" size="sm">Buscar</Button>
+                        <Button variant="warning" size="sm">
+                            <FontAwesomeIcon icon={faSearch} />
+                        </Button>
                     </div>
 
                 </div>
@@ -137,7 +225,7 @@ function Nav() {
                 </div>
             </div>
 
-            <LoginModal mostrar={loginModal} funcionCerrar={cerrarLogin} />
+            <LoginModal mostrar={loginModal} funcionCerrar={cerrarLogin} funcionLogin={enviarLogin}/>
             <RegistroModal mostrar={registroModal} funcionCerrar={cerrarRegistro} funcionRegistro={enviarRegistro} />
 
         </div>
@@ -148,28 +236,28 @@ function Nav() {
 
             <div className="row">
 
-                <div className="col-sm-1">
+                <div className="col">
                     
                     <Button variant="warning" size="sm">
                         <img
                             className="img-fluid"
                             src={Fav}
                             alt="" 
-                            width="40%"
+                            width="20%"
                         ></img>
                         <br/>
                         Favoritos
                     </Button>
                 </div>
 
-                <div className="col-sm-1">
+                <div className="col">
                     
                     <Button variant="warning" size="sm">
                         <img
                             className="img-fluid"
                             src={Sugerencias}
                             alt="" 
-                            width="30%"
+                            width="20%"
                         ></img>
                         <br/>
                         Recomendados
@@ -184,28 +272,28 @@ function Nav() {
                     
                 </div>
                 
-                <div className="col-sm-1">
+                <div className="col">
                     
                     <Button variant="warning" size="sm">
                         <img
                             className="img-fluid"
                             src={Fav}
                             alt="" 
-                            width="40%"
+                            width="20%"
                         ></img>
                         <br/>
                         Favoritos
                     </Button>
                 </div>
 
-                <div className="col-sm-1">
+                <div className="col">
                     
                     <Button variant="warning" size="sm">
                         <img
                             className="img-fluid"
                             src={Sugerencias}
                             alt="" 
-                            width="30%"
+                            width="20%"
                         ></img>
                         <br/>
                         Recomendados
