@@ -1,0 +1,28 @@
+.btn-no-style {
+    all: unset;
+    cursor: pointer;
+
+    margin-left: 7px;
+    color: grey;
+}
+
+.btn-no-style:hover {
+    text-decoration: underline black; 
+    color: black;
+}
+
+.btn-activo {
+    text-decoration: underline black; 
+    color: black;
+}
+
+.separador-izquierda {
+    border-left: 1px solid black;
+}
+
+.vista-separador {
+    margin-left: 7px;
+    margin-right: 7px;
+
+    color: grey;
+}

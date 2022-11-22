@@ -1,21 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import '../css/Nav.css';
 
 import LoginModal from './LoginModal';
 import RegistroModal from './RegistroModal';
+import NavFiltros from './NavFiltros';
 import userLogin from '../js/autorizado';
 
 import Logo from '../img/logo.png';
-import Fav from '../img/favoritos.png';
-import Sugerencias from '../img/sugerencias.png';
 import NoProfileImg from '../img/no-profile-img.png';
 
 import Button from 'react-bootstrap/Button';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch, faBars } from '@fortawesome/free-solid-svg-icons';
 
 function Nav() {
 
@@ -40,7 +38,7 @@ function Nav() {
     const cerrarRegistro = () => setShowRegistro(false);
 
     const enviarRegistro = async (event) => {
-        event.preventDefault()
+        event.preventDefault();
 
         const nombre = document.getElementById('reg-nombre').value;
         if(nombre.length < 2) {
@@ -79,6 +77,18 @@ function Nav() {
         const numero = document.getElementById('reg-telefono').value;
         if(numero === '') {
             return alert('Escribe un número');
+        }
+
+        const condiciones = document.getElementById('reg-condiciones').checked;
+        if(condiciones == false) {
+            alert('Debes aceptar los términos y condiciones');
+            return;
+        }
+
+        const privacidad = document.getElementById('reg-privacidad').checked;
+        if(privacidad == false) {
+            alert('Debes aceptar el aviso de privacidad');
+            return;
         }
 
         const prefijo = document.getElementById('reg-prefijo').value;
@@ -209,10 +219,25 @@ function Nav() {
         window.location.href = '/buscar?place=' +lugar;
     };
 
+    const initAutocomplete = useRef();
+    const inputRef = useRef();
+
+    useEffect(() => {
+        initAutocomplete.current = new window.google.maps.places.Autocomplete(
+         inputRef.current,
+         {fields: ['geometry']}
+        );
+        
+        initAutocomplete.current.addListener("place_changed", async function () {
+            const place = await initAutocomplete.current.getPlace();
+            console.log({ place });
+        });
+    }, []);
+
     //
 
     return (
-        <div className="header">
+    <div className="header">
 
         <div className="container-fluid text-center">
 
@@ -232,7 +257,7 @@ function Nav() {
                 <div className="col-sm-4 mt-3">
 
                     <div className="input-group">
-                        <input type="text" className="form-control" id='buscar-lugar' placeholder="Escribe un lugar" aria-label="Lugar para visitar"/>
+                        <input type="text" className="form-control" id='buscar-lugar' placeholder="Escribe un lugar" aria-label="Lugar para visitar" ref={inputRef}/>
 
                         <Button className="color-boton" size="sm" onClick={buscarLugar}>
                             <FontAwesomeIcon icon={faSearch} />
@@ -243,38 +268,39 @@ function Nav() {
 
                 <div className={isMobile ? "col-sm-4 mt-3" : "col-sm-4 mt-3 user-col"}>
 
-                    <DropdownButton
-                        className="user-boton"
-                        size="sm"
-                        title={
-                            <>
-                                <img className="img-fluid rounded-pill user-img" 
-                                    src={NoProfileImg}
-                                    alt="Imagen de perfil del usuario"
-                                />
-                                &nbsp;&nbsp;&nbsp;
-                            </>
-                        } 
-                    >
-                        {autorizado === false &&
-                            <>
-                                <Dropdown.Item eventKey="1" onClick={mostrarRegistro}>Regístrate</Dropdown.Item>
-                                <Dropdown.Item eventKey="2" onClick={mostrarLogin}>Inicia sesión</Dropdown.Item>
-                                <Dropdown.Divider />
-                                <Dropdown.Item eventKey="3" href="/ayuda">Ayuda</Dropdown.Item>
-                            </>
-                        }
+                    <Dropdown>
 
-                        {autorizado == true &&
-                            <>
-                                <Dropdown.Item eventKey="1" href="/perfil">Perfil</Dropdown.Item>
-                                <Dropdown.Item eventKey="2" href="/ayuda">Ayuda</Dropdown.Item>
-                                <Dropdown.Divider />
-                                <Dropdown.Item eventKey="3" onClick={cerrarSesion}>Cerrar sesión</Dropdown.Item>
-                            </>
-                        }
+                        <Dropdown.Toggle variant="link" bsPrefix className="user-btn-no">
+                            <FontAwesomeIcon icon={faBars} className="user-icon" />
+                            
+                            <img className="img-fluid rounded-pill user-img" 
+                                                        src={NoProfileImg}
+                                                        alt="Imagen de perfil del usuario"
+                                                    />
+                        </Dropdown.Toggle>
 
-                    </DropdownButton>
+                        <Dropdown.Menu>{autorizado === false &&
+                                <>
+                                    <Dropdown.Item eventKey="1" onClick={mostrarRegistro}>Regístrate</Dropdown.Item>
+                                    <Dropdown.Item eventKey="2" onClick={mostrarLogin}>Inicia sesión</Dropdown.Item>
+                                    <Dropdown.Divider />
+                                    <Dropdown.Item eventKey="3" href="/ayuda">Ayuda</Dropdown.Item>
+                                </>
+                            }
+
+                            {autorizado == true &&
+                                <>
+                                    <Dropdown.Item eventKey="1" href="/perfil">Perfil</Dropdown.Item>
+                                    <Dropdown.Item eventKey="2" href="/perfil/miscasas">Mis alojamientos</Dropdown.Item>
+                                    <Dropdown.Item eventKey="3" href="/ayuda">Ayuda</Dropdown.Item>
+                                    <Dropdown.Divider />
+                                    <Dropdown.Item eventKey="4" onClick={cerrarSesion}>Cerrar sesión</Dropdown.Item>
+                                </>
+                            }
+                        </Dropdown.Menu>
+
+                    </Dropdown>
+                    
                 </div>
             </div>
 
@@ -283,81 +309,10 @@ function Nav() {
 
         </div>
 
-        <hr className="header-separador"/>
+        <NavFiltros />
 
-        <div className="container-fluid container-filtros mb-2">
-
-            <div className="row">
-
-                <div className="col">
-                    
-                    <Button className="color-boton" size="sm">
-                        <img
-                            className="img-fluid"
-                            src={Fav}
-                            alt="" 
-                            width="20%"
-                        ></img>
-                        <br/>
-                        Favoritos
-                    </Button>
-                </div>
-
-                <div className="col">
-                    
-                    <Button className="color-boton" size="sm">
-                        <img
-                            className="img-fluid"
-                            src={Sugerencias}
-                            alt="" 
-                            width="20%"
-                        ></img>
-                        <br/>
-                        Recomendados
-                    </Button>
-                </div>
-
-                <div className="col">
-
-                    <h1 style={{color: 'black'}}>
-                        Filtros
-                    </h1>
-                    
-                </div>
-                
-                <div className="col">
-                    
-                    <Button className="color-boton" size="sm">
-                        <img
-                            className="img-fluid"
-                            src={Fav}
-                            alt="" 
-                            width="20%"
-                        ></img>
-                        <br/>
-                        Favoritos
-                    </Button>
-                </div>
-
-                <div className="col">
-                    
-                    <Button className="color-boton" size="sm">
-                        <img
-                            className="img-fluid"
-                            src={Sugerencias}
-                            alt="" 
-                            width="20%"
-                        ></img>
-                        <br/>
-                        Recomendados
-                    </Button>
-                </div>
-
-            </div>
-
-        </div>
-
-        </div>
+        <hr/>
+    </div>
     );
 }
 

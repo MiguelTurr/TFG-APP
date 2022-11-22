@@ -1,0 +1,23 @@
+/*
+    FILTROS
+*/
+
+.filtro-separador {
+    border-right: black 1px solid;
+}
+
+.filtros-derecha {
+    text-align: right;
+}
+
+.filtros-botones {
+    background-color: #ffe841 !important;
+    border-color: black !important;
+
+    color: black !important;
+}
+
+.filtros-botones:hover {
+    background-color: #d6c437 !important;
+    border-color: black !important;
+}

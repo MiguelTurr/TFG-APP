@@ -2,3 +2,12 @@
     width: 50%;
     text-align: right;
 }
+
+.img-casa {
+    border: 1px solid black !important;
+}
+
+.info-casa {
+    background-color: #f8e025 !important;
+    border: 1px solid black !important;
+}

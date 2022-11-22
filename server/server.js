@@ -173,7 +173,7 @@ server.post('/noPassword', (req, res) => {
 
     const email = req.body.email;
 
-    mysql.query("SELECT passReset FROM usuarios WHERE email=? LIMIT 1", email, async (err, result) => {
+    mysql.query("SELECT passReset FROM usuarios WHERE email=? AND activo=1 LIMIT 1", email, async (err, result) => {
 
         if(err) {
             console.log(err);
@@ -270,7 +270,31 @@ server.get('/validar/:id', (req, res) => {
     });
 });
 
+server.get('/perfil', comprobarToken, (req, res) => {
+
+    if(req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    mysql.query("SELECT * FROM usuarios WHERE ID=? LIMIT 1", req.userId, (err, result) => {
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+
+            console.log(err.message);
+            return;
+        }
+
+        console.log(result);
+        res.status(201).json({ usuario: result });
+    });
+});
+
 //
+
+server.post('/buscar', (req, res) => {
+
+});
 
 server.get('/prueba', comprobarToken, (req, res) => {
 

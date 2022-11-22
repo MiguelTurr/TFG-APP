@@ -3,6 +3,8 @@ import Home from './components/Home';
 import Ayuda from './components/Ayuda';
 import Buscar from './components/Buscar';
 import RegistroValidar from './components/RegistroValidar';
+import RecordarPassword from './components/RecordarPassword';
+import Perfil from './components/Perfil';
 import Cookies from './components/Cookies';
 
 import './css/App.css';
@@ -22,6 +24,10 @@ function App() {
           <Route path="/" element={ <Home /> }/>
           <Route path="/ayuda" element={ <Ayuda /> }/>
           <Route path="/validar/:id" element={ <RegistroValidar /> }/>
+          <Route path="/nopassword" element={ <RecordarPassword /> }/>
+          <Route path="/perfil" element={ <Perfil /> }/>
+
+
           <Route path="/buscar" element={ <Buscar /> }/>
 
         </Routes>

@@ -5,6 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
 const Login = ({ mostrar, funcionCerrar, funcionLogin }) => {
+    
     return (
         <Modal fullscreen={true} show={mostrar} onHide={funcionCerrar}>
 
@@ -33,7 +34,7 @@ const Login = ({ mostrar, funcionCerrar, funcionLogin }) => {
 
                             <hr/>
                             
-                            <a className="text-center" href="/">¿Has olvidado tu contraseña?</a>
+                            <a className="text-center" href="/nopassword">¿Has olvidado tu contraseña?</a>
                         </div>
 
                     </Form>

@@ -33,17 +33,17 @@ function Home() {
                         <div className="col-sm-4" key={index}>
 
                             <img
-                                className="img-fluid"
+                                className="img-fluid img-casa"
                                 src={x.url}/>
 
-                            <div className="container bg-warning mb-3">
+                            <div className="container mb-3 info-casa">
 
-                                <div className="row">
+                                <div className="row mt-1">
 
                                     <div className="col">
 
                                         <p>
-                                            <FontAwesomeIcon icon={faLocationDot} />&nbsp;<strong>{x.lugar}</strong>
+                                            <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green'}} />&nbsp;<strong>{x.lugar}</strong>
                                             <br/>
                                             <strong>{x.precio}€</strong> por noche
                                         </p>

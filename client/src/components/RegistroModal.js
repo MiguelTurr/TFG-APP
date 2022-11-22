@@ -84,6 +84,19 @@ const Registro = ({ mostrar, funcionCerrar, funcionRegistro }) => {
                                         </div>
                                         
                                     </Form.Group>
+                                
+                                    <Form.Group className="mb-3">
+
+                                        <Form.Check type='checkbox' id='reg-condiciones'>
+                                            <Form.Check.Input type='checkbox' />
+                                            <Form.Check.Label>Aceptas nuestros <a href="/condiciones">Términos & Condiciones</a></Form.Check.Label>
+                                        </Form.Check>
+                                        
+                                        <Form.Check type='checkbox' id='reg-privacidad'>
+                                            <Form.Check.Input type='checkbox' />
+                                            <Form.Check.Label>Confirmas haber leído el <a href="/privacidad">Aviso de privacidad</a></Form.Check.Label>
+                                        </Form.Check>
+                                    </Form.Group>
                                 </div>
                             </div>
 

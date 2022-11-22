@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `alojamientos` (
 	`descuento` float NOT NULL default 0.0,
 
 	`ubicacion` varchar(200) NOT NULL,
+	`visitas` int NOT NULL default 0,
 
 	`viajeros` tinyint NOT NULL default 1,
 	`habitaciones` tinyint NOT NULL default 1,

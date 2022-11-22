@@ -1,5 +1,38 @@
 .footer {
     position: sticky;   
     bottom: 0; 
-    color: white;
+    font-size: 15px;
+    background-color: rgb(240, 240, 240);
+}
+
+.punto-style {
+    margin-left: 7px;
+    margin-right: 7px;
+}
+
+.link-style {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+.link-style:hover {
+    color: inherit;
+    text-decoration: underline black; 
+}
+
+.idioma-col {
+    text-align: right;
+}
+
+.btn-style {
+    all: unset;
+    cursor: pointer;
+}
+
+.idioma-text {
+    cursor: pointer;
+}
+
+.idioma-text:hover {
+    text-decoration: underline black; 
 }
