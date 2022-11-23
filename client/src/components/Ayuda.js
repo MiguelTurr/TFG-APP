@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 
-import CrearAlerta from './Toast/Toast';
 import ayuda from '../resources/ayuda.json';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
 function Ayuda() {
 

@@ -28,7 +28,7 @@ const Login = ({ mostrar, funcionCerrar, funcionLogin }) => {
                         </Form.Group>
                     
                         <div className="d-grid gap-2">
-                            <Button type="submit" variant="success">
+                            <Button type="submit" variant="success" id="log-btn">
                                 Iniciar sesión
                             </Button>
 

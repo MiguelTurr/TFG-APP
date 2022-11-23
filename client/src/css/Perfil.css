@@ -26,3 +26,14 @@
 
     color: grey;
 }
+
+.tabla-seleccion:hover {
+    cursor: pointer;
+    background-color: rgb(240, 240, 240);
+}
+
+.arrow-style {
+    vertical-align: middle;
+    font-size: 20px;
+    text-align: right;
+}

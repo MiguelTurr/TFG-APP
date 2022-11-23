@@ -3,6 +3,8 @@ const cors = require('cors');
 const mysql = require("./services/mysql.js");
 const email = require("./services/email.js");
 
+const fs = require("fs");
+
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 
@@ -10,6 +12,7 @@ const bcrypt = require('bcrypt');
 const randomstring = require("randomstring");
 
 const { bcrypt_salt, cookie_secret } = require('./services/config.js');
+const { resourceLimits } = require('worker_threads');
 
 //
 
@@ -17,6 +20,8 @@ const server = express();
 
 server.use(express.json({limit: '50mb'}));
 server.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+server.use(express.static('imagenes'));
 
 server.use(express.json());
 server.use(cookieParser(
@@ -159,8 +164,16 @@ server.post('/login', (req, res) => {
         const token = jwt.sign({ id }, cookie_secret);
 
         res.status(201)
-        .cookie('token', token, { httpOnly: true, expires: new Date(Date.now() + 10000000), secure: true })
-        .json({ respuesta: 'correcto', autorizacion: true });
+        .cookie('token', token, { 
+            httpOnly: true,
+            expires: new Date(Date.now() + 10000000), 
+            secure: true
+
+        }).json({ 
+            respuesta: 'correcto',
+            autorizacion: true,
+            imagenPerfil: result[0].imgPerfil
+        });
     });
 });
 
@@ -171,9 +184,9 @@ server.post('/logout', comprobarToken, (req, res) => {
 
 server.post('/noPassword', (req, res) => {
 
-    const email = req.body.email;
+    const emailRequest = req.body.email;
 
-    mysql.query("SELECT passReset FROM usuarios WHERE email=? AND activo=1 LIMIT 1", email, async (err, result) => {
+    mysql.query("SELECT passReset,nombre FROM usuarios WHERE email=? AND activo=1 LIMIT 1", emailRequest, async (err, result) => {
 
         if(err) {
             console.log(err);
@@ -188,8 +201,8 @@ server.post('/noPassword', (req, res) => {
             return;
         }
 
-        const fechaHoy = new Date().getTime();
-        const fechaReset = new Date(result[0].passReset).getTime();
+        const fechaHoy = new Date().getTime() / 1000;
+        const fechaReset = result[0].passReset;
 
         if(fechaReset > fechaHoy) {
             res.status(401).json({ respuesta: 'err_reset' });
@@ -204,7 +217,9 @@ server.post('/noPassword', (req, res) => {
         const passwordHash = await bcrypt.hash(nuevaPassword, bcrypt_salt);
         const nuevoReset = fechaHoy + 86400000;
 
-        mysql.query("UPDATE usuarios SET password=?,passReset=? WHERE email=? LIMIT 1", passwordHash, nuevoReset, email, function(err) {
+        const userNombre = result[0].nombre;
+
+        mysql.query("UPDATE usuarios SET password=?,passReset=? WHERE email=? LIMIT 1", [passwordHash, nuevoReset, emailRequest], function(err) {
 
             if(err) {
                 console.log(err);
@@ -216,13 +231,13 @@ server.post('/noPassword', (req, res) => {
 
             try {
 
-                var texto = 'Hola la contraseña vinculada a este correo ha sido reseteada correctamente:';
+                var texto = 'Hola ' +userNombre+ ', la contraseña vinculada a este correo ha sido reseteada correctamente:';
                 texto += '\n\n';
                 texto += 'Nueva contraseña: ' +nuevaPassword;
                 texto += '\n\nUn saludo desde 2FH.'
 
                 email.sendMail({
-                    to: req.body.email,
+                    to: emailRequest,
                     subject: 'Cambio de contraseña - 2FH',
                     text: texto
                 });
@@ -231,6 +246,7 @@ server.post('/noPassword', (req, res) => {
             
             } catch(err) {
                 res.status(401).json({ respuesta: 'err_envia_correo' });
+                console.log(err);
             }
         })
     });
@@ -286,7 +302,53 @@ server.get('/perfil', comprobarToken, (req, res) => {
         }
 
         console.log(result);
-        res.status(201).json({ usuario: result });
+        res.status(201).json({ 
+            nombre: result[0].nombre,
+            apellidos: result[0].apellidos,
+            fechaNac: result[0].fechaNac,
+            genero: result[0].genero == 0 ? 'Hombre' : 'Mujer',
+            telefono: result[0].telefono,
+            residencia: result[0].residencia,
+            presentacion: result[0].presentacion,
+
+            fechaReg: result[0].fechaReg,
+            email: result[0].email,
+            imagenPerfil: result[0].imgPerfil,
+        });
+    });
+});
+
+server.post('/perfil/editar/:tipo', comprobarToken, (req, res) => {
+
+});
+
+server.get('/perfil/foto', comprobarToken, (req, res) => {
+
+    if(req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    mysql.query("SELECT imgPerfil FROM usuarios WHERE ID=? LIMIT 1", req.userId, (err, result) => {
+
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+        
+        const imagen = result[0].imgPerfil;
+
+        fs.readFile('./imagenes/perfil/' +imagen, function(err, file) {
+
+            if(err) {
+                res.status(500).json({ respuesta: 'err_file' });
+                return;
+            }
+
+            res.set({'Content-Type': 'image/jpg'});
+            res.end(file);
+        });
     });
 });
 

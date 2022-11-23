@@ -102,7 +102,7 @@ const Registro = ({ mostrar, funcionCerrar, funcionRegistro }) => {
 
                             <div className="d-grid gap-2 mt-2">
 
-                                <Button type="submit" variant="success">
+                                <Button type="submit" variant="success" id="reg-btn">
                                     Registrar cuenta
                                 </Button>
                             </div>

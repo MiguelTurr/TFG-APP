@@ -12,12 +12,13 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 	`passReset` int NOT NULL default 0,
 	`nombre` varchar(50) NOT NULL,
 	`apellidos` varchar(90) NOT NULL,
+	`presentacion` varchar(300) DEFAULT 'Escribe algo para que te conozcan...',
 	`genero` tinyint NOT NULL DEFAULT 0,
 	`fechaNac` date NOT NULL,
 	`fechaReg` datetime NOT NULL DEFAULT NOW(),
 	`telefono` varchar(20) NOT NULL,
-	`residencia` text,
-	`img-perfil` varchar(100) NOT NULL default 'default.png',
+	`residencia` text default 'Sin definir',
+	`imgPerfil` varchar(100) NOT NULL default 'default.png',
 
 	
 

@@ -96,6 +96,9 @@ function Nav() {
 
         //
 
+        var desactivarBtn = document.getElementById('reg-btn');
+        desactivarBtn.disabled = true;
+
         const data = await fetch('/registrar', { 
             method: 'POST',
 
@@ -106,8 +109,7 @@ function Nav() {
                 password: password,
                 telefono: prefijo+ ' ' +numero,
                 genero: genero,
-                fechaNac: fechaNac,
-                residencia: 'León, Castilla y León, España'
+                fechaNac: fechaNac
             }),
             
             headers: {
@@ -116,6 +118,7 @@ function Nav() {
         });
 
         const items = await data.json();
+        desactivarBtn.disabled = false;
 
         if(items.respuesta == 'err_db') {
             alert('ERROR DB');
@@ -152,6 +155,9 @@ function Nav() {
             return;
         }
 
+        var desactivarBtn = document.getElementById('log-btn');
+        desactivarBtn.disabled = true;
+
         const data = await fetch('/login', { 
             method: 'POST',
 
@@ -166,6 +172,7 @@ function Nav() {
         });
 
         const items = await data.json();
+        desactivarBtn.disabled = false;
 
         if(items.respuesta == 'err_db') {
             alert('ERROR DB');
@@ -180,7 +187,7 @@ function Nav() {
             alert('Login correcto');
             setAutorizado(true);
 
-            window.location.reload(false);
+            window.location.href = '/';
         }
     };
 
@@ -196,16 +203,39 @@ function Nav() {
             },
         });
 
-        console.log(data.status);
-
         if(data.status == 200) {
             
             alert('Logout correcto');
             setAutorizado(false);
 
-            window.location.reload(false);
+            window.location.href = '/';
         }
     };
+
+    // FOTO PERFIL
+
+    const [fotoPerfil, setFotoPerfil] = useState(NoProfileImg);
+
+    const cargarFotoPerfil = async () => {
+        
+        const imagen = await fetch('/perfil/foto', { 
+            method: 'GET',
+            
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if(imagen.status == 200) {
+            setFotoPerfil(imagen.url);
+        }
+    };
+
+    useEffect(() => {
+        if(autorizado == true) {
+            cargarFotoPerfil();
+        }
+    });
 
     // BUSCAR
 
@@ -274,7 +304,7 @@ function Nav() {
                             <FontAwesomeIcon icon={faBars} className="user-icon" />
                             
                             <img className="img-fluid rounded-pill user-img" 
-                                                        src={NoProfileImg}
+                                                        src={fotoPerfil}
                                                         alt="Imagen de perfil del usuario"
                                                     />
                         </Dropdown.Toggle>

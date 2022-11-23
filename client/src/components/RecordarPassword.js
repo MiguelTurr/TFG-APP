@@ -16,6 +16,9 @@ function RecordarPassword() {
             return;
         }
 
+        const desactivarBtn = document.getElementById('recordar-btn');
+        desactivarBtn.disabled = true;
+
         const data = await fetch('/noPassword', { 
             method: 'POST',
 
@@ -29,6 +32,7 @@ function RecordarPassword() {
         });
 
         const items = await data.json();
+        desactivarBtn.disabled = false;
 
         if(items.respuesta == 'err_db') {
             alert('ERROR DB');
@@ -41,7 +45,7 @@ function RecordarPassword() {
 
         } else {
             alert('Correo enviado');
-            //window.location.reload(false);
+            window.location.href = '/';
         }
     };
 
@@ -69,7 +73,7 @@ function RecordarPassword() {
                                 </Form.Group>
 
                                 <div className="d-grid gap-2">
-                                    <Button type="submit" variant="success">
+                                    <Button type="submit" variant="success" id='recordar-btn'>
                                         Enviar
                                     </Button>
                                 </div>

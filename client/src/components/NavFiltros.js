@@ -9,6 +9,12 @@ import { faChartSimple, faCalendarDays, faDollarSign, faHeart, faComputer, faSli
 
 function NavFiltros() {
 
+    const location = window.location.href;
+    const finalLocation = location.substring('http://localhost:3000/'.length);
+
+    if(finalLocation != '') {
+        return (<></>);
+    }
 
     return (
         <>

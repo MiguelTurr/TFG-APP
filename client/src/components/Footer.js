@@ -12,9 +12,9 @@ function Footer() {
 
             <div className="container-fluid">
 
-                <div class="row">
+                <div className="row">
 
-                    <div class="col">
+                    <div className="col">
                         <span>&copy; 2022 FastForHolidays</span>
 
                         <span className="punto-style">&middot;</span>
@@ -24,7 +24,7 @@ function Footer() {
                         <a className="link-style" href="/condiciones">Condiciones</a>
                     </div>
 
-                    <div class="col idioma-col">
+                    <div className="col idioma-col">
 
                         <button className="btn-style">
                             <FontAwesomeIcon icon={faGlobe} />
