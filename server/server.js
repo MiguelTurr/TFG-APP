@@ -318,8 +318,60 @@ server.get('/perfil', comprobarToken, (req, res) => {
     });
 });
 
-server.post('/perfil/editar/:tipo', comprobarToken, (req, res) => {
+server.post('/perfil/editar', comprobarToken, (req, res) => {
 
+    if(req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    mysql.query("SELECT password FROM usuarios WHERE ID=? LIMIT 1", req.userId, async (err, result) => {
+        
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        if(result.length == 0) {
+            res.status(500).json({ respuesta: 'err_user' });
+            return;
+        }
+
+        const match = await bcrypt.compare(req.body.password, result[0].password);
+        if(!match) {
+            res.status(401).json({ respuesta: 'err_datos' });
+            return;
+        }
+
+        //
+
+        var query = 'UPDATE usuarios SET ';
+
+        var datoEditado = req.body.editado;
+        if(req.body.tipo == 'password') {
+            datoEditado = await bcrypt.hash(datoEditado, bcrypt_salt);
+        }
+
+        query += req.body.tipo+ '="' +datoEditado+ '" ';
+        query += 'WHERE ID=' +req.userId+ ' LIMIT 1';
+        
+        mysql.query(query, function(err, result) {
+            if(err) {
+                res.status(500).json({ respuesta: 'err_db' });
+    
+                console.log(err.message);
+                return;
+            }
+    
+            if(result.affectedRows == 0) {
+                res.status(500).json({ respuesta: 'err_datos' });
+                return;
+            }
+
+            res.status(200).json({ respuesta: 'correcto' });
+        });
+    });
 });
 
 server.get('/perfil/foto', comprobarToken, (req, res) => {

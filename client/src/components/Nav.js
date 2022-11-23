@@ -218,13 +218,7 @@ function Nav() {
 
     const cargarFotoPerfil = async () => {
         
-        const imagen = await fetch('/perfil/foto', { 
-            method: 'GET',
-            
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
+        const imagen = await fetch('/perfil/foto', {  method: 'GET' });
 
         if(imagen.status == 200) {
             setFotoPerfil(imagen.url);

@@ -37,3 +37,13 @@
     font-size: 20px;
     text-align: right;
 }
+
+.resaltar-titulo {
+    background-color: #ffe841;
+    border-radius: 15px;
+    padding: 10px;
+}
+
+.mod-container {
+    /*width: 50%;*/
+}

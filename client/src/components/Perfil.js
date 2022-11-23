@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
+import Form from 'react-bootstrap/Form';
 
 function Perfil() {
 
@@ -34,13 +35,7 @@ function Perfil() {
 
     const cargarImagenPerfil = async () => {
 
-        const imagen = await fetch('/perfil/foto', { 
-            method: 'GET',
-            
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
+        const imagen = await fetch('/perfil/foto', { method: 'GET' });
 
         if(imagen.status == 200) {
             setUserImg(imagen.url);
@@ -86,22 +81,123 @@ function Perfil() {
         if(opcionId === 'telefono') {
 
             opciones = {
-                titulo: 'Editando: ',
+                modId: opcionId,
+                titulo: 'Teléfono',
+                anterior: userInfo.telefono,
+                prefix: userInfo.telefono.split(' ')[0],
+                modificado: false
             }
 
         } else if(opcionId === 'residencia') {
 
             opciones = {
-                titulo: 'Editando: ',
+                modId: opcionId,
+                titulo: 'Residencia',
+                anterior: userInfo.residencia,
+                modificado: false
             }
 
         } else if(opcionId === 'presentacion') {
+
             opciones = {
-                titulo: '<h1>Editando: </h1>',
+                modId: opcionId,
+                titulo: 'Sobre ti',
+                anterior: userInfo.presentacion.substring(0, 15)+ '...',
+                modificado: false
+            }
+
+        } else if(opcionId === 'email') {
+
+            opciones = {
+                modId: opcionId,
+                titulo: 'Email',
+                anterior: userInfo.email,
+                modificado: false
+            }
+        } else if(opcionId === 'password') {
+
+            opciones = {
+                modId: opcionId,
+                titulo: 'Contraseña',
+                anterior: '*********',
+                modificado: false
             }
         }
 
         setModDatos(opciones);
+    };
+
+    useEffect(() => {
+        if(cambiarDatos == true && modDatos.modificado == false) {
+            var element = document.getElementById('mod-' +modDatos.modId);
+            element.addEventListener("keyup", function() { setModDatos({ ...modDatos, modificado: true }); });
+        }
+    });
+
+    const enviarDatoModificado = async (event) => {
+        event.preventDefault();
+
+        const editado = document.getElementById('mod-' +modDatos.modId).value;
+        if(editado == '') {
+            alert('Debes escribir algo primero');
+            return;
+        }
+
+        const password = document.getElementById('mod-password-2').value;
+        if(password == '') {
+            alert('Debes escribir tu contraseña');
+            return;
+        }
+
+        var datoEditado = editado;
+
+        if(modDatos.modId === 'telefono') {
+            datoEditado = modDatos.prefix+ ' ' +editado;
+        }
+
+        const data = await fetch('/perfil/editar', {
+            method: 'POST',
+            body: JSON.stringify({
+                editado: datoEditado,
+                password: password,
+                tipo: modDatos.modId,
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        const items = await data.json();
+
+        if(items.respuesta == 'err_user') {
+            alert('Ha ocurrido un error');
+
+        } else if(items.respuesta == 'err_db') {
+            alert('ERROR DB');
+
+        } else if(items.respuesta == 'err_datos') {
+            alert('ERROR datos');
+
+        } else if(items.respuesta == 'correcto') {
+            alert('Se ha actualizado tus datos');
+
+            const editado = document.getElementById('mod-' +modDatos.modId).value;
+
+            if(modDatos.modId === 'telefono') {
+                setUserInfo({ ...userInfo, telefono: modDatos.prefix+ ' ' +editado });
+    
+            } else if(modDatos.modId === 'residencia') {
+                setUserInfo({ ...userInfo, residencia: editado });
+    
+            } else if(modDatos.modId === 'presentacion') {
+                setUserInfo({ ...userInfo, presentacion: editado });
+    
+            } else if(modDatos.modId === 'email') {
+                setUserInfo({ ...userInfo, email: editado });
+            }
+
+            setCambiarDatos(false);
+        }
     };
 
     //
@@ -223,7 +319,7 @@ function Perfil() {
                                 <td>
                                 </td>
                             </tr>
-                            <tr className="tabla-seleccion">
+                            <tr className="tabla-seleccion" onClick={() => { modificarOpcion('email') }}>
                                 <td>
                                     Correo electrónico:
                                     <br/>
@@ -233,7 +329,7 @@ function Perfil() {
                                     <FontAwesomeIcon icon={faArrowRight} />
                                 </td>
                             </tr>
-                            <tr className="tabla-seleccion">
+                            <tr className="tabla-seleccion" onClick={() => { modificarOpcion('password') }}>
                                 <td>
                                     Contraseña:
                                     <br/>
@@ -258,8 +354,52 @@ function Perfil() {
                     </table>
                     </>}
 
-                    {()=> {
-                        if(cambiarDatos == true) return (<>AA {modDatos.titulo}</>)}
+                    {cambiarDatos == true && 
+                        <div className="col-sm-6 text-center mx-auto">
+                            <h5>
+                                {modDatos.titulo}: <span className="resaltar-titulo">{modDatos.anterior}</span>
+                            </h5>
+
+                            <hr/>
+
+                            <Form onSubmit={enviarDatoModificado}>
+
+                                <Form.Group className="mb-3" style={modDatos.modId == 'telefono' ? {} : { display: 'none' }} >
+                                    <div className="input-group mb-3">
+                                        <span className="input-group-text">{modDatos.prefix}</span>
+                                        <Form.Control type="number" placeholder="Nuevo teléfono" id="mod-telefono"/>
+                                    </div>
+                                </Form.Group>
+
+                                <Form.Group className="mb-3" style={modDatos.modId == 'residencia' ? {} : { display: 'none' }} >
+                                    <Form.Control type="text" placeholder="Nueva residencia" id="mod-residencia" />
+                                </Form.Group>
+
+                                <Form.Group className="mb-3" style={modDatos.modId == 'presentacion' ? {} : { display: 'none' }} >
+                                    <Form.Control as="textarea" placeholder="Escribe aquí algo sobre ti" id="mod-presentacion"/>
+                                </Form.Group>
+
+                                <Form.Group className="mb-3" style={modDatos.modId == 'email' ? {} : { display: 'none' }} >
+                                    <Form.Control type="email" placeholder="Nuevo correo" id="mod-email" />
+                                </Form.Group>
+
+                                <Form.Group className="mb-3" style={modDatos.modId == 'password' ? {} : { display: 'none' }} >
+                                    <Form.Control type="password" placeholder="Nueva contraseña" id="mod-password" />
+                                </Form.Group>
+
+                                <Form.Group className="mb-3" style={modDatos.modificado == true ? {} : { display: 'none' }}>
+                                    <Form.Label htmlFor="mod-password-2">Valida tu contraseña</Form.Label>
+                                    <Form.Control type="password" placeholder="Escribe contraseña" id="mod-password-2" />
+                                </Form.Group>
+                            
+                                <div className="d-grid gap-2">
+                                    <Button type="submit" className="filtros-botones" size="sm">
+                                        Modificar
+                                    </Button>
+                                </div>
+
+                            </Form>
+                        </div>
                     }
                 </div>
 
