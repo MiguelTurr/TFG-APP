@@ -18,6 +18,8 @@ function App() {
     <Router>
 
       <div className="App">
+
+        <div className="toast-container position-absolute top-50 start-50 translate-middle" id="alertasInfo"></div>
         <Nav />
 
         <Routes>

@@ -1,25 +1,40 @@
-import React, { useState } from "react";
+import { library, icon } from '@fortawesome/fontawesome-svg-core'
+import { faTriangleExclamation, faSquareCheck } from '@fortawesome/free-solid-svg-icons';
 
-import './Toast.css';
+library.add(faTriangleExclamation, faSquareCheck);
 
-import Toast from 'react-bootstrap/Toast';
-import Button from "react-bootstrap/Button";
+export async function crearAlerta(tipo, mensaje, tiempo=2000) {
 
-function CrearAlerta() {
+    var toastPrincipal = document.createElement("div");
+    toastPrincipal.classList.add('toast');
+    toastPrincipal.style.backgroundColor = tipo == 'error' ? '#ee5f5b' : '#62c462';
+    toastPrincipal.style.padding = '5px';
+    toastPrincipal.style.fontSize = '17px';
+    toastPrincipal.style.textAlign = 'center';
+    toastPrincipal.style.color = 'white';
+    toastPrincipal.style.fontWeight = 'bold';
 
-    const [show, changeShow] = useState(false);
+    var iconoElement = document.createElement('i');
+    var icono;
 
-    return (
-        <>
-            <Toast show={show} onClose={() => changeShow(false)}>
-                <Toast.Body>Preuabs</Toast.Body>
-            </Toast>
+    if(tipo == 'error') {
+        icono = icon({ prefix: 'fa', iconName: 'triangle-exclamation' }).html;
 
-            <Button onClick={() => changeShow(true)}>
-                Boton
-            </Button>
-        </>
-    );
+    } else if(tipo == 'exito') {
+        icono = icon({ prefix: 'fa', iconName: 'square-check' }).html;
+    }
+
+    iconoElement.style.fontSize = '50px';
+    iconoElement.innerHTML = icono;
+
+    toastPrincipal.append(iconoElement);
+
+    toastPrincipal.innerHTML += '<br/>' +mensaje;
+
+    document.getElementById('alertasInfo').append(toastPrincipal);
+    toastPrincipal.style.display = 'block';
+
+    setTimeout(() => {
+        toastPrincipal.remove();
+    }, tiempo);
 }
-
-export default CrearAlerta;

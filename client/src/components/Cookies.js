@@ -5,7 +5,10 @@ import { useState, useEffect } from "react";
 
 import Button from 'react-bootstrap/Button';
 
+
 function Cookies() {
+
+    const [aceptaCookies, setCookies] = useState(true);
 
     useEffect( () => {
         const cookies = document.cookie.split('; ');
@@ -15,14 +18,15 @@ function Cookies() {
 
             if(tipo[0] == 'cookiesAceptadas') {
                 setCookies(!(tipo[1] == false));
+
+            } else {
+                setCookies(false);
             }
         });
     }, []);
 
-    const [aceptaCookies, setCookies] = useState(false);
-
     if(aceptaCookies == true) {
-        return (<></>);
+        return(<></>);
     }
 
     const aceptarCookies = async () => {
@@ -34,7 +38,7 @@ function Cookies() {
     };
 
     return ( 
-        <div className="row">
+        <div className="row" style={aceptaCookies === false ? {} : { display: 'none' }}>
 
             <div className="col-md-4 col-sm-12 button-fixed text-white p-3">
 

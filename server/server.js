@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 const mysql = require("./services/mysql.js");
 const email = require("./services/email.js");
 
@@ -12,7 +13,6 @@ const bcrypt = require('bcrypt');
 const randomstring = require("randomstring");
 
 const { bcrypt_salt, cookie_secret } = require('./services/config.js');
-const { resourceLimits } = require('worker_threads');
 
 //
 
@@ -20,7 +20,6 @@ const server = express();
 
 server.use(express.json({limit: '50mb'}));
 server.use(express.urlencoded({ extended: true, limit: '50mb' }));
-
 server.use(express.static('imagenes'));
 
 server.use(express.json());
@@ -32,6 +31,8 @@ server.use(cors({
     origin: ['http://localhost:3000'],
     methods: ['GET', 'POST']
 }));
+
+server.use(fileUpload());
 
 //
 
@@ -172,7 +173,7 @@ server.post('/login', (req, res) => {
         }).json({ 
             respuesta: 'correcto',
             autorizacion: true,
-            imagenPerfil: result[0].imgPerfil
+            nombre: result[0].nombre
         });
     });
 });
@@ -351,6 +352,12 @@ server.post('/perfil/editar', comprobarToken, (req, res) => {
         var datoEditado = req.body.editado;
         if(req.body.tipo == 'password') {
             datoEditado = await bcrypt.hash(datoEditado, bcrypt_salt);
+
+        } else if(req.body.tipo == 'imagen') {
+            const extension = req.body.editado.split('.')[1];
+            datoEditado = 'user' +req.userId+ '-profile.' +extension;
+
+            req.body.tipo = 'imgPerfil';
         }
 
         query += req.body.tipo+ '="' +datoEditado+ '" ';
@@ -367,6 +374,11 @@ server.post('/perfil/editar', comprobarToken, (req, res) => {
             if(result.affectedRows == 0) {
                 res.status(500).json({ respuesta: 'err_datos' });
                 return;
+            }
+
+            if(req.files != undefined) {
+                const avatar = req.files.imagen;
+                avatar.mv('./imagenes/perfil/' +datoEditado);
             }
 
             res.status(200).json({ respuesta: 'correcto' });

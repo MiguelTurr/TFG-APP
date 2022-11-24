@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import '../css/Nav.css';
 
+import { crearAlerta } from './Toast/Toast.js';
+
 import LoginModal from './LoginModal';
 import RegistroModal from './RegistroModal';
 import NavFiltros from './NavFiltros';
@@ -42,18 +44,17 @@ function Nav() {
 
         const nombre = document.getElementById('reg-nombre').value;
         if(nombre.length < 2) {
-            alert('Escribe un nombre');
-            return;
+            return crearAlerta('error', '¡Escribe un nombre!');
         }
 
         const apellidos = document.getElementById('reg-apellidos').value;
         if(apellidos === '') {
-            return alert('Escribe un apellido');
+            return crearAlerta('error', '¡Escribe un apellido!');
         }
 
         const email = document.getElementById('reg-email').value;
         if(email === '') {
-            return alert('Escribe un correo electrónico');
+            return crearAlerta('error', '¡Escribe un correo electrónico!');
         }
 
         const fechaNac = document.getElementById('reg-fechaNac').value;
@@ -61,34 +62,32 @@ function Nav() {
         const fechaFinal = (fechaHoy - new Date(fechaNac).getTime()) / (1000 * 60 * 60 * 24 * 365);
 
         if(fechaFinal < 18) {
-            return alert('Debes tener más de 18 años');
+            return crearAlerta('error', '¡Debes tener más de 18 años!');
         }
 
         const password = document.getElementById('reg-password').value;
         if(password.length < 5) {
-            return alert('La contraseña debe tener al menos 5 caracteres');
+            return crearAlerta('error', '¡La contraseña debe tener al menos 5 caracteres!');
         }
 
         const passwordRepite = document.getElementById('reg-password-2').value;
         if(password !== passwordRepite) {
-            return alert('La contraseña no coincide');
+            return crearAlerta('error', '¡Las contraseñas no coinciden!');
         }
 
         const numero = document.getElementById('reg-telefono').value;
         if(numero === '') {
-            return alert('Escribe un número');
+            return crearAlerta('error', '¡Escribe un número de teléfono!');
         }
 
         const condiciones = document.getElementById('reg-condiciones').checked;
         if(condiciones == false) {
-            alert('Debes aceptar los términos y condiciones');
-            return;
+            return crearAlerta('error', '¡Acepta los términos y condiciones!');
         }
 
         const privacidad = document.getElementById('reg-privacidad').checked;
         if(privacidad == false) {
-            alert('Debes aceptar el aviso de privacidad');
-            return;
+            return crearAlerta('error', '¡Acepta el aviso de privacidad!');
         }
 
         const prefijo = document.getElementById('reg-prefijo').value;
@@ -121,13 +120,13 @@ function Nav() {
         desactivarBtn.disabled = false;
 
         if(items.respuesta == 'err_db') {
-            alert('ERROR DB');
+            crearAlerta('error', '¡Ha ocurrido un error en la base de datos!');
 
         } else if(items.respuesta == 'err_email') {
-            alert('DUPLICADO EMAIL');
+            crearAlerta('error', '¡Ese correo ya está en uso!');
 
         } else {
-            alert('VERIFICA CORREO');
+            crearAlerta('exito', 'Verifica tu cuenta en el correo electrónico');
         }
     };
 
@@ -144,14 +143,14 @@ function Nav() {
         const email = document.getElementById('log-email').value;
 
         if(email === '') {
-            alert('Escribe un correo');
+            crearAlerta('error', '¡Escribe un correo electrónico!');
             return;
         }
 
         const password = document.getElementById('log-password').value;
 
         if(password === '') {
-            alert('Escribe una contraseña');
+            crearAlerta('error', '¡Escribe una contraseña!');
             return;
         }
 
@@ -175,19 +174,23 @@ function Nav() {
         desactivarBtn.disabled = false;
 
         if(items.respuesta == 'err_db') {
-            alert('ERROR DB');
+            crearAlerta('error', '¡Ha ocurrido un error en la base de datos!');
 
         } else if(items.respuesta == 'err_datos') {
-            alert('ERROR DATOS');
+            crearAlerta('error', '¡Los datos introducidos son incorrectos!');
 
         } else if(items.respuesta == 'err_validado') {
-            alert('VALIDA EL CORREO');
+            crearAlerta('error', '¡Mira tu correo para validar la cuenta!');
 
         } else {
-            alert('Login correcto');
-            setAutorizado(true);
+            
+            crearAlerta('exito', 'Has iniciado sesión como ' +items.nombre);
 
-            window.location.href = '/';
+            setTimeout(() => {
+                setAutorizado(true);
+                window.location.href = '/';
+
+            }, 1000);
         }
     };
 
@@ -204,11 +207,14 @@ function Nav() {
         });
 
         if(data.status == 200) {
-            
-            alert('Logout correcto');
-            setAutorizado(false);
 
-            window.location.href = '/';
+            crearAlerta('exito', '¡Sesión terminada!');
+
+            setTimeout(() => {
+                setAutorizado(false);
+                window.location.href = '/';
+
+            }, 1000);
         }
     };
 
@@ -237,7 +243,7 @@ function Nav() {
         const lugar = document.getElementById('buscar-lugar').value;
 
         if(lugar == '') {
-            return alert('Escribe un lugar para visitar');
+            return crearAlerta('error', '¡Escribe un lugar para visitar!');
         }
 
         window.location.href = '/buscar?place=' +lugar;

@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import '../css/Perfil.css';
 import NoProfileImg from '../img/no-profile-img.png';
 
+import { crearAlerta } from './Toast/Toast.js';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
@@ -54,12 +56,6 @@ function Perfil() {
         if(vistaPerfil == vistaId) {
             return;
         }
-
-        var addClass = document.getElementById('vista-'+vistaId);
-        var removeClass = document.getElementById('vista-'+vistaPerfil);
-
-        addClass.classList.add('btn-activo');
-        removeClass.classList.remove('btn-activo');
 
         setPerfilVista(vistaId);
     };
@@ -114,12 +110,22 @@ function Perfil() {
                 anterior: userInfo.email,
                 modificado: false
             }
+
         } else if(opcionId === 'password') {
 
             opciones = {
                 modId: opcionId,
                 titulo: 'Contraseña',
                 anterior: '*********',
+                modificado: false
+            }
+
+        } else if(opcionId === 'imagen') {
+
+            opciones = {
+                modId: opcionId,
+                titulo: 'Imagen',
+                anterior: 'Foto de perfil',
                 modificado: false
             }
         }
@@ -130,23 +136,48 @@ function Perfil() {
     useEffect(() => {
         if(cambiarDatos == true && modDatos.modificado == false) {
             var element = document.getElementById('mod-' +modDatos.modId);
-            element.addEventListener("keyup", function() { setModDatos({ ...modDatos, modificado: true }); });
+
+            if(modDatos.modId == 'imagen') {
+                element.addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
+            } else {
+                element.addEventListener("keyup", function() { setModDatos({ ...modDatos, modificado: true }); });
+            }
         }
     });
 
     const enviarDatoModificado = async (event) => {
         event.preventDefault();
 
-        const editado = document.getElementById('mod-' +modDatos.modId).value;
+        const element = document.getElementById('mod-' +modDatos.modId);
+        const editado = element.value;
         if(editado == '') {
-            alert('Debes escribir algo primero');
-            return;
+            return crearAlerta('error', '¡Escribe algo primero!');
+        }
+
+        var imagenAvatar = undefined;
+
+        if(modDatos.modId === 'password') {
+
+            if(editado.length < 5) {
+                return crearAlerta('error', '¡La contraseña debe tener al menos 5 caracteres!');
+            }
+
+        } else if(modDatos.modId === 'imagen') {
+
+            imagenAvatar = element.files[0];
+            
+            if (!['image/jpeg', 'image/png'].includes(imagenAvatar.type)) {
+                return crearAlerta('error', '¡Sólo formato .png o .jpg!');
+            }
+
+            if(imagenAvatar.size > 2 * 1024 * 1024) {
+                return crearAlerta('error', '¡La imagen debe pesar menos de 2 MB!');
+            }
         }
 
         const password = document.getElementById('mod-password-2').value;
         if(password == '') {
-            alert('Debes escribir tu contraseña');
-            return;
+            return crearAlerta('error', '¡Escribe tu contraseña para confirmar!');
         }
 
         var datoEditado = editado;
@@ -155,33 +186,34 @@ function Perfil() {
             datoEditado = modDatos.prefix+ ' ' +editado;
         }
 
+        var formData = new FormData();
+
+        formData.append('editado', datoEditado);
+        formData.append('password', password);
+        formData.append('tipo', modDatos.modId);
+
+        if(imagenAvatar != undefined) {
+            formData.append('imagen', imagenAvatar);
+        }
+
         const data = await fetch('/perfil/editar', {
             method: 'POST',
-            body: JSON.stringify({
-                editado: datoEditado,
-                password: password,
-                tipo: modDatos.modId,
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            body: formData,
         });
 
         const items = await data.json();
 
         if(items.respuesta == 'err_user') {
-            alert('Ha ocurrido un error');
+            crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
 
         } else if(items.respuesta == 'err_db') {
-            alert('ERROR DB');
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
         } else if(items.respuesta == 'err_datos') {
-            alert('ERROR datos');
+            crearAlerta('error', '¡La contraseña no es la correcta!');
 
         } else if(items.respuesta == 'correcto') {
-            alert('Se ha actualizado tus datos');
-
-            const editado = document.getElementById('mod-' +modDatos.modId).value;
+            crearAlerta('exito', '¡Los datos han sido actualizados!');
 
             if(modDatos.modId === 'telefono') {
                 setUserInfo({ ...userInfo, telefono: modDatos.prefix+ ' ' +editado });
@@ -194,6 +226,8 @@ function Perfil() {
     
             } else if(modDatos.modId === 'email') {
                 setUserInfo({ ...userInfo, email: editado });
+
+            } else if(modDatos.modId === 'imagen') {
             }
 
             setCambiarDatos(false);
@@ -209,19 +243,19 @@ function Perfil() {
             <div className="row">
 
                 {cambiarDatos == false && <div className="col">
-                    <button className="btn-no-style btn-activo" onClick={() => { cambiarVistaPerfil(0) }} id="vista-0">
+                    <button className={vistaPerfil === 0 ? "btn-no-style btn-activo" : "btn-no-style"} onClick={() => { cambiarVistaPerfil(0) }} id="vista-0">
                         Información personal
                     </button>
                     
                     <span className="vista-separador">/</span>
 
-                    <button className="btn-no-style" onClick={() => { cambiarVistaPerfil(1) }} id="vista-1">
+                    <button className={vistaPerfil === 1 ? "btn-no-style btn-activo" : "btn-no-style"} onClick={() => { cambiarVistaPerfil(1) }} id="vista-1">
                         Información cuenta
                     </button>
                     
                     <span className="vista-separador">/</span>
 
-                    <button className="btn-no-style">
+                    <button className={vistaPerfil === 2 ? "btn-no-style btn-activo" : "btn-no-style"} onClick={() => { cambiarVistaPerfil(2) }} id="vista-2">
                         Eliminar cuenta
                     </button>
 
@@ -339,7 +373,7 @@ function Perfil() {
                                     <FontAwesomeIcon icon={faArrowRight} />
                                 </td>
                             </tr>
-                            <tr className="tabla-seleccion">
+                            <tr className="tabla-seleccion" onClick={() => { modificarOpcion('imagen') }}>
                                 <td>
                                     Foto de perfil:
                                     <br/>
@@ -385,6 +419,11 @@ function Perfil() {
 
                                 <Form.Group className="mb-3" style={modDatos.modId == 'password' ? {} : { display: 'none' }} >
                                     <Form.Control type="password" placeholder="Nueva contraseña" id="mod-password" />
+                                </Form.Group>
+
+                                <Form.Group className="mb-3" style={modDatos.modId == 'imagen' ? {} : { display: 'none' }} >
+                                    <Form.Label htmlFor="mod-password-2"><small>512x512 dimensiones recomendadas (.png / .jpg)</small></Form.Label>
+                                    <Form.Control type="file" accept="image/*" id="mod-imagen" />
                                 </Form.Group>
 
                                 <Form.Group className="mb-3" style={modDatos.modificado == true ? {} : { display: 'none' }}>
