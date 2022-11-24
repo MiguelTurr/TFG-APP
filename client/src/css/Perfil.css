@@ -44,6 +44,14 @@
     padding: 10px;
 }
 
-.mod-container {
-    /*width: 50%;*/
+.borrar-botones {
+    background-color: #ff4141 !important;
+    border-color: black !important;
+
+    color: black !important;
+}
+
+.borrar-botones:hover {
+    background-color: #d63737 !important;
+    border-color: black !important;
 }

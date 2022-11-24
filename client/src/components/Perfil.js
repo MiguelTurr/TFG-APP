@@ -6,7 +6,7 @@ import NoProfileImg from '../img/no-profile-img.png';
 import { crearAlerta } from './Toast/Toast.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faArrowLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
 import Form from 'react-bootstrap/Form';
@@ -126,7 +126,8 @@ function Perfil() {
                 modId: opcionId,
                 titulo: 'Imagen',
                 anterior: 'Foto de perfil',
-                modificado: false
+                modificado: false,
+                puedeBorrar: true
             }
         }
 
@@ -234,6 +235,36 @@ function Perfil() {
         }
     };
 
+    const opcionBorrar = async () => {
+
+        var datoBorrar = userInfo.imagenPerfil;
+
+        const data = await fetch('/perfil/borrar', {
+            method: 'POST',
+
+            body: JSON.stringify({
+                tipo: modDatos.modId,
+                borrar: datoBorrar,
+            }),
+            
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        const items = await data.json();
+
+        if(items.respuesta == 'err_user') {
+            crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
+
+        } else if(items.respuesta == 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if(items.respuesta == 'correcto') {
+            setUserImg(NoProfileImg);
+        }
+    };
+
     //
 
     return (
@@ -263,8 +294,12 @@ function Perfil() {
 
                 {cambiarDatos == true && <div className="col">
                     
-                    <Button className="filtros-botones" size="sm" onClick={() => { volverPerfil() }} id="btn-volver">
+                    <Button className="filtros-botones" size="sm" onClick={() => { volverPerfil() }}>
                         <FontAwesomeIcon icon={faArrowLeft} /> Volver
+                    </Button>
+                    &nbsp;&nbsp;
+                    <Button className="borrar-botones" size="sm" onClick={() => { opcionBorrar() }}  style={modDatos.puedeBorrar == true ? {} : { display: 'none' }}>
+                        <FontAwesomeIcon icon={faTrash} /> Eliminar {modDatos.modId}
                     </Button>
                 </div>}
 

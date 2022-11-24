@@ -61,12 +61,15 @@ const comprobarToken = (req, _, next) => {
 
 //
 
-server.get('/cookies', (req, res) => {
-
-});
-
 server.get('/cookies/aceptar', (req, res) => {
-    res.status(200).cookie('cookiesAceptadas', true, { httpOnly: false, expires: new Date(2147483647222222), secure: false, sameSite: true }).end();
+
+    res.status(200).cookie('cookiesAceptadas', true, { 
+        httpOnly: false, 
+        expires: new Date(Date.now() + 31536000000), 
+        secure: false, 
+        sameSite: true 
+    }).end();
+
 });
 
 server.post('/registrar', async (req, res) => {
@@ -167,7 +170,7 @@ server.post('/login', (req, res) => {
         res.status(201)
         .cookie('token', token, { 
             httpOnly: true,
-            expires: new Date(Date.now() + 10000000), 
+            expires: new Date(Date.now() + 31536000000), 
             secure: true
 
         }).json({ 
@@ -384,6 +387,37 @@ server.post('/perfil/editar', comprobarToken, (req, res) => {
             res.status(200).json({ respuesta: 'correcto' });
         });
     });
+});
+
+server.post('/perfil/borrar', comprobarToken, (req, res) => {
+
+    if(req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    console.log(req.body.tipo+ ' ' +req.body.borrar);
+    
+    fs.unlink('./imagenes/perfil/' +req.body.borrar, (err) => {
+        if(err) {
+            console.log(err);
+            return;
+        }
+    });
+
+    /*mysql.query("UPDATE usuarios SET imagen='default.png' WHERE ID=? LIMIT 1", req.userId, function(err) {
+
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+
+            console.log(err.message);
+            return;
+        }
+
+
+
+    });*/
+
 });
 
 server.get('/perfil/foto', comprobarToken, (req, res) => {
