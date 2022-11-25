@@ -1,5 +1,7 @@
 import React from "react";
 
+import { crearAlerta } from './Toast/Toast.js';
+
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
@@ -12,8 +14,7 @@ function RecordarPassword() {
         const email = document.getElementById('recordar-email').value;
 
         if(email === '') {
-            alert('Escribe un correo');
-            return;
+            return crearAlerta('error', '¡Escribe un correo!');
         }
 
         const desactivarBtn = document.getElementById('recordar-btn');
@@ -34,18 +35,21 @@ function RecordarPassword() {
         const items = await data.json();
         desactivarBtn.disabled = false;
 
-        if(items.respuesta == 'err_db') {
-            alert('ERROR DB');
+        if(items.respuesta === 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error en la base de datos!');
 
-        } else if(items.respuesta == 'err_datos') {
-            alert('ERROR DATOS');
+        } else if(items.respuesta === 'err_datos') {
+            crearAlerta('error', '¡Los datos intruducidos son incorrectos!');
 
-        } else if(items.respuesta == 'err_reset') {
-            alert('HACE POCO YA SE HA RESETADO');
+        } else if(items.respuesta === 'err_reset') {
+            crearAlerta('error', '¡Ya se ha usado el sistema recientemente!');
 
         } else {
-            alert('Correo enviado');
-            window.location.href = '/';
+            crearAlerta('exito', '¡Correo enviado!');
+
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1000);
         }
     };
 

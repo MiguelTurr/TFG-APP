@@ -305,7 +305,6 @@ server.get('/perfil', comprobarToken, (req, res) => {
             return;
         }
 
-        console.log(result);
         res.status(201).json({ 
             nombre: result[0].nombre,
             apellidos: result[0].apellidos,
@@ -396,16 +395,25 @@ server.post('/perfil/borrar', comprobarToken, (req, res) => {
         return;
     }
 
-    console.log(req.body.tipo+ ' ' +req.body.borrar);
-    
-    fs.unlink('./imagenes/perfil/' +req.body.borrar, (err) => {
-        if(err) {
-            console.log(err);
-            return;
-        }
-    });
+    var query = 'UPDATE usuarios SET ';
 
-    /*mysql.query("UPDATE usuarios SET imagen='default.png' WHERE ID=? LIMIT 1", req.userId, function(err) {
+    if(req.body.tipo == 'imagen') {
+
+        query += "imgPerfil='default.png' ";
+
+        fs.unlink('./imagenes/perfil/' +req.body.borrar, (err) => {
+            if(err) {
+                res.status(500).json({ respuesta: 'err_server' });
+
+                console.log(err);
+                return;
+            }
+        });
+    }
+
+    query += 'WHERE ID=' +req.userId+ ' LIMIT 1';
+
+    mysql.query(query, function(err) {
 
         if(err) {
             res.status(500).json({ respuesta: 'err_db' });
@@ -414,10 +422,8 @@ server.post('/perfil/borrar', comprobarToken, (req, res) => {
             return;
         }
 
-
-
-    });*/
-
+        res.status(200).json({ respuesta: 'correcto' });
+    });
 });
 
 server.get('/perfil/foto', comprobarToken, (req, res) => {
@@ -448,6 +454,78 @@ server.get('/perfil/foto', comprobarToken, (req, res) => {
             res.end(file);
         });
     });
+});
+
+server.get('/perfil/eliminar', comprobarToken, (req, res) => {
+
+    if(req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    mysql.query('DELETE FROM usuarios WHERE ID=? LIMIT 1', req.userId, function(err) {
+
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        res.status(200).clearCookie("token").json({ respuesta: 'correcto' });
+    })
+});
+
+server.get('/perfil/misalojamientos', comprobarToken, (req, res) => {
+
+    if(req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    res.json( { 
+        "respuesta": 'correcto',
+        "alojamientos": 
+            [ 
+                {
+                    precio: 50,
+                    lugar: 'Zamora, España',
+                    valoraciones: 3.5,
+                    creadoEn: new Date(1995, 11, 17)
+                },
+                {
+                    precio: 10,
+                    lugar: 'León, México',
+                    valoraciones: 2.5,
+                    creadoEn: new Date(2000, 11, 17)
+                },
+                {
+                    precio: 10,
+                    lugar: 'León, México',
+                    valoraciones: 1.5,
+                    creadoEn: new Date(2010, 11, 17)
+                },
+                {
+                    precio: 10,
+                    lugar: 'León, México',
+                    valoraciones: 2.5,
+                    creadoEn: new Date(2011, 11, 17)
+                }
+            ]
+        });
+
+    //mysql.query('SELECT * FROM alojamientos WHERE userID=? ORDER BY ', )
+    
+});
+
+server.post('/perfil/misalojamientos/crear', comprobarToken, (req, res) => {
+
+    if(req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    console.log(req.body);
+    
 });
 
 //

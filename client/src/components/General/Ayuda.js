@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 
-import ayuda from '../resources/ayuda.json';
+import ayuda from '../../resources/ayuda.json';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 function Ayuda() {
 
     const [ vistaMenu, setVistaMenu ] = useState('visitante');
     const [ vistaAyuda, setVistaAyuda ] = useState(0);
-    const [ textoAyuda, setTextoAyuda ] = useState(ayuda.visitante[0]);
+    const [ textoAyuda, setTextoAyuda ] = useState(ayuda.visitante.textos[0]);
+
+    const [ titulosVisitante, setVisitante ] = useState(ayuda.visitante.titulos);
+    const [ titulosHospedador, setHospedador ] = useState(ayuda.hospedador.titulos);
 
     const cambiarVista = (menuId) => {
 
@@ -22,7 +28,7 @@ function Ayuda() {
 
         setVistaMenu(menuId);
         setVistaAyuda(0);
-        setTextoAyuda(ayuda[menuId][0]);
+        setTextoAyuda(ayuda[menuId].textos[0]);
     }
 
     const ayudaVista = (vistaId) => {
@@ -37,15 +43,16 @@ function Ayuda() {
         removeClass.classList.remove('btn-activo');
 
         setVistaAyuda(vistaId);
-        setTextoAyuda(ayuda[vistaMenu][vistaId]);
+        setTextoAyuda(ayuda[vistaMenu].textos[vistaId]);
     }
 
     return (
         
         <div className="container-fluid">
             <div className="row">
+
                 <h3>
-                      Resuelve tus dudas en el centro de ayuda
+                    <FontAwesomeIcon icon={faInfoCircle} /> Resuelve tus dudas en el centro de ayuda
                 </h3>
                 
             </div>
@@ -73,33 +80,31 @@ function Ayuda() {
                 {vistaMenu === 'visitante' &&
                     <div className="col-sm-3">
                         <ul>
-                            <li>
-                                <button className="btn-no-style btn-activo" onClick={() => { ayudaVista(0) }}  id="btn-visitante-0">
-                                    Métodos de pago
-                                </button>
-                            </li>
-                            <li>
-                                <button className="btn-no-style" onClick={() => { ayudaVista(1) }}  id="btn-visitante-1">
-                                    Cancelar reserva
-                                </button>
-                            </li>
+                            {
+                                titulosVisitante.map((x, key) => (
+                                    <li key={key}>
+                                        <button className={key === 0 ? "btn-no-style btn-activo" : "btn-no-style"} onClick={() => { ayudaVista(key) }} id={'btn-visitante-'+key}>
+                                            {x}
+                                        </button>
+                                    </li>
+                                ))
+                            }
                         </ul>
                 </div>}
 
                 {vistaMenu === 'hospedador' &&
                     <div className="col-sm-3">
                         <ul>
-                            <li>
-                                <button className="btn-no-style btn-activo" onClick={() => { ayudaVista(0) }}  id="btn-hospedador-0">
-                                    Reseña mala
-                                </button>
-                            </li>
-                            <li>
-
-                                <button className="btn-no-style" onClick={() => { ayudaVista(1) }}  id="btn-hospedador-1">
-                                    No he recibido un pago
-                                </button>
-                            </li>
+                            {
+                                titulosHospedador.map((x, key) => (
+                                    <li key={key}>
+                                        <button className={key === 0 ? "btn-no-style btn-activo" : "btn-no-style"} onClick={() => { ayudaVista(key) }} id={'btn-hospedador-'+key}>
+                                            {x}
+                                        </button>
+                                    </li>
+                                ))
+                            }
+                            
                         </ul>
                     </div>}
                     

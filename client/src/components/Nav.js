@@ -266,6 +266,28 @@ function Nav() {
 
     //
 
+    const irFavoritos = () => {
+
+        if(autorizado === false) {
+            mostrarLogin();
+            return;
+        }
+
+        window.location.href = '/favoritos';
+    };
+
+    const irRecomendados = () => {
+
+        if(autorizado === false) {
+            mostrarLogin();
+            return;
+        }
+
+        window.location.href = '/recomendados';
+    };
+
+    //
+
     return (
     <div className="header">
 
@@ -321,7 +343,7 @@ function Nav() {
                             {autorizado == true &&
                                 <>
                                     <Dropdown.Item eventKey="1" href="/perfil">Perfil</Dropdown.Item>
-                                    <Dropdown.Item eventKey="2" href="/perfil/miscasas">Mis alojamientos</Dropdown.Item>
+                                    <Dropdown.Item eventKey="2" href="/perfil/misalojamientos">Mis alojamientos</Dropdown.Item>
                                     <Dropdown.Item eventKey="3" href="/ayuda">Ayuda</Dropdown.Item>
                                     <Dropdown.Divider />
                                     <Dropdown.Item eventKey="4" onClick={cerrarSesion}>Cerrar sesión</Dropdown.Item>
@@ -339,7 +361,7 @@ function Nav() {
 
         </div>
 
-        <NavFiltros />
+        <NavFiltros fav={irFavoritos} rec={irRecomendados} />
 
         <hr/>
     </div>

@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartSimple, faCalendarDays, faDollarSign, faHeart, faComputer, faSliders } from '@fortawesome/free-solid-svg-icons';
 
-function NavFiltros() {
+function NavFiltros({ fav, rec }) {
 
     const location = window.location.href;
     const finalLocation = location.substring('http://localhost:3000/'.length);
@@ -57,11 +57,11 @@ function NavFiltros() {
 
                     <div className="btn-group" role="group">
                         
-                        <Button className="filtros-botones" size="sm">
+                        <Button className="filtros-botones" size="sm" onClick={() => { fav() }}>
                             <FontAwesomeIcon icon={faHeart} /> Favoritos
                         </Button>
 
-                        <Button className="filtros-botones" size="sm">
+                        <Button className="filtros-botones" size="sm" onClick={() => { rec() }}>
                             <FontAwesomeIcon icon={faComputer} /> Recomendados
                         </Button>
                     </div>

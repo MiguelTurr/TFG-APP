@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 
-import '../css/Perfil.css';
-import NoProfileImg from '../img/no-profile-img.png';
+import '../../css/Perfil.css';
+import NoProfileImg from '../../img/no-profile-img.png';
 
-import { crearAlerta } from './Toast/Toast.js';
+import { crearAlerta } from '../Toast/Toast.js';
+import userLogin from '../../js/autorizado';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faArrowLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faArrowLeft, faTrash, faUserMinus, faUserClock } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
 import Form from 'react-bootstrap/Form';
 
 function Perfil() {
+
+    const { autorizado, setAutorizado } = userLogin();
 
     // CARGAR PERFIL INFO
 
@@ -127,7 +130,7 @@ function Perfil() {
                 titulo: 'Imagen',
                 anterior: 'Foto de perfil',
                 modificado: false,
-                puedeBorrar: true
+                puedeBorrar: (userImg === NoProfileImg ? false : true)
             }
         }
 
@@ -197,12 +200,16 @@ function Perfil() {
             formData.append('imagen', imagenAvatar);
         }
 
+        var desactivarBtn = document.getElementById('mod-btn');
+        desactivarBtn.disabled = true;
+
         const data = await fetch('/perfil/editar', {
             method: 'POST',
             body: formData,
         });
 
         const items = await data.json();
+        desactivarBtn.disabled = false;
 
         if(items.respuesta == 'err_user') {
             crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
@@ -229,6 +236,8 @@ function Perfil() {
                 setUserInfo({ ...userInfo, email: editado });
 
             } else if(modDatos.modId === 'imagen') {
+                //cargar de nuevo la iamgen
+                //cargarImagenPerfil();
             }
 
             setCambiarDatos(false);
@@ -236,6 +245,10 @@ function Perfil() {
     };
 
     const opcionBorrar = async () => {
+
+        if(userImg === NoProfileImg) {
+            return crearAlerta('error', '¡No tienes foto de perfil!');
+        }
 
         var datoBorrar = userInfo.imagenPerfil;
 
@@ -260,8 +273,48 @@ function Perfil() {
         } else if(items.respuesta == 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
+        } else if(items.respuesta == 'err_server') {
+            crearAlerta('error', '¡Ha ocurrido un error en el servidor!');
+
         } else if(items.respuesta == 'correcto') {
+            crearAlerta('exito', '¡Ahora ya no tienes imagen de perfil!');
+
             setUserImg(NoProfileImg);
+            setCambiarDatos(false);
+        }
+    };
+
+    const desactivarCuenta = async (tipo) => {
+
+        if(tipo === 'desactivar') {
+            return crearAlerta('error', '¡No es posible usar esto!');
+        }
+
+        const data = await fetch('/perfil/' +tipo, {
+            method: 'GET',
+            
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        const items = await data.json();
+
+        if(items.respuesta == 'err_user') {
+            crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
+
+        } else if(items.respuesta == 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if(items.respuesta == 'correcto') {
+            
+            crearAlerta('exito', 'Tu cuenta ha sido eliminada');
+
+            setTimeout(() => {
+                setAutorizado(false);
+                window.location.href = '/';
+
+            }, 1000);
         }
     };
 
@@ -412,7 +465,7 @@ function Perfil() {
                                 <td>
                                     Foto de perfil:
                                     <br/>
-                                    <img src={userImg} className="img-fluid" width="5%" alt="Imagen de perfil del usuario"></img>
+                                    <img src={userImg} key={userImg} className="img-fluid" width="5%" alt="Imagen de perfil del usuario"></img>
                                 </td>
                                 <td className="arrow-style">
                                     <FontAwesomeIcon icon={faArrowRight} />
@@ -422,6 +475,40 @@ function Perfil() {
                         </tbody>
                     </table>
                     </>}
+
+                    {cambiarDatos == false && vistaPerfil == 2 && <div className="col-sm-6 text-center mx-auto">
+
+                        <div className="d-grid gap-2">
+
+                            <h5>
+                                Desactiva tu cuenta
+                            </h5>
+
+                            <Button className="filtros-botones" size="sm" onClick={() => { desactivarCuenta('desactivar'); }}>
+                                <FontAwesomeIcon icon={faUserClock} /> Desactivar
+                            </Button>
+
+                            <small>
+                                * Su cuenta dejará de ser visible al resto de usuarios, hasta que vuelva a iniciar sesión.
+                            </small>
+
+                            <hr/>
+
+                            <h5>
+                                Elimina tu cuenta totalmente
+                            </h5>
+
+                            <Button className="borrar-botones" size="sm" onClick={() => { desactivarCuenta('eliminar'); }}>
+                                <FontAwesomeIcon icon={faUserMinus} /> Eliminar
+                            </Button>
+
+                            <small>
+                                * Se eliminará toda la información almacenada sobre tu cuenta.
+                            </small>
+                        </div>
+
+                    </div>}
+
 
                     {cambiarDatos == true && 
                         <div className="col-sm-6 text-center mx-auto">
@@ -467,7 +554,7 @@ function Perfil() {
                                 </Form.Group>
                             
                                 <div className="d-grid gap-2">
-                                    <Button type="submit" className="filtros-botones" size="sm">
+                                    <Button type="submit" className="filtros-botones" size="sm" id="mod-btn">
                                         Modificar
                                     </Button>
                                 </div>
