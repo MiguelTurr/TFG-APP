@@ -16,28 +16,32 @@ const Login = ({ mostrar, funcionCerrar, funcionLogin }) => {
             <Modal.Body>
                 <div className="container">
 
-                    <Form onSubmit={funcionLogin}>
-                        <Form.Group className="mb-3" controlId="log-email">
-                            <Form.Label>Correo electrónico</Form.Label>
-                            <Form.Control type="email" placeholder="Escribe correo" />
-                        </Form.Group>
+                    <div className="row">
+                        <div className="col-sm-6 mx-auto">
 
-                        <Form.Group className="mb-3" controlId="log-password">
-                            <Form.Label>Contraseña</Form.Label>
-                            <Form.Control type="password" placeholder="Escribe contraseña" />
-                        </Form.Group>
-                    
-                        <div className="d-grid gap-2">
-                            <Button type="submit" variant="success" id="log-btn">
-                                Iniciar sesión
-                            </Button>
+                            <Form onSubmit={funcionLogin}>
+                                <Form.Group className="mb-3" controlId="log-email">
+                                    <Form.Label>Correo electrónico</Form.Label>
+                                    <Form.Control type="email" placeholder="Escribe correo" required />
+                                </Form.Group>
 
-                            <hr/>
+                                <Form.Group className="mb-3" controlId="log-password">
+                                    <Form.Label>Contraseña</Form.Label>
+                                    <Form.Control type="password" placeholder="Escribe contraseña" required />
+                                </Form.Group>
                             
-                            <a className="text-center" href="/nopassword">¿Has olvidado tu contraseña?</a>
-                        </div>
+                                <div className="d-grid gap-2">
+                                    <Button type="submit" variant="success" id="log-btn">
+                                        Iniciar sesión
+                                    </Button>
 
-                    </Form>
+                                    <hr/>
+                                    
+                                    <a className="text-center" href="/nopassword">¿Has olvidado tu contraseña?</a>
+                                </div>
+                            </Form>
+                        </div>
+                    </div>
                 </div>
 
             </Modal.Body>

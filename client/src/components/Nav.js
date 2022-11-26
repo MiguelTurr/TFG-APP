@@ -42,21 +42,6 @@ function Nav() {
     const enviarRegistro = async (event) => {
         event.preventDefault();
 
-        const nombre = document.getElementById('reg-nombre').value;
-        if(nombre.length < 2) {
-            return crearAlerta('error', '¡Escribe un nombre!');
-        }
-
-        const apellidos = document.getElementById('reg-apellidos').value;
-        if(apellidos === '') {
-            return crearAlerta('error', '¡Escribe un apellido!');
-        }
-
-        const email = document.getElementById('reg-email').value;
-        if(email === '') {
-            return crearAlerta('error', '¡Escribe un correo electrónico!');
-        }
-
         const fechaNac = document.getElementById('reg-fechaNac').value;
         const fechaHoy = new Date().getTime();
         const fechaFinal = (fechaHoy - new Date(fechaNac).getTime()) / (1000 * 60 * 60 * 24 * 365);
@@ -75,21 +60,20 @@ function Nav() {
             return crearAlerta('error', '¡Las contraseñas no coinciden!');
         }
 
-        const numero = document.getElementById('reg-telefono').value;
-        if(numero === '') {
-            return crearAlerta('error', '¡Escribe un número de teléfono!');
-        }
-
         const condiciones = document.getElementById('reg-condiciones').checked;
-        if(condiciones == false) {
+        if(condiciones === false) {
             return crearAlerta('error', '¡Acepta los términos y condiciones!');
         }
 
         const privacidad = document.getElementById('reg-privacidad').checked;
-        if(privacidad == false) {
+        if(privacidad === false) {
             return crearAlerta('error', '¡Acepta el aviso de privacidad!');
         }
 
+        const nombre = document.getElementById('reg-nombre').value;
+        const apellidos = document.getElementById('reg-apellidos').value;
+        const email = document.getElementById('reg-email').value;
+        const numero = document.getElementById('reg-telefono').value;
         const prefijo = document.getElementById('reg-prefijo').value;
         const genero = document.getElementById('reg-genero').value;
 
@@ -119,10 +103,10 @@ function Nav() {
         const items = await data.json();
         desactivarBtn.disabled = false;
 
-        if(items.respuesta == 'err_db') {
+        if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error en la base de datos!');
 
-        } else if(items.respuesta == 'err_email') {
+        } else if(items.respuesta === 'err_email') {
             crearAlerta('error', '¡Ese correo ya está en uso!');
 
         } else {
@@ -141,18 +125,7 @@ function Nav() {
         event.preventDefault();
         
         const email = document.getElementById('log-email').value;
-
-        if(email === '') {
-            crearAlerta('error', '¡Escribe un correo electrónico!');
-            return;
-        }
-
         const password = document.getElementById('log-password').value;
-
-        if(password === '') {
-            crearAlerta('error', '¡Escribe una contraseña!');
-            return;
-        }
 
         var desactivarBtn = document.getElementById('log-btn');
         desactivarBtn.disabled = true;
@@ -173,13 +146,13 @@ function Nav() {
         const items = await data.json();
         desactivarBtn.disabled = false;
 
-        if(items.respuesta == 'err_db') {
+        if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error en la base de datos!');
 
-        } else if(items.respuesta == 'err_datos') {
+        } else if(items.respuesta === 'err_datos') {
             crearAlerta('error', '¡Los datos introducidos son incorrectos!');
 
-        } else if(items.respuesta == 'err_validado') {
+        } else if(items.respuesta === 'err_validado') {
             crearAlerta('error', '¡Mira tu correo para validar la cuenta!');
 
         } else {
@@ -206,7 +179,7 @@ function Nav() {
             },
         });
 
-        if(data.status == 200) {
+        if(data.status === 200) {
 
             crearAlerta('exito', '¡Sesión terminada!');
 
@@ -226,13 +199,13 @@ function Nav() {
         
         const imagen = await fetch('/perfil/foto', {  method: 'GET' });
 
-        if(imagen.status == 200) {
+        if(imagen.status === 200) {
             setFotoPerfil(imagen.url);
         }
     };
 
     useEffect(() => {
-        if(autorizado == true) {
+        if(autorizado === true) {
             cargarFotoPerfil();
         }
     });
@@ -242,7 +215,7 @@ function Nav() {
     const buscarLugar = () => {
         const lugar = document.getElementById('buscar-lugar').value;
 
-        if(lugar == '') {
+        if(lugar === '') {
             return crearAlerta('error', '¡Escribe un lugar para visitar!');
         }
 
@@ -340,7 +313,7 @@ function Nav() {
                                 </>
                             }
 
-                            {autorizado == true &&
+                            {autorizado === true &&
                                 <>
                                     <Dropdown.Item eventKey="1" href="/perfil">Perfil</Dropdown.Item>
                                     <Dropdown.Item eventKey="2" href="/perfil/misalojamientos">Mis alojamientos</Dropdown.Item>

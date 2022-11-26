@@ -26,12 +26,12 @@ const Registro = ({ mostrar, funcionCerrar, funcionRegistro }) => {
 
                                     <Form.Group className="mb-3" controlId="reg-nombre">
                                         <Form.Label>Nombre</Form.Label>
-                                        <Form.Control type="text" placeholder="Escribe nombre" />
+                                        <Form.Control type="text" placeholder="Escribe nombre" required />
                                     </Form.Group>
 
                                     <Form.Group className="mb-3" controlId="reg-apellidos">
                                         <Form.Label>Apellidos</Form.Label>
-                                        <Form.Control type="text" placeholder="Escribe apellidos" />
+                                        <Form.Control type="text" placeholder="Escribe apellidos" required/>
                                     </Form.Group>
 
                                     <Form.Group className="mb-3">
@@ -44,12 +44,12 @@ const Registro = ({ mostrar, funcionCerrar, funcionRegistro }) => {
 
                                     <Form.Group className="mb-3" controlId="reg-email">
                                         <Form.Label>Correo electrónico</Form.Label>
-                                        <Form.Control type="email" placeholder="Escribe correo" />
+                                        <Form.Control type="email" placeholder="Escribe correo" required/>
                                     </Form.Group>
 
                                     <Form.Group className="mb-3" controlId="reg-fechaNac">
                                         <Form.Label>Fecha nacimiento</Form.Label>
-                                        <Form.Control type="date"/>
+                                        <Form.Control type="date" required/>
                                     </Form.Group>
 
                                 </div>
@@ -58,12 +58,12 @@ const Registro = ({ mostrar, funcionCerrar, funcionRegistro }) => {
                                     
                                     <Form.Group className="mb-3" controlId="reg-password">
                                         <Form.Label>Contraseña</Form.Label>
-                                        <Form.Control type="password" placeholder="Escribe contraseña" />
+                                        <Form.Control type="password" placeholder="Escribe contraseña" required/>
                                     </Form.Group>
                                 
                                     <Form.Group className="mb-3" controlId="reg-password-2">
                                         <Form.Label>Repite contraseña</Form.Label>
-                                        <Form.Control type="password" placeholder="Escribe contraseña" />
+                                        <Form.Control type="password" placeholder="Escribe contraseña" required/>
                                     </Form.Group>
                                 
                                     <Form.Group className="mb-3">
@@ -80,7 +80,7 @@ const Registro = ({ mostrar, funcionCerrar, funcionRegistro }) => {
                                                     })
                                                 }
                                             </Form.Select>
-                                            <Form.Control type="number" placeholder="Escribe número" id="reg-telefono"/>
+                                            <Form.Control type="number" placeholder="Escribe número" id="reg-telefono" required/>
                                         </div>
                                         
                                     </Form.Group>
@@ -89,12 +89,16 @@ const Registro = ({ mostrar, funcionCerrar, funcionRegistro }) => {
 
                                         <Form.Check type='checkbox' id='reg-condiciones'>
                                             <Form.Check.Input type='checkbox' />
-                                            <Form.Check.Label>Aceptas nuestros <a href="/condiciones">Términos & Condiciones</a></Form.Check.Label>
+                                            <Form.Check.Label>
+                                                Aceptas nuestros <a href="/condiciones" target="_blank">Términos & Condiciones</a>
+                                            </Form.Check.Label>
                                         </Form.Check>
                                         
                                         <Form.Check type='checkbox' id='reg-privacidad'>
                                             <Form.Check.Input type='checkbox' />
-                                            <Form.Check.Label>Confirmas haber leído el <a href="/privacidad">Aviso de privacidad</a></Form.Check.Label>
+                                            <Form.Check.Label required>
+                                                Confirmas haber leído el <a href="/privacidad" target="_blank">Aviso de privacidad</a>
+                                            </Form.Check.Label>
                                         </Form.Check>
                                     </Form.Group>
                                 </div>

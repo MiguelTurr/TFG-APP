@@ -43,6 +43,8 @@ function App() {
 
           <Route path="/buscar" element={ <Buscar /> }/>
 
+          <Route path="*" element={<Home />} />
+
         </Routes>
         
         <Cookies/>
