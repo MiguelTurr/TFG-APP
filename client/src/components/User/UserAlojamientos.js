@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
+import '../../css/UserAlojamientos.css';
+
 import CrearAlojamiento from './CrearAlojamiento.js';
 import { crearAlerta } from '../Toast/Toast.js';
 

@@ -535,8 +535,14 @@ server.post('/perfil/misalojamientos/crear', comprobarToken, (req, res) => {
     console.log(req.files.imagen.length);
 
     const imagenLen = req.files.imagen.length;
-    for(var i = 0; i < imagenLen; i++) {
-        console.log(req.files.imagen[i].name)
+    if(imagenLen === undefined) {
+        console.log(req.files.imagen.name)
+
+    } else {
+
+        for(var i = 0; i < imagenLen; i++) {
+            console.log(req.files.imagen[i].name)
+        }
     }
     
     res.status(200).json({ respuesta: 'correcto' });

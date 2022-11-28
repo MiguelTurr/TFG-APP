@@ -43,7 +43,6 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
         lat: 0.0,
         long: 0.0,
 
-        imagenes: undefined,
         imgTotal: 0,
     });
 
@@ -66,6 +65,10 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
 
         const len = e.target.files.length;
 
+        if(len > 5) {
+            return crearAlerta('error', '¡El máximo son 5 imágenes!')
+        }
+
         setForm({...form, imagenes: e.target.files, imgTotal: len });
 
         var array = [];
@@ -79,8 +82,27 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
         }
     };
 
-    const removeImagen = (e) => {
-        console.log(e.target)
+    const removeImagen = (e, index) => {
+
+        const inputImagenes = document.getElementById('imagenes');
+
+        var fileActual = inputImagenes.files;
+        var fileBuffer = new DataTransfer()
+        
+        for (let i = 0; i < fileActual.length; i++) {
+            if (index !== i) {
+                fileBuffer.items.add(fileActual[i]);
+            }
+        }
+
+        inputImagenes.files = fileBuffer.files;
+
+        //
+
+        setForm({...form, imgTotal: form.imgTotal - 1 });
+
+        imagenPreview.splice(index, 1)
+        setImagenPreview(imagenPreview);
     };
 
     const erroresForm = () => {
@@ -110,26 +132,24 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
 
         if(!form.ubicacion || form.ubicacion === '') erroresEncontrados.ubicacion = '¡Debes poner una ubicación!';
 
-        if(form.imagenes === undefined) erroresEncontrados.imagenes = '¡Debes añadir al menos una imagen!';
+        const inputImagenes = document.getElementById('imagenes');
+        const len = inputImagenes.files.length;
+
+        if(len === 0) erroresEncontrados.imagenes = '¡Debes añadir al menos una imagen!';
+        else if(len > 5) erroresEncontrados.imagenes = '¡Sólo puedes subir 5 imágenes!';
         else {
-            const len = form.imagenes.length;
 
-            if(len === 0) erroresEncontrados.imagenes = '¡Debes añadir al menos una imagen!';
-            else if(len > 5) erroresEncontrados.imagenes = '¡Sólo puedes subir 5 imágenes!';
-            else {
-                
-                const maxSize = 2 * 1024 * 1024;
+            const maxSize = 2 * 1024 * 1024;
 
-                for(var i = 0; i < len; i++) {
-                    if(!['image/jpeg', 'image/png'].includes(form.imagenes[i].type)) {
-                        erroresEncontrados.imagenes = '¡Una imagen no tiene el formato correcto!';
-                        break;
-                    }
-        
-                    if(form.imagenes[i].size > maxSize) {
-                        erroresEncontrados.imagenes = '¡El tamaño máximo por imagen es de 2 MB!';
-                        break;
-                    }
+            for (var i = 0; i < len; i++) {
+                if(!['image/jpeg', 'image/png'].includes(inputImagenes.files[i].type)) {
+                    erroresEncontrados.imagenes = '¡Una imagen no tiene el formato correcto!';
+                    break;
+                }
+
+                if(inputImagenes.files[i].size > maxSize) {
+                    erroresEncontrados.imagenes = '¡El tamaño máximo por imagen es de 2 MB!';
+                    break;
                 }
             }
         }
@@ -160,16 +180,14 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
         var formData = new FormData();
 
         Object.keys(form).map((x) => {
-            if(x === 'imagenes') {
-                return;
-            }
             formData.append(x, form[x]);
         });
 
-        const len = form.imagenes.length;
+        var inputImagenes = document.getElementById('imagenes');
+        const len = inputImagenes.files.length;
 
         for(var i = 0; i < len; i++) {
-            formData.append('imagen', form.imagenes[i]);
+            formData.append('imagen', inputImagenes.files[i]);
         }
 
         //
@@ -483,12 +501,12 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
                         <hr/>
 
                         <Form.Group className="mb-3">
-                            <Form.Label htmlFor="mod-password-2">Imágenes</Form.Label>
+                            <Form.Label htmlFor="imagenes">Imágenes</Form.Label>
                             <Form.Control 
                                 type="file"
-                                id="prueba"
+                                id="imagenes"
                                 size="sm" 
-                                accept="image/*" 
+                                accept="image/*"
                                 onChange={addImagenes}
                                 isInvalid={!!formErrors.imagenes}
                                 multiple/>
@@ -504,13 +522,19 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
 
                         <hr/>
 
+                        {form.imgTotal > 0 && <small className="text-muted">
+                            Imágenes: {form.imgTotal} de 5
+                            <br/>
+                            <br/>
+                        </small>}
+
                         <div className="row">
 
                             {
                                 imagenPreview.map((x, index) => (
                                     
-                                    <div className="col" key={index}>
-                                        <img className="img-fluid" src={x}/>
+                                    <div className="col" key={index} onClick={ (e) => { removeImagen(e, index) }}>
+                                        <img className="img-fluid preview-img" src={x} alt="preview de imagen"/>
                                     </div>
                                 ))
                             }

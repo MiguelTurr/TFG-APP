@@ -1,0 +1,7 @@
+.preview-img  {
+    cursor: pointer;
+}
+
+.preview-img:hover {
+    filter: opacity(50%);
+}
