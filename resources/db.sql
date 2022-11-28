@@ -36,12 +36,21 @@ DELETE FROM `usuarios`;
 CREATE TABLE IF NOT EXISTS `alojamientos` (
     `ID` int NOT NULL AUTO_INCREMENT,
 	`usuarioID` int NOT NULL,
+	`creadoEn` datetime NOT NULL default NOW(),
 	`titulo` varchar(70) NOT NULL,
 	`descripcion` varchar(800) NOT NULL,
 	`precio` smallint NOT NULL,
 	`descuento` float NOT NULL default 0.0,
 
 	`ubicacion` varchar(200) NOT NULL,
+	`ciudad` varchar(70) NOT NULL,
+	`comunidad` varchar(70) NOT NULL,
+	`pais` varchar(70) NOT NULL,
+
+	`lat` float NOT NULL,
+	`long` float NOT NULL,
+	`imgCantidad` tinyint NOT NULL,
+
 	`visitas` int NOT NULL default 0,
 
 	`viajeros` tinyint NOT NULL default 1,
@@ -49,8 +58,8 @@ CREATE TABLE IF NOT EXISTS `alojamientos` (
 	`camas` tinyint NOT NULL default 1,
 	`aseos` tinyint NOT NULL default 1,
 
-	`horaEntrada` time NOT NULL,
-	`horaSalida` time NOT NULL,
+	`horaEntrada` time,
+	`horaSalida` time,
 
 	`puedeFumar` tinyint NOT NULL default 0,
 	`puedeFiestas` tinyint NOT NULL default 0,
@@ -63,6 +72,7 @@ CREATE TABLE IF NOT EXISTS `alojamientos` (
 
 DELETE FROM `alojamientos`;
 
+/*
 CREATE TABLE IF NOT EXISTS `alojamientos_img` (
     `ID` int NOT NULL AUTO_INCREMENT,
 	`alojamientoID` int NOT NULL,
@@ -72,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `alojamientos_img` (
     PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-DELETE FROM `alojamientos_img`;
+DELETE FROM `alojamientos_img`;*/
 
 ----------------------------------------------------------------------------------
 

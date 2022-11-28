@@ -101,7 +101,7 @@ function UserAlojamientos() {
                     </tbody>
                 </table>
             </>}
-            <CrearAlojamiento show={vistaCrear}/>
+            <CrearAlojamiento show={vistaCrear} vistaAlojamientos={setVistaCrear}/>
         </div>
     )
 }

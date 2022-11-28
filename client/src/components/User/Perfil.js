@@ -42,7 +42,7 @@ function Perfil() {
 
         const imagen = await fetch('/perfil/foto', { method: 'GET' });
 
-        if(imagen.status == 200) {
+        if(imagen.status === 200) {
             setUserImg(imagen.url);
         }
     };
@@ -56,7 +56,7 @@ function Perfil() {
 
     const [vistaPerfil, setPerfilVista] = useState(0);
     const cambiarVistaPerfil = (vistaId) => {
-        if(vistaPerfil == vistaId) {
+        if(vistaPerfil === vistaId) {
             return;
         }
 
@@ -138,10 +138,10 @@ function Perfil() {
     };
 
     useEffect(() => {
-        if(cambiarDatos == true && modDatos.modificado == false) {
+        if(cambiarDatos === true && modDatos.modificado === false) {
             var element = document.getElementById('mod-' +modDatos.modId);
 
-            if(modDatos.modId == 'imagen') {
+            if(modDatos.modId === 'imagen') {
                 element.addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
             } else {
                 element.addEventListener("keyup", function() { setModDatos({ ...modDatos, modificado: true }); });
@@ -154,7 +154,7 @@ function Perfil() {
 
         const element = document.getElementById('mod-' +modDatos.modId);
         const editado = element.value;
-        if(editado == '') {
+        if(editado === '') {
             return crearAlerta('error', '¡Escribe algo primero!');
         }
 
@@ -180,7 +180,7 @@ function Perfil() {
         }
 
         const password = document.getElementById('mod-password-2').value;
-        if(password == '') {
+        if(password === '') {
             return crearAlerta('error', '¡Escribe tu contraseña para confirmar!');
         }
 
@@ -196,7 +196,7 @@ function Perfil() {
         formData.append('password', password);
         formData.append('tipo', modDatos.modId);
 
-        if(imagenAvatar != undefined) {
+        if(imagenAvatar !== undefined) {
             formData.append('imagen', imagenAvatar);
         }
 
@@ -211,16 +211,16 @@ function Perfil() {
         const items = await data.json();
         desactivarBtn.disabled = false;
 
-        if(items.respuesta == 'err_user') {
+        if(items.respuesta === 'err_user') {
             crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
 
-        } else if(items.respuesta == 'err_db') {
+        } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
-        } else if(items.respuesta == 'err_datos') {
+        } else if(items.respuesta === 'err_datos') {
             crearAlerta('error', '¡La contraseña no es la correcta!');
 
-        } else if(items.respuesta == 'correcto') {
+        } else if(items.respuesta === 'correcto') {
             crearAlerta('exito', '¡Los datos han sido actualizados!');
 
             if(modDatos.modId === 'telefono') {
@@ -267,16 +267,16 @@ function Perfil() {
 
         const items = await data.json();
 
-        if(items.respuesta == 'err_user') {
+        if(items.respuesta === 'err_user') {
             crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
 
-        } else if(items.respuesta == 'err_db') {
+        } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
-        } else if(items.respuesta == 'err_server') {
+        } else if(items.respuesta === 'err_server') {
             crearAlerta('error', '¡Ha ocurrido un error en el servidor!');
 
-        } else if(items.respuesta == 'correcto') {
+        } else if(items.respuesta === 'correcto') {
             crearAlerta('exito', '¡Ahora ya no tienes imagen de perfil!');
 
             setUserImg(NoProfileImg);
@@ -300,13 +300,13 @@ function Perfil() {
 
         const items = await data.json();
 
-        if(items.respuesta == 'err_user') {
+        if(items.respuesta === 'err_user') {
             crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
 
-        } else if(items.respuesta == 'err_db') {
+        } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
-        } else if(items.respuesta == 'correcto') {
+        } else if(items.respuesta === 'correcto') {
             
             crearAlerta('exito', 'Tu cuenta ha sido eliminada');
 
@@ -326,7 +326,7 @@ function Perfil() {
 
             <div className="row">
 
-                {cambiarDatos == false && <div className="col">
+                {cambiarDatos === false && <div className="col">
                     <button className={vistaPerfil === 0 ? "btn-no-style btn-activo" : "btn-no-style"} onClick={() => { cambiarVistaPerfil(0) }} id="vista-0">
                         Información personal
                     </button>
@@ -345,13 +345,13 @@ function Perfil() {
 
                 </div>}
 
-                {cambiarDatos == true && <div className="col">
+                {cambiarDatos === true && <div className="col">
                     
                     <Button className="filtros-botones" size="sm" onClick={() => { volverPerfil() }}>
                         <FontAwesomeIcon icon={faArrowLeft} /> Volver
                     </Button>
                     &nbsp;&nbsp;
-                    <Button className="borrar-botones" size="sm" onClick={() => { opcionBorrar() }}  style={modDatos.puedeBorrar == true ? {} : { display: 'none' }}>
+                    <Button className="borrar-botones" size="sm" onClick={() => { opcionBorrar() }}  style={modDatos.puedeBorrar === true ? {} : { display: 'none' }}>
                         <FontAwesomeIcon icon={faTrash} /> Eliminar {modDatos.modId}
                     </Button>
                 </div>}
@@ -364,7 +364,7 @@ function Perfil() {
                 
                 <div className="col">
 
-                    {cambiarDatos == false && vistaPerfil == 0 && <> <table className="table">
+                    {cambiarDatos === false && vistaPerfil === 0 && <> <table className="table">
                         <tbody>
                             <tr>
                                 <td>
@@ -430,7 +430,7 @@ function Perfil() {
                     </table>
                     </>}
 
-                    {cambiarDatos == false && vistaPerfil == 1 && <> <table className="table">
+                    {cambiarDatos === false && vistaPerfil === 1 && <> <table className="table">
                         <tbody>
                             <tr>
                                 <td>
@@ -476,7 +476,7 @@ function Perfil() {
                     </table>
                     </>}
 
-                    {cambiarDatos == false && vistaPerfil == 2 && <div className="col-sm-6 text-center mx-auto">
+                    {cambiarDatos === false && vistaPerfil === 2 && <div className="col-sm-6 text-center mx-auto">
 
                         <div className="d-grid gap-2">
 
@@ -510,7 +510,7 @@ function Perfil() {
                     </div>}
 
 
-                    {cambiarDatos == true && 
+                    {cambiarDatos === true && 
                         <div className="col-sm-6 text-center mx-auto">
                             <h5>
                                 {modDatos.titulo}: <span className="resaltar-titulo">{modDatos.anterior}</span>
@@ -520,35 +520,35 @@ function Perfil() {
 
                             <Form onSubmit={enviarDatoModificado}>
 
-                                <Form.Group className="mb-3" style={modDatos.modId == 'telefono' ? {} : { display: 'none' }} >
+                                <Form.Group className="mb-3" style={modDatos.modId === 'telefono' ? {} : { display: 'none' }} >
                                     <div className="input-group mb-3">
                                         <span className="input-group-text">{modDatos.prefix}</span>
                                         <Form.Control type="number" placeholder="Nuevo teléfono" id="mod-telefono"/>
                                     </div>
                                 </Form.Group>
 
-                                <Form.Group className="mb-3" style={modDatos.modId == 'residencia' ? {} : { display: 'none' }} >
+                                <Form.Group className="mb-3" style={modDatos.modId === 'residencia' ? {} : { display: 'none' }} >
                                     <Form.Control type="text" placeholder="Nueva residencia" id="mod-residencia" />
                                 </Form.Group>
 
-                                <Form.Group className="mb-3" style={modDatos.modId == 'presentacion' ? {} : { display: 'none' }} >
+                                <Form.Group className="mb-3" style={modDatos.modId === 'presentacion' ? {} : { display: 'none' }} >
                                     <Form.Control as="textarea" placeholder="Escribe aquí algo sobre ti" id="mod-presentacion"/>
                                 </Form.Group>
 
-                                <Form.Group className="mb-3" style={modDatos.modId == 'email' ? {} : { display: 'none' }} >
+                                <Form.Group className="mb-3" style={modDatos.modId === 'email' ? {} : { display: 'none' }} >
                                     <Form.Control type="email" placeholder="Nuevo correo" id="mod-email" />
                                 </Form.Group>
 
-                                <Form.Group className="mb-3" style={modDatos.modId == 'password' ? {} : { display: 'none' }} >
+                                <Form.Group className="mb-3" style={modDatos.modId === 'password' ? {} : { display: 'none' }} >
                                     <Form.Control type="password" placeholder="Nueva contraseña" id="mod-password" />
                                 </Form.Group>
 
-                                <Form.Group className="mb-3" style={modDatos.modId == 'imagen' ? {} : { display: 'none' }} >
+                                <Form.Group className="mb-3" style={modDatos.modId === 'imagen' ? {} : { display: 'none' }} >
                                     <Form.Label htmlFor="mod-password-2"><small>512x512 dimensiones recomendadas (.png / .jpg)</small></Form.Label>
                                     <Form.Control type="file" accept="image/*" id="mod-imagen" />
                                 </Form.Group>
 
-                                <Form.Group className="mb-3" style={modDatos.modificado == true ? {} : { display: 'none' }}>
+                                <Form.Group className="mb-3" style={modDatos.modificado === true ? {} : { display: 'none' }}>
                                     <Form.Label htmlFor="mod-password-2">Valida tu contraseña</Form.Label>
                                     <Form.Control type="password" placeholder="Escribe contraseña" id="mod-password-2" />
                                 </Form.Group>

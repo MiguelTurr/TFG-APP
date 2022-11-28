@@ -222,7 +222,7 @@ function Nav() {
         window.location.href = '/buscar?place=' +lugar;
     };
 
-    const initAutocomplete = useRef();
+    /*const initAutocomplete = useRef();
     const inputRef = useRef();
 
     useEffect(() => {
@@ -235,7 +235,7 @@ function Nav() {
             const place = await initAutocomplete.current.getPlace();
             console.log({ place });
         });
-    }, []);
+    }, []);*/
 
     //
 
@@ -282,7 +282,7 @@ function Nav() {
                 <div className="col-sm-4 mt-3">
 
                     <div className="input-group">
-                        <input type="text" className="form-control" id='buscar-lugar' placeholder="Escribe un lugar" aria-label="Lugar para visitar" ref={inputRef}/>
+                        <input type="text" className="form-control" id='buscar-lugar' placeholder="Escribe un lugar" aria-label="Lugar para visitar"/>
 
                         <Button className="color-boton" size="sm" onClick={buscarLugar}>
                             <FontAwesomeIcon icon={faSearch} />

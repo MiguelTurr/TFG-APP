@@ -513,8 +513,15 @@ server.get('/perfil/misalojamientos', comprobarToken, (req, res) => {
             ]
         });
 
-    //mysql.query('SELECT * FROM alojamientos WHERE userID=? ORDER BY ', )
-    
+    /*
+    mysql.query('SELECT * FROM alojamientos WHERE userID=? ORDER BY creadoEn DESC', req.userId, function(err, result) {
+        if(err) {
+            return;
+        }
+
+
+    });
+    */
 });
 
 server.post('/perfil/misalojamientos/crear', comprobarToken, (req, res) => {
@@ -525,7 +532,24 @@ server.post('/perfil/misalojamientos/crear', comprobarToken, (req, res) => {
     }
 
     console.log(req.body);
+    console.log(req.files.imagen.length);
+
+    const imagenLen = req.files.imagen.length;
+    for(var i = 0; i < imagenLen; i++) {
+        console.log(req.files.imagen[i].name)
+    }
     
+    res.status(200).json({ respuesta: 'correcto' });
+});
+
+server.post('/perfil/misalojamientos/editar/:id', comprobarToken, (req, res) => {
+
+    if(req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    //console.log(req.body);
 });
 
 //

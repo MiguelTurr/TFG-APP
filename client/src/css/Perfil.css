@@ -58,7 +58,7 @@
 }
 
 .crear-botones {
-    background-color: #ffbc40 !important;
+    background-color: #00be39 !important;
     border-color: black !important;
 
     color: black !important;
@@ -66,6 +66,6 @@
 }
 
 .crear-botones:hover {
-    background-color: #d69e37 !important;
+    background-color: #00681f !important;
     border-color: black !important;
 }

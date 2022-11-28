@@ -3,8 +3,6 @@ INSERTAR MAPA HTML
 
 OBTENER LATITUD Y LONGITUD A PARTIR DE DIRECCIÓN
 
-COOOKIES / he olvidado la contraseña / almacenar userid
-
 
 fast for holidays
 ff-hs
