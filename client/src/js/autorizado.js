@@ -11,6 +11,10 @@ export default function useToken() {
     const saveAutorizado = autorizado => {
         localStorage.setItem('autorizado', autorizado);
         setAutorizado(autorizado);
+
+        if(autorizado === false) {
+            window.location.href = '/';
+        }
     };
 
     return {

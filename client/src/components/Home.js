@@ -1,6 +1,6 @@
 import React from 'react';
 import '../css/Home.css';
-import Footer from './Footer';
+import Footer from './Home/Footer';
 
 import { useEffect, useState } from 'react';
 
@@ -9,16 +9,21 @@ import { faStar, faLocationDot } from '@fortawesome/free-solid-svg-icons'
 
 function Home() {
 
-    useEffect( () => {
+    useEffect(() => {
         fetchItems();
     }, []);
 
-    const [prueba, setPrueba] = useState([]);
+    const [alojamientos, setAlojamientos] = useState([]);
 
     const fetchItems = async() => {
-        const data = await fetch('/prueba', { method: 'GET' });
+        const data = await fetch('/home', { method: 'GET' });
         const items = await data.json();
-        setPrueba( items.usuarios );
+
+        if(items.respuesta === 'err_db') {
+
+        } else if(items.respuesta === 'correcto') {
+            setAlojamientos(items.alojamientos);
+        }
     }
 
     return(
@@ -28,7 +33,7 @@ function Home() {
             <div className="row">
 
                 {
-                    prueba.map((x, index) => (
+                    alojamientos.map((x, index) => (
 
                         <div className="col-sm-4" key={index}>
 
@@ -43,7 +48,7 @@ function Home() {
                                     <div className="col">
 
                                         <p>
-                                            <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green'}} />&nbsp;<strong>{x.lugar}</strong>
+                                            <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green'}} />&nbsp;<strong>{x.ubicacion}</strong>
                                             <br/>
                                             <strong>{x.precio}€</strong> por noche
                                         </p>

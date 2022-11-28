@@ -185,7 +185,6 @@ function Nav() {
 
             setTimeout(() => {
                 setAutorizado(false);
-                window.location.href = '/';
 
             }, 1000);
         }
@@ -316,7 +315,7 @@ function Nav() {
                             {autorizado === true &&
                                 <>
                                     <Dropdown.Item eventKey="1" href="/perfil">Perfil</Dropdown.Item>
-                                    <Dropdown.Item eventKey="2" href="/perfil/misalojamientos">Mis alojamientos</Dropdown.Item>
+                                    <Dropdown.Item eventKey="2" href="/perfil/mis-alojamientos">Mis alojamientos</Dropdown.Item>
                                     <Dropdown.Item eventKey="3" href="/ayuda">Ayuda</Dropdown.Item>
                                     <Dropdown.Divider />
                                     <Dropdown.Item eventKey="4" onClick={cerrarSesion}>Cerrar sesión</Dropdown.Item>

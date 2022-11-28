@@ -12,6 +12,7 @@ const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const randomstring = require("randomstring");
 
+const utils = require('./services/utils.js');
 const { bcrypt_salt, cookie_secret } = require('./services/config.js');
 
 //
@@ -52,8 +53,12 @@ const comprobarToken = (req, _, next) => {
     const token = req.cookies.token;
 
     if(token) {
-        const decoded = jwt.verify(token, cookie_secret);
-        req.userId = decoded.id;
+        try {
+            const decoded = jwt.verify(token, cookie_secret);
+            req.userId = decoded.id;
+
+        } catch(err) {
+        }
     }
 
     next();
@@ -357,7 +362,7 @@ server.post('/perfil/editar', comprobarToken, (req, res) => {
 
         } else if(req.body.tipo == 'imagen') {
             const extension = req.body.editado.split('.')[1];
-            datoEditado = 'user' +req.userId+ '-profile.' +extension;
+            datoEditado = utils.nombreFotoPerfil(req.userId, extension);
 
             req.body.tipo = 'imgPerfil';
         }
@@ -482,46 +487,20 @@ server.get('/perfil/misalojamientos', comprobarToken, (req, res) => {
         return;
     }
 
-    res.json( { 
-        "respuesta": 'correcto',
-        "alojamientos": 
-            [ 
-                {
-                    precio: 50,
-                    lugar: 'Zamora, España',
-                    valoraciones: 3.5,
-                    creadoEn: new Date(1995, 11, 17)
-                },
-                {
-                    precio: 10,
-                    lugar: 'León, México',
-                    valoraciones: 2.5,
-                    creadoEn: new Date(2000, 11, 17)
-                },
-                {
-                    precio: 10,
-                    lugar: 'León, México',
-                    valoraciones: 1.5,
-                    creadoEn: new Date(2010, 11, 17)
-                },
-                {
-                    precio: 10,
-                    lugar: 'León, México',
-                    valoraciones: 2.5,
-                    creadoEn: new Date(2011, 11, 17)
-                }
-            ]
-        });
-
-    /*
-    mysql.query('SELECT * FROM alojamientos WHERE userID=? ORDER BY creadoEn DESC', req.userId, function(err, result) {
+    mysql.query('SELECT * FROM alojamientos WHERE usuarioID=? ORDER BY creadoEn DESC', req.userId, function(err, result) {
         if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+
+            console.log(err.message);
             return;
         }
 
+        for(var i = 0; i < result.length; i++) {
+            result[i].valoraciones = 2.5;
+        }
 
+        res.status(200).json({ respuesta: 'correcto', alojamientos: result });
     });
-    */
 });
 
 server.post('/perfil/misalojamientos/crear', comprobarToken, (req, res) => {
@@ -531,21 +510,87 @@ server.post('/perfil/misalojamientos/crear', comprobarToken, (req, res) => {
         return;
     }
 
-    console.log(req.body);
-    console.log(req.files.imagen.length);
+    var servicios_final = 0;
 
-    const imagenLen = req.files.imagen.length;
-    if(imagenLen === undefined) {
-        console.log(req.files.imagen.name)
+    servicios_final |= utils.boolToInt(req.body.cocina) << 8;
+    servicios_final |= utils.boolToInt(req.body.wifi) << 7;
+    servicios_final |= utils.boolToInt(req.body.animales) << 6;
+    servicios_final |= utils.boolToInt(req.body.aparcamiento) << 5;
+    servicios_final |= utils.boolToInt(req.body.piscina) << 4;
+    servicios_final |= utils.boolToInt(req.body.lavadora) << 3;
+    servicios_final |= utils.boolToInt(req.body.aire) << 2;
+    servicios_final |= utils.boolToInt(req.body.calefaccion) << 1;
+    servicios_final |= utils.boolToInt(req.body.television);
 
-    } else {
-
-        for(var i = 0; i < imagenLen; i++) {
-            console.log(req.files.imagen[i].name)
-        }
-    }
+    const horaEntrada = req.body.horaEntrada === 'undefined' ? null : req.body.horaEntrada;
+    const horaSalida = req.body.horaSalida === 'undefined' ? null : req.body.horaSalida;
     
-    res.status(200).json({ respuesta: 'correcto' });
+    mysql.query('INSERT INTO alojamientos (usuarioID, titulo, descripcion, precio, ubicacion, lat, lng, viajeros, habitaciones, camas, aseos, horaEntrada, horaSalida, puedeFumar, puedeFiestas, servicios) VALUES (?)', 
+    [
+        [
+            req.userId,
+            req.body.titulo,
+            req.body.descripcion,
+            parseInt(req.body.precio),
+            req.body.ubicacion,
+            parseFloat(req.body.lat),
+            parseFloat(req.body.long),
+            parseInt(req.body.viajeros),
+            parseInt(req.body.habitaciones),
+            parseInt(req.body.camas),
+            parseInt(req.body.aseos),
+            horaEntrada,
+            horaSalida,
+            utils.boolToInt(req.body.puedeFumar),
+            utils.boolToInt(req.body.puedeFiestas),
+            servicios_final
+        ]
+    ], (err, result) => {
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+
+            console.log(err.message);
+            return;
+        }
+
+        const alojamientoId = result.insertId;
+
+        var arrayNombreImagenes = [];
+
+        const imagenLen = req.files.imagen.length;
+        if(imagenLen === undefined) {
+
+            const file = req.files.imagen;
+
+            const extension = file.name.split('.')[1];
+            const nombreFile = utils.nombreFotoAlojamiento(alojamientoId, 0, extension);
+            
+            file.mv('./imagenes/casas/' +nombreFile);
+
+            arrayNombreImagenes.push([alojamientoId, nombreFile]);
+
+        } else {
+
+            for(var i = 0; i < imagenLen; i++) {
+
+                const file = req.files.imagen[i];
+
+                const extension = file.name.split('.')[1];
+                const nombreFile = utils.nombreFotoAlojamiento(alojamientoId, i, extension);
+                
+                file.mv('./imagenes/casas/' +nombreFile);
+
+                arrayNombreImagenes.push([alojamientoId, nombreFile]);
+            }
+        }
+        
+        mysql.query('INSERT INTO alojamientos_img (alojamientoID, nombre) VALUES ?', [arrayNombreImagenes]);
+
+        //
+
+        res.status(200).json({ respuesta: 'correcto', alojamientoId: alojamientoId });
+
+    });
 });
 
 server.post('/perfil/misalojamientos/editar/:id', comprobarToken, (req, res) => {
@@ -564,81 +609,33 @@ server.post('/buscar', (req, res) => {
 
 });
 
-server.get('/prueba', comprobarToken, (req, res) => {
+server.get('/home', comprobarToken, (req, res) => {
 
-    //var queryStr = '';
+    var queryStr = 'SELECT * FROM alojamientos ';
 
     if(req.userId == undefined) {
+        queryStr += 'ORDER BY creadoEn DESC';
 
-        res.json( { 
-            "usuarios": 
-                [ 
-                    {
-                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                        precio: 50,
-                        lugar: 'Zamora, España'
-                    },
-                    {
-                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                        precio: 10,
-                        lugar: 'León, México'
-                    }
-                ]
-            });
     } else {
-
-        res.json( { 
-            "usuarios": 
-                [ 
-                    {
-                        nombre: 'usuario1', 
-                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                        precio: 200,
-                        lugar: 'León, España'
-                    },
-                    {
-                        nombre: 'usuario2',
-                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                        precio: 200,
-                        lugar: 'León, España'
-                    },
-                    {
-                        nombre: 'usuario3',
-                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                        precio: 200,
-                        lugar: 'León, España'
-                    },
-                    {
-                        nombre: 'usuario4',
-                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                        precio: 200,
-                        lugar: 'León, España'
-                    },
-                    {
-                        nombre: 'usuario5',
-                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                        precio: 200,
-                        lugar: 'León, España'
-                    },
-                    {
-                        nombre: 'usuario6',
-                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                        precio: 200,
-                        lugar: 'León, España'
-                    },
-                    {
-                        nombre: 'usuario7',
-                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                        precio: 200,
-                        lugar: 'León, España'
-                    },
-                    {
-                        nombre: 'usuario8',
-                        url: 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960',
-                        precio: 200,
-                        lugar: 'León, España'
-                    }
-                ]
-            });
+        //queryStr += 'WHERE usuarioID!=' +req.userId+ ' ';
+        queryStr += 'ORDER BY creadoEn DESC';
     }
+
+    //
+
+    mysql.query(queryStr, function(err, result) {
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+
+            console.log(err.message);
+            return;
+        }
+
+        for(var i = 0; i < result.length; i++) {
+            result[i].valoraciones = 2.5;
+            result[i].url = 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960';
+        }
+
+        res.status(200).json({ respuesta: 'correcto', alojamientos: result });
+    });
 });

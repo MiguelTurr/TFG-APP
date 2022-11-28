@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import '../../css/UserAlojamientos.css';
+import userLogin from '../../js/autorizado.js';
 
 import CrearAlojamiento from './CrearAlojamiento.js';
 import { crearAlerta } from '../Toast/Toast.js';
@@ -11,6 +12,8 @@ import { faPlusSquare, faArrowRight, faLocationDot, faStar } from '@fortawesome/
 import Button from "react-bootstrap/esm/Button";
 
 function UserAlojamientos() {
+
+    const { setAutorizado } = userLogin();
 
     var crearOptions = { year: 'numeric', month: 'long', day: 'numeric' };
 
@@ -32,6 +35,7 @@ function UserAlojamientos() {
 
         if(items.respuesta === 'err_user') {
             crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
+            setAutorizado(false);
 
         } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
@@ -70,6 +74,10 @@ function UserAlojamientos() {
 
                 <hr/>
 
+                {userAlojamientos.length === 0 && <h5>
+                    No tienes ningún alojamiento creado.
+                </h5>}
+
                 <table className="table">
 
                     <tbody>
@@ -79,7 +87,7 @@ function UserAlojamientos() {
                                 <tr className="tabla-seleccion" onClick={e => { verAlojamiento(e, index) }} key={index}>
                                     <td>
                                         <p>
-                                            <FontAwesomeIcon icon={faLocationDot} /> {x.lugar}
+                                            <FontAwesomeIcon icon={faLocationDot} /> {x.ubicacion}
                                             <br/>
                                             {x.precio}€ por noche
                                         </p>

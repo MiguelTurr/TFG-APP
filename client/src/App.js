@@ -38,7 +38,7 @@ function App() {
           <Route path="/validar/:id" element={ <RegistroValidar /> }/>
           <Route path="/nopassword" element={ <RecordarPassword /> }/>
           <Route path="/perfil" element={ <Perfil /> }/>
-          <Route path="/perfil/misalojamientos" element={ <UserAlojamientos /> }/>
+          <Route path="/perfil/mis-alojamientos" element={ <UserAlojamientos /> }/>
 
 
           <Route path="/buscar" element={ <Buscar /> }/>

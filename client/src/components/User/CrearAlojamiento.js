@@ -69,7 +69,7 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
             return crearAlerta('error', '¡El máximo son 5 imágenes!')
         }
 
-        setForm({...form, imagenes: e.target.files, imgTotal: len });
+        setForm({...form, imgTotal: len });
 
         var array = [];
         for(var i = 0; i < len; i++) {
@@ -201,16 +201,19 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
         btnDesactivar.disabled = false;
 
         if(items.respuesta === 'err_user') {
+            window.scrollTo(0, 0);
             crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
 
         } else if(items.respuesta === 'err_db') {
+            window.scrollTo(0, 0);
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
         } else if(items.respuesta === 'correcto') {
 
             crearAlerta('exito', '¡Has creado un nuevo alojamiento!');
+            vistaAlojamientos(false);
 
-            //vistaAlojamientos(false);
+            //console.log('alojamientoId: ' +items.alojamientoId)
         }
     };
 
