@@ -4,7 +4,7 @@ import { crearAlerta } from '../Toast/Toast.js';
 import { esNumero } from '../../resources/regex.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouse, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faHouse, faArrowLeft, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
 import Form from 'react-bootstrap/Form';
@@ -16,7 +16,7 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
     const [form, setForm] = useState({
         titulo: '',
         descripcion: '',
-        precio: '',
+        precio: 10,
 
         viajeros: 1,
         habitaciones: 1,
@@ -59,6 +59,17 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
         if(!!formErrors[elementId]) {
             setformErrors({...formErrors, [elementId]: null});
         }
+    };
+
+    const botonesSumaResta = (e) => {
+        var [opcion, operacion] = e.currentTarget.id.split('-');
+
+        var valorActual = form[opcion];
+
+        if(operacion === 'resta') valorActual --;
+        else valorActual ++;
+        
+        setForm({...form, [opcion]: valorActual, });
     };
 
     const addImagenes = (e) => {
@@ -113,22 +124,6 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
 
         if(!form.descripcion || form.descripcion === '') erroresEncontrados.descripcion = '¡Debe tener una descripción!';
         else if(form.descripcion > 800) erroresEncontrados.descripcion = '¡La descripción es demasiada larga!';
-
-        if(!form.precio || form.precio === '') erroresEncontrados.precio = '¡Debes poner un precio!';
-        else if(!esNumero.test(form.precio)) erroresEncontrados.precio = '¡Debes poner un número!';
-        else if(parseInt(form.precio) < 10) erroresEncontrados.precio = '¡El precio mínimo son 10€!';
-
-        if(!form.viajeros || form.viajeros === ''
-        || !esNumero.test(form.viajeros) || parseInt(form.viajeros) < 1) erroresEncontrados.viajeros = '¡Mínimo uno!';
-
-        if(!form.habitaciones || form.habitaciones === ''
-        || !esNumero.test(form.habitaciones) || parseInt(form.habitaciones) < 1) erroresEncontrados.habitaciones = '¡Mínimo una!';
-
-        if(!form.camas || form.camas === ''
-        || !esNumero.test(form.camas) || parseInt(form.camas) < 1) erroresEncontrados.camas = '¡Mínimo una!';
-
-        if(!form.aseos || form.aseos === ''
-        || !esNumero.test(form.aseos) || parseInt(form.aseos) < 1) erroresEncontrados.aseos = '¡Mínimo uno!';
 
         if(!form.ubicacion || form.ubicacion === '') erroresEncontrados.ubicacion = '¡Debes poner una ubicación!';
 
@@ -257,54 +252,36 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
                             </Form.Control.Feedback>
                         </Form.Group>
 
-                        <Form.Group className="mb-3">
-                            <Form.Label htmlFor="precio">Precio</Form.Label>
-                            <Form.Control 
-                                type="text" 
-                                id="precio"
-                                size="sm" 
-                                placeholder="Escribe el precio por noche"
-                                value={form.precio}
-                                onChange={cambiosForm}
-                                isInvalid={!!formErrors.precio}/>
+                        <hr/>
 
-                            <Form.Control.Feedback type="invalid">
-                                {formErrors.precio}
-                            </Form.Control.Feedback>
+                        <Form.Group className="mb-3">
+                            <Form.Label htmlFor="precio">Precio por noche</Form.Label>
+                            <Form.Range id="precio" min="10" max="2000" value={form.precio} onChange={cambiosForm}/>
+                            <h4 className="text-center">{form.precio} €</h4>
                         </Form.Group>
 
+                        <hr/>
+
                         <Form.Group className="mb-3">
+
                             <Row>
                                 <Col>
-                                    <Form.Label htmlFor="viajeros">Viajeros</Form.Label>
-                                    <Form.Control 
-                                        type="text"
-                                        id="viajeros"
-                                        placeholder="Escribe una cantidad" 
-                                        value={form.viajeros}
-                                        onChange={cambiosForm}
-                                        size="sm" 
-                                        isInvalid={!!formErrors.viajeros}/>
-                                        
-                                    <Form.Control.Feedback type="invalid">
-                                        {formErrors.viajeros}
-                                    </Form.Control.Feedback>
+                                    <Form.Label>Viajeros</Form.Label>
                                 </Col>
                                 <Col>
-                                
-                                    <Form.Label htmlFor="habitaciones">Habitaciones</Form.Label>
-                                    <Form.Control 
-                                        type="text" 
-                                        id="habitaciones"
-                                        placeholder="Escribe una cantidad" 
-                                        value={form.habitaciones}
-                                        onChange={cambiosForm}
-                                        size="sm"
-                                        isInvalid={!!formErrors.habitaciones}/>
-
-                                    <Form.Control.Feedback type="invalid">
-                                        {formErrors.habitaciones}
-                                    </Form.Control.Feedback>
+                                    <Button id="viajeros-resta" disabled={form.viajeros <= 1} className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
+                                        <FontAwesomeIcon icon={faMinus} style={{ color: 'black' }} />
+                                    </Button>
+                                </Col>
+                                <Col className="text-center">
+                                    <h5>
+                                        {form.viajeros}
+                                    </h5>
+                                </Col>
+                                <Col style={{ textAlign: 'right' }}>
+                                    <Button id="viajeros-suma" className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
+                                        <FontAwesomeIcon icon={faPlus} style={{ color: 'black' }} />
+                                    </Button>
                                 </Col>
                             </Row>
                         </Form.Group>
@@ -312,38 +289,75 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
                         <Form.Group className="mb-3">
                             <Row>
                                 <Col>
-                                    <Form.Label htmlFor="camas">Camas</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        id="camas"
-                                        placeholder="Escribe una cantidad"
-                                        value={form.camas}
-                                        onChange={cambiosForm}
-                                        size="sm"
-                                        isInvalid={!!formErrors.camas} />
-
-                                    <Form.Control.Feedback type="invalid">
-                                        {formErrors.camas}
-                                    </Form.Control.Feedback>
+                                    <Form.Label>Habitaciones</Form.Label>
                                 </Col>
                                 <Col>
-
-                                    <Form.Label htmlFor="aseos">Baños</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        id="aseos"
-                                        placeholder="Escribe una cantidad"
-                                        value={form.aseos}
-                                        onChange={cambiosForm}
-                                        size="sm"
-                                        isInvalid={!!formErrors.aseos} />
-
-                                    <Form.Control.Feedback type="invalid">
-                                        {formErrors.aseos}
-                                    </Form.Control.Feedback>
+                                    <Button id="habitaciones-resta" disabled={form.habitaciones <= 1} className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
+                                        <FontAwesomeIcon icon={faMinus} style={{ color: 'black' }} />
+                                    </Button>
+                                </Col>
+                                <Col className="text-center">
+                                    <h5>
+                                        {form.habitaciones}
+                                    </h5>
+                                </Col>
+                                <Col style={{ textAlign: 'right' }}>
+                                    <Button id="habitaciones-suma" className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
+                                        <FontAwesomeIcon icon={faPlus} style={{ color: 'black' }} />
+                                    </Button>
                                 </Col>
                             </Row>
                         </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            
+                            <Row>
+                                <Col>
+                                    <Form.Label>Camas</Form.Label>
+                                </Col>
+                                <Col>
+                                    <Button id="camas-resta" disabled={form.camas <= 1} className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
+                                        <FontAwesomeIcon icon={faMinus} style={{ color: 'black' }} />
+                                    </Button>
+                                </Col>
+                                <Col className="text-center">
+                                    <h5>
+                                        {form.camas}
+                                    </h5>
+                                </Col>
+                                <Col style={{ textAlign: 'right' }}>
+                                    <Button id="camas-suma" className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
+                                        <FontAwesomeIcon icon={faPlus} style={{ color: 'black' }} />
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+
+                            <Row>
+                                <Col>
+                                    <Form.Label htmlFor="viajeros">Aseos</Form.Label>
+                                </Col>
+                                <Col>
+                                    <Button id="aseos-resta" disabled={form.aseos <= 1} className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
+                                        <FontAwesomeIcon icon={faMinus} style={{ color: 'black' }} />
+                                    </Button>
+                                </Col>
+                                <Col className="text-center">
+                                    <h5>
+                                        {form.aseos}
+                                    </h5>
+                                </Col>
+                                <Col style={{ textAlign: 'right' }}>
+                                    <Button id="aseos-suma" className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
+                                        <FontAwesomeIcon icon={faPlus} style={{ color: 'black' }} />
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Form.Group>
+
+                        <hr/>
 
                         <Form.Group className="mb-3">
                             <Row>
@@ -367,6 +381,8 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
                                 </Col>
                             </Row>
                         </Form.Group>
+
+                        <hr/>
 
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="mod-password-2">Normas</Form.Label>
@@ -393,7 +409,9 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
                                 />
                             </div>
                         </Form.Group>
-                        
+
+                        <hr/>
+
                         <Form.Group className="mb-3">
                             <Form.Label>Servicios</Form.Label>
                             <div key='checkbox' className="mb-3">

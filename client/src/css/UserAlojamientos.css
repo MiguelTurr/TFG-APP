@@ -5,3 +5,8 @@
 .preview-img:hover {
     filter: opacity(50%);
 }
+
+.btn-plus-minus {
+    background-color: white !important;
+    border-color: black !important;
+}
