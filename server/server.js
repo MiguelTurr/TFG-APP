@@ -125,6 +125,7 @@ server.post('/registrar', async (req, res) => {
             texto += '\n\nUn saludo desde 2FH.'
 
             email.sendMail({
+                from: 'FastForHolidays',
                 to: req.body.email,
                 subject: 'Código de verificación - 2FH',
                 text: texto

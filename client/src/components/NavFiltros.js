@@ -1,20 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import '../css/NavFiltros.css';
 
 import Button from 'react-bootstrap/Button';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartSimple, faCalendarDays, faDollarSign, faHeart, faComputer, faSliders } from '@fortawesome/free-solid-svg-icons';
+import { faChartSimple, faCalendarDays, faDollarSign, faHeart, faComputer, faSliders, faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 
 function NavFiltros({ fav, rec }) {
+
+    const [ordenar, setOrdenar] = useState({ orden: 'fecha', tipo: 'desc' });
+    const [flecha, setFlecha] = useState(faArrowDown);
+
+    const history = useNavigate();
 
     const location = window.location.href;
     const finalLocation = location.substring('http://localhost:3000/'.length);
 
-    if(finalLocation != '') {
+    if(finalLocation !== '' && finalLocation.includes('home') === false) {
         return (<></>);
     }
+
+    const ordenarPor = (cambiarOrden) => {
+
+        var cambiarTipo = 'desc';
+
+        if(ordenar.orden === cambiarOrden) {
+
+            var tipoOrden = ordenar.tipo;
+
+            cambiarTipo = (tipoOrden === 'desc' ? 'asc' : 'desc');
+
+            setOrdenar({...ordenar , tipo: cambiarTipo });
+            setFlecha(tipoOrden === 'desc' ? faArrowUp : faArrowDown);
+
+        } else {
+            setOrdenar({ orden: cambiarOrden, tipo: cambiarTipo });
+            setFlecha(faArrowDown);
+        }
+
+        history('/home?ordenar=' +cambiarOrden+ '-' +cambiarTipo);
+    };
 
     return (
         <>
@@ -30,16 +57,25 @@ function NavFiltros({ fav, rec }) {
 
                     <div className="btn-group" role="group">
                         
-                        <Button className="filtros-botones" size="sm">
-                            <FontAwesomeIcon icon={faCalendarDays} /> Fecha
+                        <Button className="filtros-botones" size="sm" onClick={() => { ordenarPor('fecha'); }}>
+                            <FontAwesomeIcon icon={faCalendarDays} /> Fecha 
+                            <span style={ordenar.orden === 'fecha' ? {} : { display: 'none' } }>
+                                &nbsp;<FontAwesomeIcon icon={flecha} />
+                            </span>
                         </Button>
 
-                        <Button className="filtros-botones" size="sm">
+                        <Button className="filtros-botones" size="sm" onClick={() => { ordenarPor('relevancia'); }}>
                             <FontAwesomeIcon icon={faChartSimple} /> Relevancia
+                            <span style={ordenar.orden === 'relevancia' ? {} : { display: 'none' } }>
+                                &nbsp;<FontAwesomeIcon icon={flecha} />
+                            </span>
                         </Button>
 
-                        <Button className="filtros-botones" size="sm">
+                        <Button className="filtros-botones" size="sm" onClick={() => { ordenarPor('precio'); }}>
                             <FontAwesomeIcon icon={faDollarSign} /> Precio
+                            <span style={ordenar.orden === 'precio' ? {} : { display: 'none' } }>
+                                &nbsp;<FontAwesomeIcon icon={flecha} />
+                            </span>
                         </Button>
                     </div>
 

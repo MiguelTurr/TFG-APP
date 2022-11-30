@@ -5,12 +5,15 @@ import Ayuda from './components/General/Ayuda';
 import Condiciones from './components/General/Condiciones';
 import Privacidad from './components/General/Privacidad';
 
+import Cookies from './components/Cookies';
+
 import Buscar from './components/Buscar';
 import RegistroValidar from './components/RegistroValidar';
 import RecordarPassword from './components/RecordarPassword';
 import Perfil from './components/User/Perfil';
 import UserAlojamientos from './components/User/UserAlojamientos';
-import Cookies from './components/Cookies';
+import Favoritos from './components/User/Favoritos';
+import Recomendaciones from './components/User/Recomendados';
 
 import './css/App.css';
 
@@ -29,6 +32,7 @@ function App() {
 
         <Routes>
           <Route path="/" element={ <Home /> }/>
+          <Route path="/home" element={ <Home /> }/>
 
           <Route path="/ayuda" element={ <Ayuda /> }/>
           <Route path="/condiciones" element={ <Condiciones /> }/>
@@ -39,7 +43,8 @@ function App() {
           <Route path="/nopassword" element={ <RecordarPassword /> }/>
           <Route path="/perfil" element={ <Perfil /> }/>
           <Route path="/perfil/mis-alojamientos" element={ <UserAlojamientos /> }/>
-
+          <Route path="/perfil/favoritos" element={ <Favoritos /> }/>
+          <Route path="/perfil/recomendados" element={ <Recomendaciones /> }/>
 
           <Route path="/buscar" element={ <Buscar /> }/>
 

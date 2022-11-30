@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 
 import { crearAlerta } from '../Toast/Toast.js';
-import { esNumero } from '../../resources/regex.js';
+//import { esNumero } from '../../resources/regex.js';
+
+import BuscarLugar from "../Maps/buscarLugar.js";
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHouse, faArrowLeft, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
@@ -11,7 +14,25 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
-function CrearAlojamiento({ show, vistaAlojamientos }) {  
+const center = {
+    lat: -3.745,
+    lng: -38.523
+  };
+  
+
+function CrearAlojamiento({ show, vistaAlojamientos }) {
+
+    const [map, setMap] = React.useState(null)
+
+    const onLoad = React.useCallback(function callback(map) {
+        // This is just an example of getting and using the map instance!!! don't just blindly copy!
+        const bounds = new window.google.maps.LatLngBounds(center);
+        map.fitBounds(bounds);
+
+        setMap(map)
+    }, [])
+
+    //
 
     const [form, setForm] = useState({
         titulo: '',
@@ -39,25 +60,23 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
         calefaccion: false,
         television: false,
 
-        ubicacion: '',
-        lat: 0.0,
-        long: 0.0,
-
         imgTotal: 0,
     });
 
-    const [ formErrors, setformErrors ] = useState({});
-    const [ imagenPreview, setImagenPreview ] = useState([]);
+    const [ubicacion, setUbicacion] = useState({ direccion: '', lat: 0.0, lng: 0.0 });
 
-    const cambiosForm = (event, tipo=undefined) => {
+    const [formErrors, setformErrors] = useState({});
+    const [imagenPreview, setImagenPreview] = useState([]);
+
+    const cambiosForm = (event, tipo = undefined) => {
 
         const elementId = event.target.id;
         const elementValue = (tipo === undefined) ? event.target.value : event.target.checked;
 
-        setForm({...form, [elementId]: elementValue, });
-        
-        if(!!formErrors[elementId]) {
-            setformErrors({...formErrors, [elementId]: null});
+        setForm({ ...form, [elementId]: elementValue, });
+
+        if (!!formErrors[elementId]) {
+            setformErrors({ ...formErrors, [elementId]: null });
         }
     };
 
@@ -66,30 +85,30 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
 
         var valorActual = form[opcion];
 
-        if(operacion === 'resta') valorActual --;
-        else valorActual ++;
-        
-        setForm({...form, [opcion]: valorActual, });
+        if (operacion === 'resta') valorActual--;
+        else valorActual++;
+
+        setForm({ ...form, [opcion]: valorActual, });
     };
 
     const addImagenes = (e) => {
 
         const len = e.target.files.length;
 
-        if(len > 5) {
+        if (len > 5) {
             return crearAlerta('error', '¡El máximo son 5 imágenes!')
         }
 
-        setForm({...form, imgTotal: len });
+        setForm({ ...form, imgTotal: len });
 
         var array = [];
-        for(var i = 0; i < len; i++) {
+        for (var i = 0; i < len; i++) {
             array.push(URL.createObjectURL(e.target.files[i]));
         }
         setImagenPreview(array);
-        
-        if(!!formErrors.imagenes) {
-            setformErrors({...formErrors, imagenes: null});
+
+        if (!!formErrors.imagenes) {
+            setformErrors({ ...formErrors, imagenes: null });
         }
     };
 
@@ -99,7 +118,7 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
 
         var fileActual = inputImagenes.files;
         var fileBuffer = new DataTransfer()
-        
+
         for (let i = 0; i < fileActual.length; i++) {
             if (index !== i) {
                 fileBuffer.items.add(fileActual[i]);
@@ -110,7 +129,7 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
 
         //
 
-        setForm({...form, imgTotal: form.imgTotal - 1 });
+        setForm({ ...form, imgTotal: form.imgTotal - 1 });
 
         imagenPreview.splice(index, 1)
         setImagenPreview(imagenPreview);
@@ -119,30 +138,30 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
     const erroresForm = () => {
         const erroresEncontrados = {};
 
-        if(!form.titulo || form.titulo === '') erroresEncontrados.titulo = '¡Debe tener un título!';
-        else if(form.titulo > 70) erroresEncontrados.titulo = '¡El título es demasiado largo!';
+        if (!form.titulo || form.titulo === '') erroresEncontrados.titulo = '¡Debe tener un título!';
+        else if (form.titulo > 70) erroresEncontrados.titulo = '¡El título es demasiado largo!';
 
-        if(!form.descripcion || form.descripcion === '') erroresEncontrados.descripcion = '¡Debe tener una descripción!';
-        else if(form.descripcion > 800) erroresEncontrados.descripcion = '¡La descripción es demasiada larga!';
+        if (!form.descripcion || form.descripcion === '') erroresEncontrados.descripcion = '¡Debe tener una descripción!';
+        else if (form.descripcion > 800) erroresEncontrados.descripcion = '¡La descripción es demasiada larga!';
 
-        if(!form.ubicacion || form.ubicacion === '') erroresEncontrados.ubicacion = '¡Debes poner una ubicación!';
+        //if (!form.ubicacion || form.ubicacion === '') erroresEncontrados.ubicacion = '¡Debes poner una ubicación!';
 
         const inputImagenes = document.getElementById('imagenes');
         const len = inputImagenes.files.length;
 
-        if(len === 0) erroresEncontrados.imagenes = '¡Debes añadir al menos una imagen!';
-        else if(len > 5) erroresEncontrados.imagenes = '¡Sólo puedes subir 5 imágenes!';
+        if (len === 0) erroresEncontrados.imagenes = '¡Debes añadir al menos una imagen!';
+        else if (len > 5) erroresEncontrados.imagenes = '¡Sólo puedes subir 5 imágenes!';
         else {
 
             const maxSize = 2 * 1024 * 1024;
 
             for (var i = 0; i < len; i++) {
-                if(!['image/jpeg', 'image/png'].includes(inputImagenes.files[i].type)) {
+                if (!['image/jpeg', 'image/png'].includes(inputImagenes.files[i].type)) {
                     erroresEncontrados.imagenes = '¡Una imagen no tiene el formato correcto!';
                     break;
                 }
 
-                if(inputImagenes.files[i].size > maxSize) {
+                if (inputImagenes.files[i].size > maxSize) {
                     erroresEncontrados.imagenes = '¡El tamaño máximo por imagen es de 2 MB!';
                     break;
                 }
@@ -159,7 +178,7 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
 
         const comprobarErrores = erroresForm();
 
-        if(Object.keys(comprobarErrores).length > 0) {
+        if (Object.keys(comprobarErrores).length > 0) {
 
             window.scrollTo(0, 0);
 
@@ -181,7 +200,7 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
         var inputImagenes = document.getElementById('imagenes');
         const len = inputImagenes.files.length;
 
-        for(var i = 0; i < len; i++) {
+        for (var i = 0; i < len; i++) {
             formData.append('imagen', inputImagenes.files[i]);
         }
 
@@ -195,15 +214,15 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
         const items = await data.json();
         btnDesactivar.disabled = false;
 
-        if(items.respuesta === 'err_user') {
+        if (items.respuesta === 'err_user') {
             window.scrollTo(0, 0);
             crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
 
-        } else if(items.respuesta === 'err_db') {
+        } else if (items.respuesta === 'err_db') {
             window.scrollTo(0, 0);
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
-        } else if(items.respuesta === 'correcto') {
+        } else if (items.respuesta === 'correcto') {
 
             crearAlerta('exito', '¡Has creado un nuevo alojamiento!');
             vistaAlojamientos(false);
@@ -212,24 +231,24 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
         }
     };
 
-    return(<>
+    return (<>
         {show === true && <div className="container-fluid mb-5">
 
             <Form onSubmit={crearNuevoAlojamiento}>
-                <div className="row">
-                
-                    <div className="col-sm">
+                    <div className="row">
+
+                        <div className="col-sm">
 
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="titulo">Título</Form.Label>
                             <Form.Control
-                                type="text" 
-                                id="titulo" 
-                                size="sm" 
-                                placeholder="Ejemplo: Casa grande con buenas vistas" 
+                                type="text"
+                                id="titulo"
+                                size="sm"
+                                placeholder="Ejemplo: Casa grande con buenas vistas"
                                 value={form.titulo}
                                 onChange={cambiosForm}
-                                isInvalid={!!formErrors.titulo}/>
+                                isInvalid={!!formErrors.titulo} />
 
                             <Form.Control.Feedback type="invalid">
                                 {formErrors.titulo}
@@ -238,29 +257,35 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
 
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="descripcion">Descripción</Form.Label>
-                            <Form.Control 
-                                as="textarea" 
+                            <Form.Control
+                                as="textarea"
                                 id="descripcion"
-                                size="sm" 
-                                placeholder="Ejemplo: La casa está situada cerca de un rio con muy buenas vistas..." 
+                                size="sm"
+                                placeholder="Ejemplo: La casa está situada cerca de un rio con muy buenas vistas..."
                                 value={form.descripcion}
                                 onChange={cambiosForm}
-                                isInvalid={!!formErrors.descripcion}/>
+                                isInvalid={!!formErrors.descripcion} />
 
                             <Form.Control.Feedback type="invalid">
                                 {formErrors.descripcion}
                             </Form.Control.Feedback>
                         </Form.Group>
 
-                        <hr/>
+                        <hr />
 
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="precio">Precio por noche</Form.Label>
-                            <Form.Range id="precio" min="10" max="2000" value={form.precio} onChange={cambiosForm}/>
-                            <h4 className="text-center">{form.precio} €</h4>
+                            <Row>
+                                <Col>
+                                    <Form.Range id="precio" min="10" max="2000" value={form.precio} onChange={cambiosForm} />
+                                </Col>
+                                <Col>
+                                    <h4 className="text-center">{form.precio} €</h4>
+                                </Col>
+                            </Row>
                         </Form.Group>
 
-                        <hr/>
+                        <hr />
 
                         <Form.Group className="mb-3">
 
@@ -310,7 +335,7 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                            
+
                             <Row>
                                 <Col>
                                     <Form.Label>Camas</Form.Label>
@@ -357,32 +382,32 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
                             </Row>
                         </Form.Group>
 
-                        <hr/>
+                        <hr />
 
                         <Form.Group className="mb-3">
                             <Row>
                                 <Col>
                                     <Form.Label htmlFor="horaEntrada">Hora entrada</Form.Label>
-                                    <Form.Control 
+                                    <Form.Control
                                         id="horaEntrada"
-                                        type="time" 
-                                        size="sm" 
+                                        type="time"
+                                        size="sm"
                                         value={form.horaEntrada}
-                                        onChange={cambiosForm}/>
+                                        onChange={cambiosForm} />
                                 </Col>
                                 <Col>
                                     <Form.Label htmlFor="horaSalida">Hora salida</Form.Label>
-                                    <Form.Control 
+                                    <Form.Control
                                         id="horaSalida"
-                                        type="time" 
-                                        size="sm" 
+                                        type="time"
+                                        size="sm"
                                         value={form.horaSalida}
-                                        onChange={cambiosForm}/>
+                                        onChange={cambiosForm} />
                                 </Col>
                             </Row>
                         </Form.Group>
 
-                        <hr/>
+                        <hr />
 
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="mod-password-2">Normas</Form.Label>
@@ -410,7 +435,7 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
                             </div>
                         </Form.Group>
 
-                        <hr/>
+                        <hr />
 
                         <Form.Group className="mb-3">
                             <Form.Label>Servicios</Form.Label>
@@ -505,32 +530,37 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
 
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="mod-password-2">Ubicación</Form.Label>
-                            <Form.Control 
-                                type="text"
-                                id="ubicacion"
-                                size="sm" 
-                                placeholder="Escribe el lugar del alojamiento"
-                                value={form.ubicacion}
-                                onChange={cambiosForm}
-                                isInvalid={!!formErrors.ubicacion}/>
+
+                            <BuscarLugar/>
 
                             <Form.Control.Feedback type="invalid">
                                 {formErrors.ubicacion}
                             </Form.Control.Feedback>
+
+                            <div id="map">
+
+                            </div>
+
+                            <GoogleMap 
+                                center={center}
+                                zoom={10}
+                                onLoad={onLoad}>
+                            </GoogleMap>
+
                         </Form.Group>
 
-                        <hr/>
+                        <hr />
 
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="imagenes">Imágenes</Form.Label>
-                            <Form.Control 
+                            <Form.Control
                                 type="file"
                                 id="imagenes"
-                                size="sm" 
+                                size="sm"
                                 accept="image/*"
                                 onChange={addImagenes}
                                 isInvalid={!!formErrors.imagenes}
-                                multiple/>
+                                multiple />
 
                             <Form.Control.Feedback type="invalid">
                                 {formErrors.imagenes}
@@ -541,21 +571,21 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
                             </Form.Text>
                         </Form.Group>
 
-                        <hr/>
+                        <hr />
 
                         {form.imgTotal > 0 && <small className="text-muted">
                             Imágenes: {form.imgTotal} de 5
-                            <br/>
-                            <br/>
+                            <br />
+                            <br />
                         </small>}
 
                         <div className="row">
 
                             {
                                 imagenPreview.map((x, index) => (
-                                    
-                                    <div className="col" key={index} onClick={ (e) => { removeImagen(e, index) }}>
-                                        <img className="img-fluid preview-img" src={x} alt="preview de imagen"/>
+
+                                    <div className="col" key={index} onClick={(e) => { removeImagen(e, index) }}>
+                                        <img className="img-fluid preview-img" src={x} alt="preview de imagen" />
                                     </div>
                                 ))
                             }
@@ -565,9 +595,9 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
 
                 </div>
 
-                <hr/>
+                <hr />
 
-                <Button className="filtros-botones" size="sm" onClick={ () => { vistaAlojamientos(false) }}>
+                <Button className="filtros-botones" size="sm" onClick={() => { vistaAlojamientos(false) }}>
                     <FontAwesomeIcon icon={faArrowLeft} /> Volver
                 </Button>
                 &nbsp;&nbsp;

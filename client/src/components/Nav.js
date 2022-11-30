@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import '../css/Nav.css';
 
 import { crearAlerta } from './Toast/Toast.js';
@@ -245,7 +245,7 @@ function Nav() {
             return;
         }
 
-        window.location.href = '/favoritos';
+        window.location.href = '/perfil/favoritos';
     };
 
     const irRecomendados = () => {
@@ -255,7 +255,7 @@ function Nav() {
             return;
         }
 
-        window.location.href = '/recomendados';
+        window.location.href = '/perfil/recomendados';
     };
 
     //

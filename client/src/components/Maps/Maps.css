@@ -1,0 +1,14 @@
+.lista-sin-numeros {
+    list-style-type: none;
+    padding: 5px;
+}
+
+.lista-opciones {
+    margin-bottom: 3px;
+    cursor: pointer;
+    padding-left: 10px;
+}
+
+.lista-opciones:hover {
+    background-color: rgb(240, 240, 240);
+}
