@@ -8,6 +8,8 @@ import Privacidad from './components/General/Privacidad';
 import Cookies from './components/Cookies';
 
 import Buscar from './components/Buscar';
+import VerAlojamiento from './components/Alojamiento/VerAlojamiento';
+
 import RegistroValidar from './components/RegistroValidar';
 import RecordarPassword from './components/RecordarPassword';
 import Perfil from './components/User/Perfil';
@@ -38,7 +40,6 @@ function App() {
           <Route path="/condiciones" element={ <Condiciones /> }/>
           <Route path="/privacidad" element={ <Privacidad /> }/>
 
-
           <Route path="/validar/:id" element={ <RegistroValidar /> }/>
           <Route path="/nopassword" element={ <RecordarPassword /> }/>
           <Route path="/perfil" element={ <Perfil /> }/>
@@ -46,7 +47,9 @@ function App() {
           <Route path="/perfil/favoritos" element={ <Favoritos /> }/>
           <Route path="/perfil/recomendados" element={ <Recomendaciones /> }/>
 
-          <Route path="/buscar" element={ <Buscar /> }/>
+          <Route path="/alojamiento/buscar" element={ <Buscar /> }/>
+          <Route path="/alojamiento/ver" element={ <VerAlojamiento /> }/>
+
 
           <Route path="*" element={<Home />} />
 

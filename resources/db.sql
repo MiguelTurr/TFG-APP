@@ -27,9 +27,13 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 DELETE FROM `usuarios`;
----INSERT INTO `usuarios` (`activo`, `vertificacion`, `email`, `password`, `nombre`, `apellidos`, `fechaNac`, `telefono`) VALUES
-	(1, '', 'manolo@app-tfg.com', 'manolo25', 'Manolo', 'Garcia Sanchez', '10-05-1990', '+34'),	
-	(1, '', 'sara@app-tfg.com', 'sarita99', 'Sara', 'Lopez', '20-07-1997', '+35');
+
+INSERT INTO `usuarios` (`ID`, `activo`, `verificacion`, `email`, `password`, `nombre`, `apellidos`, `fechaNac`, `telefono`) VALUES
+	(1, 1, '', 'manolo@app-tfg.com', '$2a$10$xUG5DUhMOIVXbI1wCT5nKuM0Ua73msM2AxUXyX.YNUH.4IlquSca6', 'Manolo', 'Garcia Sanchez', '1990-05-10', '+34 4707529'),	
+	(2, 1, '', 'sara@app-tfg.com', '$2a$10$xUG5DUhMOIVXbI1wCT5nKuM0Ua73msM2AxUXyX.YNUH.4IlquSca6', 'Sara', 'Lopez', '1997-07-20', '+35 0449749'),
+	(3, 1, '', 'pepe@app-tfg.com', '$2a$10$xUG5DUhMOIVXbI1wCT5nKuM0Ua73msM2AxUXyX.YNUH.4IlquSca6', 'Pepe', 'González', '1992-07-20', '+35 3133896'),
+	(4, 1, '', 'jose@app-tfg.com', '$2a$10$xUG5DUhMOIVXbI1wCT5nKuM0Ua73msM2AxUXyX.YNUH.4IlquSca6', 'Jose', 'Martínez Pérez', '1991-07-22', '+35 8623507'),
+	(5, 1, '', 'federico@app-tfg.com', '$2a$10$xUG5DUhMOIVXbI1wCT5nKuM0Ua73msM2AxUXyX.YNUH.4IlquSca6', 'Fede', 'Muñoz Álvarez', '1980-07-15', '+35 9175917');
 
 ----------------------------------------------------------------------------------
 
@@ -38,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `alojamientos` (
 	`usuarioID` int NOT NULL,
 	`creadoEn` datetime NOT NULL default NOW(),
 	`titulo` varchar(70) NOT NULL,
-	`descripcion` varchar(800) NOT NULL,
+	`descripcion` varchar(2500) NOT NULL,
 	`precio` smallint NOT NULL,
 	`descuento` float NOT NULL default 0.0,
 
@@ -85,16 +89,19 @@ DELETE FROM `alojamientos_img`;
 
 ----------------------------------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `favoritos` (
+CREATE TABLE IF NOT EXISTS `usuarios_favoritos` (
     `ID` int NOT NULL AUTO_INCREMENT,
 	`usuarioID` int NOT NULL,
 	`alojamientoID` int NOT NULL,
+	`addEn` datetime NOT NULL default NOW(),
 
 
     CONSTRAINT FK_UsuarioFavorito FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
     CONSTRAINT FK_AlojamientoFavorito FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID),
     PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+ALTER TABLE `usuarios_favoritos` ADD CONSTRAINT UQ_UsuarioID_AlojamientoID UNIQUE(usuarioID, alojamientoID);
 
 DELETE FROM `favoritos`;
 
@@ -104,6 +111,7 @@ CREATE TABLE IF NOT EXISTS `valoraciones` (
     `ID` int NOT NULL AUTO_INCREMENT,
 	`usuarioID` int NOT NULL,
 	`alojamientoID` int NOT NULL,
+	`creadaEn` datetime NOT NULL default NOW(),
 	`mensaje` varchar(300) NOT NULL,
 	`valLlegada` float NOT NULL,
 	`valVeracidad` float NOT NULL,

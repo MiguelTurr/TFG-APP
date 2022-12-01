@@ -33,6 +33,8 @@ function BuscarLugar({ ubicacion }) {
                 getGeocode({ address: description }).then((results) => {
                     const { lat, lng } = getLatLng(results[0]);
                     console.log("📍 Coordinates: ", { lat, lng });
+
+                    console.log(results[0]);
                 });
             };
 

@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../css/Nav.css';
 
 import { crearAlerta } from './Toast/Toast.js';
+import BuscarLugar from "./Maps/buscarLugar.js";
 
 import LoginModal from './LoginModal';
 import RegistroModal from './RegistroModal';
@@ -13,6 +14,7 @@ import NoProfileImg from '../img/no-profile-img.png';
 
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Navbar from 'react-bootstrap/Navbar';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faBars } from '@fortawesome/free-solid-svg-icons';
@@ -218,7 +220,7 @@ function Nav() {
             return crearAlerta('error', '¡Escribe un lugar para visitar!');
         }
 
-        window.location.href = '/buscar?place=' +lugar;
+        window.location.href = '/alojamiento/buscar?place=' +lugar;
     };
 
     /*const initAutocomplete = useRef();
@@ -280,9 +282,10 @@ function Nav() {
 
                 <div className="col-sm-4 mt-3">
 
+                    <BuscarLugar  id='buscar-lugar' />
                     <div className="input-group">
                         <input type="text" className="form-control" id='buscar-lugar' placeholder="Escribe un lugar" aria-label="Lugar para visitar"/>
-
+                        
                         <Button className="color-boton" size="sm" onClick={buscarLugar}>
                             <FontAwesomeIcon icon={faSearch} />
                         </Button>

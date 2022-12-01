@@ -606,6 +606,161 @@ server.post('/perfil/misalojamientos/editar/:id', comprobarToken, (req, res) => 
 
 //
 
+server.get('/alojamiento/hospedador/:id', (req, res) => {
+
+    const id = req.params.id;
+
+    console.log('Hospedador: ' +id);
+
+    res.status(200).json({ respuesta: 'correcto', hospedador: { nombre: 'Jose', apellidos: 'Prueba prueba', creadoEn: new Date() } });
+});
+
+server.get('/alojamiento/valoraciones/:id', (req, res) => {
+
+    const id = req.params.id;
+
+    console.log('VALORACIONES: ' +id);
+
+    var arrayValoraciones = {
+        valLlegada: 3.5,
+        valVeracidad: 4.5,
+        valComunicacion: 2.2,
+        valUbicacion: 5.0,
+        valLimpieza: 4.9,
+        valCalidad: 2.0,
+
+        valMedia: 4.4,
+        valComentarios: 200,
+    };
+
+    res.status(200).json({ respuesta: 'correcto', valoraciones: arrayValoraciones });
+});
+
+server.get('/alojamiento/add-favorito/:id', comprobarToken, (req, res) => {
+
+    const alojamientoId = req.params.id;
+
+    if(req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    mysql.query('INSERT INTO usuarios_favoritos (usuarioID, alojamientoID) VALUES (?)', [
+        [
+            req.userId,
+            parseInt(alojamientoId)
+        ]
+    ], function(err) {
+
+            if(err) {
+                res.status(500).json({ respuesta: 'err_db' });
+                console.log(err.message);
+                console.log(err);
+                return;
+            }
+
+            res.status(200).json({ respuesta: 'correcto', fav: true });
+        }
+    );
+});
+
+server.get('/alojamiento/remove-favorito/:id', comprobarToken, (req, res) => {
+
+    const alojamientoId = req.params.id;
+
+    if(req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    mysql.query('DELETE FROM usuarios_favoritos WHERE usuarioID=? AND alojamientoID=?', [ req.userId, parseInt(alojamientoId) ], function(err) {
+
+         if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+         }
+
+        res.status(200).json({ respuesta: 'correcto', fav: false });
+    });
+});
+
+server.get('/alojamiento/ver/:id', comprobarToken, (req, res) => {
+
+    const id = req.params.id;
+
+    var queryStr = '';
+
+    if(req.userId === undefined) {
+        queryStr += 'SELECT * FROM alojamientos WHERE ID=? LIMIT 1';
+
+    } else {
+        queryStr = 'SELECT alo.*, fav.ID as favorito FROM alojamientos as alo \
+        LEFT JOIN usuarios_favoritos as fav ON fav.alojamientoID=alo.ID AND fav.usuarioID=' +req.userId+ ' \
+        WHERE alo.ID=? LIMIT 1';
+    }
+
+    console.log(queryStr);
+
+    mysql.query(queryStr, id, (err, result) => {
+
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        var servicios = result[0].servicios;
+
+        result[0].cocina = servicios >> 8;
+        result[0].wifi = servicios >> 7 & 0x1;
+        result[0].animales = servicios >> 6 & 0x01;
+        result[0].aparcamiento = servicios >> 5 & 0x001;
+        result[0].piscina = servicios >> 4 & 0x0001;
+        result[0].lavadora = servicios >> 3 & 0x00001;
+        result[0].aire = servicios >> 2 & 0x000001;
+        result[0].calefaccion = servicios >> 1 & 0x0000001;
+        result[0].television = servicios & 0x0000001;
+
+        console.log(result[0].favorito)
+
+        if(result[0].favorito === undefined) {
+            result[0].favorito = null;
+        }
+
+        res.status(200).json({ respuesta: 'correcto', alojamiento: result });
+
+        mysql.query('UPDATE alojamientos SET visitas=? WHERE ID=? LIMIT 1', [result[0].visitas + 1, result[0].ID]);
+    });
+});
+
+server.get('/alojamiento/imagen/:id', (req, res) => {
+
+    const [ id, index ] = req.params.id.split('-');
+
+    mysql.query("SELECT nombre FROM alojamientos_img WHERE alojamientoID=?", id, (err, result) => {
+
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+        
+        const imagen = result[index].nombre;
+
+        fs.readFile('./imagenes/casas/' +imagen, function(err, file) {
+
+            if(err) {
+                res.status(500).json({ respuesta: 'err_file' });
+                return;
+            }
+
+            res.set({'Content-Type': 'image/*'});
+            res.end(file);
+        });
+    });
+});
+
 server.post('/buscar', (req, res) => {
 
 });
@@ -615,12 +770,14 @@ server.get('/home', comprobarToken, (req, res) => {
     var queryStr = 'SELECT * FROM alojamientos ';
 
     if(req.userId == undefined) {
-        queryStr += 'ORDER BY creadoEn DESC';
+        queryStr += 'ORDER BY creadoEn DESC ';
 
     } else {
         //queryStr += 'WHERE usuarioID!=' +req.userId+ ' ';
-        queryStr += 'ORDER BY creadoEn DESC';
+        queryStr += 'ORDER BY creadoEn DESC ';
     }
+
+    queryStr += 'LIMIT 30';
 
     //
 
@@ -634,7 +791,7 @@ server.get('/home', comprobarToken, (req, res) => {
 
         for(var i = 0; i < result.length; i++) {
             result[i].valoraciones = 2.5;
-            result[i].url = 'https://a0.muscache.com/im/pictures/eda1a9aa-13e1-48b1-b54b-b48cfdf4bb00.jpg?im_w=960';
+            result[i].favorito = false;
         }
 
         res.status(200).json({ respuesta: 'correcto', alojamientos: result });

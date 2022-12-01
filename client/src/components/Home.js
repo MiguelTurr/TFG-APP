@@ -20,6 +20,7 @@ function Home() {
     }, [location.search]);
 
     const [alojamientos, setAlojamientos] = useState([]);
+    const [imgAlojamientos, setImgAlojamientos] = useState([]);
 
     const fetchItems = async (orden) => {
 
@@ -32,25 +33,48 @@ function Home() {
 
         } else if(items.respuesta === 'correcto') {
             setAlojamientos(items.alojamientos);
+
+            var len = items.alojamientos.length;
+            var arrayImg = [];
+
+            for(var i = 0; i < len; i++) {
+
+                const imagen = await fetch('/alojamiento/imagen/' +items.alojamientos[i].ID+ '-0', { 
+                    method: 'GET',
+            
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+
+                if(imagen.status === 200) {
+                    arrayImg.push(imagen.url);
+                }
+            }
+            setImgAlojamientos(arrayImg);
         }
     }
+
+    const verAlojamiento = (e, index) => {
+        window.location.href = '/alojamiento/ver?casa=' +alojamientos[index].ID;
+    };
 
     return(
     <>
         <div className="container-fluid">
 
             <div className="row">
-
                 {
                     alojamientos.map((x, index) => (
 
-                        <div className="col-sm-3" key={index}>
+                        <div className="col-sm-3 mb-3" key={index}>
 
-                            <Card className="container-casa mb-3 h-100">
+                            <Card className="container-casa h-100" onClick={e => { verAlojamiento(e, index) }}>
 
                                  <img
                                     className="card-img-top"
-                                    src={x.url}/>
+                                    height="250px"
+                                    src={imgAlojamientos[index]}/>
 
                                 <Card.Body className="card-body info-casa">
 
@@ -68,7 +92,7 @@ function Home() {
                                         <div className="col derecha-casa">
                                             <FontAwesomeIcon icon={faStar} />&nbsp;3,5
                                             <br/>
-                                            <FontAwesomeIcon icon={faHeart} style={{ color: 'green' }} />
+                                            <FontAwesomeIcon icon={faHeart} style={x.favorito === false ? {} : { color: 'red' } } />
                                         </div>
                                     </div>
                                 </Card.Body>

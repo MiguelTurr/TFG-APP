@@ -6,8 +6,8 @@ const http = require('https');
 //
 
 const max_usurios = 5;
-const scroll_max = 1;
-const scroll_timer_time = 2000;
+const scroll_max = 5;
+const scroll_timer_time = 3000;
 const render_time = scroll_max * scroll_timer_time;
 const url = 'https://www.airbnb.es/';
 
@@ -26,6 +26,8 @@ async function scapHome() {
         await driver.get(url);
         await driver.wait(until.elementLocated(By.xpath("//meta[contains(@itemprop, 'name')]")), 10000);
 
+        await driver.findElement(By.className('czcfm7x')).click();
+
         // SCROLL HACIA ABAJO
         // PARA RENDERIZAR MÁS ELEMENTOS
 
@@ -34,7 +36,10 @@ async function scapHome() {
 
             var scroll_final = 15 * (scroll_time + 1);
 
-            await driver.executeScript("document.querySelectorAll('.gh7uyir > .dir-ltr')["+scroll_final+"].scrollIntoView({ behavior: 'smooth', block: 'start' })");
+            //console.log(await driver.executeScript("return document.querySelectorAll('.gh7uyir > .dir-ltr').length"));
+
+            await driver.executeScript("document.querySelectorAll('.gh7uyir > div > .dir-ltr')["+scroll_final+"].scrollIntoView({ behavior: 'smooth', block: 'start' })");
+            
             scroll_time ++;
 
             if(scroll_time >= scroll_max) {
@@ -53,7 +58,7 @@ async function scapHome() {
 
             const $ = cheerio.load(element_text);
 
-            var element_for = $('.gh7uyir > .dir');
+            var element_for = $('.gh7uyir > div > .dir');
             var len = element_for.length;
 
             for(let i = 0; i < len; i++) {
@@ -284,7 +289,10 @@ function scrapFile(data) {
 
     str += Math.floor(Math.random() * max_usurios) + '|';
     str += data.titulo+ '|';
-    str += data.descripcion+ '|';
+
+    var descripcionFinal = (data.descripcion == null) ? 'Escribe una descripción...' : data.descripcion;
+
+    str += descripcionFinal+ '|';
     str += data.precio+ '|';
     str += data.ubicacion+ '|';
     str += data.personas+ '|' +data.habitaciones+ '|' +data.camas+ '|' +data.bathroom+ '|';
@@ -294,30 +302,32 @@ function scrapFile(data) {
     var hora_llegada = data.normas.hora_llegada;
     var hora_salida = data.normas.hora_salida;
 
-    if(hora_llegada == '') {
-        hora_llegada = '12:00';
+    var patterm = new RegExp('^[0-9]+$');
+
+    if(hora_llegada == '' || patterm.test(hora_llegada) == false) {
+        hora_llegada = null;
     }
 
-    if(hora_salida == '') {
-        hora_salida = '13:00';
+    if(hora_salida == '' || patterm.test(hora_salida) == false) {
+        hora_salida = null;
     }
 
     str += hora_llegada+ '|' +hora_salida+ '|';
-    str += data.normas.fumar+ '|' +data.normas.fiestas+ '|';
+    str += (data.normas.fumar == true ? 1 : 0)+ '|' +(data.normas.fiestas == true ? 1 : 0)+ '|';
 
     // SERVICIOS
 
     var servicios_final = 0;
     
-    servicios_final |= servicios.cocina << 8;
-    servicios_final |= servicios.wifi << 7;
-    servicios_final |= servicios.animales << 6;
-    servicios_final |= servicios.aparcamiento << 5;
-    servicios_final |= servicios.piscina << 4;
-    servicios_final |= servicios.lavadora << 3;
-    servicios_final |= servicios.aire_acondicionado << 2;
-    servicios_final |= servicios.calefaccion << 1;
-    servicios_final |= servicios.television;
+    servicios_final |= data.servicios.cocina << 8;
+    servicios_final |= data.servicios.wifi << 7;
+    servicios_final |= data.servicios.animales << 6;
+    servicios_final |= data.servicios.aparcamiento << 5;
+    servicios_final |= data.servicios.piscina << 4;
+    servicios_final |= data.servicios.lavadora << 3;
+    servicios_final |= data.servicios.aire_acondicionado << 2;
+    servicios_final |= data.servicios.calefaccion << 1;
+    servicios_final |= data.servicios.television;
 
     str += servicios_final+ '\n';
 
@@ -336,8 +346,12 @@ function scrapIMG(img) {
 
     var str = '';
 
-    str += (casas + 1)+ ',';
-    str += img+ '\n';
+    var len = img.length;
+
+    for(var i = 0; i < len; i++) {
+        str += (casas + 1)+ '|';
+        str += img[i]+ '\n';
+    }
 
     fs.appendFile('./scrap_img.txt', str, error => {
 
