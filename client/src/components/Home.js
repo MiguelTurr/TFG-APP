@@ -108,7 +108,7 @@ function Home() {
                                         <div className="col derecha-casa">
                                             <FontAwesomeIcon icon={faStar} />&nbsp;{parseFloat(x.valoracionMedia).toFixed(2)}
                                             <br/>
-                                            <FontAwesomeIcon icon={faHeart} style={x.favorito === null ? {} : { color: 'red' } } />
+                                            <FontAwesomeIcon icon={faHeart} style={x.favorito === null || x.favorito === undefined ? {} : { color: 'red' } } />
                                         </div>
                                     </div>
                                 </Card.Body>

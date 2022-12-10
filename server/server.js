@@ -312,6 +312,7 @@ server.get('/perfil', comprobarToken, (req, res) => {
         }
 
         res.status(201).json({ 
+            ID: result[0].ID,
             nombre: result[0].nombre,
             apellidos: result[0].apellidos,
             fechaNac: result[0].fechaNac,
@@ -319,10 +320,13 @@ server.get('/perfil', comprobarToken, (req, res) => {
             telefono: result[0].telefono,
             residencia: result[0].residencia,
             presentacion: result[0].presentacion,
+            trabajo: result[0].trabajo == '' ? 'Sin expecificar' : result[0].trabajo,
+            idiomas: result[0].idiomas,
 
             fechaReg: result[0].fechaReg,
             email: result[0].email,
             imagenPerfil: result[0].imgPerfil,
+            recibirCorreos: result[0].recibirCorreos === 0 ? 'Desactivado' : 'Activado',
         });
     });
 });
@@ -391,6 +395,40 @@ server.post('/perfil/editar', comprobarToken, (req, res) => {
 
             res.status(200).json({ respuesta: 'correcto' });
         });
+    });
+});
+
+server.post('/perfil/editar/estado', comprobarToken, (req, res) => {
+
+    if(req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    var query = 'UPDATE usuarios SET ';
+
+    query += req.body.tipo+ '=' +parseInt(req.body.editado)+ ' ';
+    query += 'WHERE ID=' +req.userId+ ' LIMIT 1';
+
+    mysql.query(query, function(err, result) {
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+
+            console.log(err.message);
+            return;
+        }
+
+        if(result.affectedRows == 0) {
+            res.status(500).json({ respuesta: 'err_datos' });
+            return;
+        }
+
+        if(req.files != undefined) {
+            const avatar = req.files.imagen;
+            avatar.mv('./imagenes/perfil/' +datoEditado);
+        }
+
+        res.status(200).json({ respuesta: 'correcto' });
     });
 });
 
@@ -768,12 +806,12 @@ server.get('/alojamiento/add-favorito/:id', comprobarToken, (req, res) => {
 
 server.get('/alojamiento/remove-favorito/:id', comprobarToken, (req, res) => {
 
-    const alojamientoId = req.params.id;
-
     if(req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
+
+    const alojamientoId = req.params.id;
 
     mysql.query('DELETE FROM usuarios_favoritos WHERE usuarioID=? AND alojamientoID=?', [ req.userId, parseInt(alojamientoId) ], function(err) {
 
@@ -897,6 +935,92 @@ server.get('/usuario/ver/:id', (req, res) => {
         }
 
         res.status(200).json({ respuesta: 'correcto', user: result });
+    });
+});
+
+server.get('/usuario/alojamientos/:id', (req, res) => {
+
+    const userId = req.params.id;
+
+    mysql.query('SELECT ID,valoracionMedia,vecesValorado,ubicacion FROM alojamientos WHERE usuarioID=? ORDER BY creadoEn DESC', userId, function(err, result) {
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+
+            console.log(err.message);
+            return;
+        }
+
+        res.status(200).json({ respuesta: 'correcto', alojamientos: result });
+    });
+});
+
+server.get('/usuario/alojamientos/valoraciones/:id', (req, res) => {
+
+    const userId = req.params.id;
+
+    mysql.query(`SELECT val.creadaEn,val.mensaje,alo.ID as alojamientoId,alo.ubicacion,usu.ID as usuarioId,usu.nombre,usu.residencia,usu.fechaReg FROM alojamientos as alo
+        INNER JOIN alojamientos_valoraciones as val ON val.alojamientoID=alo.ID
+        INNER JOIN usuarios as usu ON val.usuarioID=usu.ID 
+        WHERE alo.usuarioID=? ORDER BY val.creadaEn DESC`, userId, 
+
+        function(err, result) {
+            if(err) {
+                res.status(500).json({ respuesta: 'err_db' });
+
+                console.log(err.message);
+                return;
+            }
+
+            res.status(200).json({ respuesta: 'correcto', valoraciones: result });
+        }
+    );
+});
+
+server.get('/usuario/valoraciones/:id', (req, res) => {
+
+    const userId = req.params.id;
+
+    mysql.query(`SELECT val.creadoEn,val.mensaje,usu.ID as usuarioId,usu.nombre,usu.residencia,usu.fechaReg FROM usuarios_valoraciones as val
+        INNER JOIN usuarios as usu ON val.usuarioID=usu.ID
+        WHERE val.userValoradoID=? ORDER BY val.creadoEn DESC`, userId,
+        function(err, result) {
+
+            if(err) {
+                res.status(500).json({ respuesta: 'err_db' });
+
+                console.log(err.message);
+                return;
+            }
+
+            res.status(200).json({ respuesta: 'correcto', valoraciones: result });
+        }
+    );
+});
+
+server.post('/usuario/denuncia', comprobarToken, (req, res) => {
+    
+    if(req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    mysql.query('INSERT INTO usuarios_denuncias (usuarioID, reportadoID, mensaje) VALUES (?)', 
+    [
+        [
+            req.userId,
+            req.body.denunciadoId,
+            req.body.mensaje,
+        ]
+    ], function(err) {
+        
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+
+            console.log(err.message);
+            return;
+        }
+
+        res.status(200).json({ respuesta: 'correcto' });
     });
 });
 

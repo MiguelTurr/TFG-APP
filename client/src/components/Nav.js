@@ -123,52 +123,6 @@ function Nav() {
     const mostrarLogin = () => setShowLogin(true);
     const cerrarLogin = () => setShowLogin(false);
 
-    const enviarLogin = async (event) => {
-        event.preventDefault();
-        
-        const email = document.getElementById('log-email').value;
-        const password = document.getElementById('log-password').value;
-
-        var desactivarBtn = document.getElementById('log-btn');
-        desactivarBtn.disabled = true;
-
-        const data = await fetch('/login', { 
-            method: 'POST',
-
-            body: JSON.stringify({ 
-                email: email,
-                password: password
-            }),
-            
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
-
-        const items = await data.json();
-        desactivarBtn.disabled = false;
-
-        if(items.respuesta === 'err_db') {
-            crearAlerta('error', '¡Ha ocurrido un error en la base de datos!');
-
-        } else if(items.respuesta === 'err_datos') {
-            crearAlerta('error', '¡Los datos introducidos son incorrectos!');
-
-        } else if(items.respuesta === 'err_validado') {
-            crearAlerta('error', '¡Mira tu correo para validar la cuenta!');
-
-        } else {
-            
-            crearAlerta('exito', 'Has iniciado sesión como ' +items.nombre);
-
-            setTimeout(() => {
-                setAutorizado(true);
-                window.location.href = '/';
-
-            }, 1000);
-        }
-    };
-
     // LOGOUT
 
     const cerrarSesion = async () => {
@@ -331,7 +285,7 @@ function Nav() {
                 </div>
             </div>
 
-            <LoginModal mostrar={loginModal} funcionCerrar={cerrarLogin} funcionLogin={enviarLogin}/>
+            <LoginModal mostrar={loginModal} funcionCerrar={cerrarLogin}/>
             <RegistroModal mostrar={registroModal} funcionCerrar={cerrarRegistro} funcionRegistro={enviarRegistro} />
 
         </div>

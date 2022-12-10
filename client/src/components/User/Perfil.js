@@ -7,7 +7,7 @@ import { crearAlerta } from '../Toast/Toast.js';
 import userLogin from '../../js/autorizado';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faArrowLeft, faTrash, faUserMinus, faUserClock } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faRepeat, faArrowLeft, faTrash, faUserMinus, faUserClock, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
 import Form from 'react-bootstrap/Form';
@@ -23,6 +23,7 @@ function Perfil() {
 
     const [userInfo, setUserInfo] = useState([]);
     const [userImg, setUserImg] = useState(NoProfileImg);
+    const [userIdiomas, setUserIdiomas] = useState([]);
 
     const perfilInfo = async () => {
 
@@ -105,6 +106,40 @@ function Perfil() {
                 modificado: false
             }
 
+        } else if(opcionId === 'trabajo') {
+
+            opciones = {
+                modId: opcionId,
+                titulo: 'Trabajo',
+                anterior: userInfo.trabajo,
+                modificado: false
+            }
+
+        } else if(opcionId === 'idiomas') {
+
+            const idiomas = userInfo.idiomas.split(', ');
+            var objeto = {
+                idioma_esp: false,
+                idioma_ing: false,
+                idioma_fra: false,
+                idioma_por: false,
+                idioma_chi: false,
+            };
+
+            for(var i = 0; i < idiomas.length; i++) {
+                objeto['idioma_' +idiomas[i].slice(0, 3).toLowerCase()] = true;
+            }
+            setUserIdiomas(objeto);
+
+            //
+
+            opciones = {
+                modId: opcionId,
+                titulo: 'Idiomas',
+                anterior: userInfo.idiomas,
+                modificado: false
+            }
+
         } else if(opcionId === 'email') {
 
             opciones = {
@@ -132,10 +167,46 @@ function Perfil() {
                 modificado: false,
                 puedeBorrar: (userImg === NoProfileImg ? false : true)
             }
+
         }
 
         setModDatos(opciones);
     };
+
+    const cambiarEstado = async (opcionId) => {
+
+        var nuevoEstado = 0;
+
+        if(opcionId === 'recibirCorreos') {   
+            nuevoEstado = userInfo.recibirCorreos === 'Desactivado' ? 1 : 0;
+        }
+
+        var formData = new FormData();
+
+        formData.append('editado', nuevoEstado);
+        formData.append('tipo', opcionId);
+
+        const data = await fetch('/perfil/editar/estado', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const items = await data.json();
+
+        if(items.respuesta === 'err_user') {
+            crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
+
+        } else if(items.respuesta === 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if(items.respuesta === 'correcto') {
+            crearAlerta('exito', '¡Los datos han sido actualizados!');
+            
+            if(opcionId === 'recibirCorreos') {
+                setUserInfo({ ...userInfo, recibirCorreos:  userInfo.recibirCorreos === 'Desactivado' ? 'Activado' : 'Desactivado' });
+            }
+        }
+    }
 
     useEffect(() => {
         if(cambiarDatos === true && modDatos.modificado === false) {
@@ -143,6 +214,14 @@ function Perfil() {
 
             if(modDatos.modId === 'imagen') {
                 element.addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
+                
+            } else if(modDatos.modId === 'idiomas') {
+                document.getElementById('idioma_esp').addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
+                document.getElementById('idioma_ing').addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
+                document.getElementById('idioma_fra').addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
+                document.getElementById('idioma_por').addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
+                document.getElementById('idioma_chi').addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
+                
             } else {
                 element.addEventListener("keyup", function() { setModDatos({ ...modDatos, modificado: true }); });
             }
@@ -188,6 +267,34 @@ function Perfil() {
 
         if(modDatos.modId === 'telefono') {
             datoEditado = modDatos.prefix+ ' ' +editado;
+
+        } else if(modDatos.modId === 'idiomas') {
+            var idiomas = [];
+
+            if(document.getElementById('idioma_esp').checked === true) {
+                idiomas.push('Español');
+            }
+
+            if(document.getElementById('idioma_ing').checked === true) {
+                idiomas.push('Inglés');
+            }
+
+            if(document.getElementById('idioma_fra').checked === true) {
+                idiomas.push('Francés');
+            }
+
+            if(document.getElementById('idioma_por').checked === true) {
+                idiomas.push('Portugués');
+            }
+
+            if(document.getElementById('idioma_chi').checked === true) {
+                idiomas.push('Chino');
+            }
+
+            if(idiomas.length === 0) {
+                return crearAlerta('error', '¡Debes colocar al menos un idioma!');
+            }
+            datoEditado = idiomas.toString().replaceAll(',', ', ');
         }
 
         var formData = new FormData();
@@ -234,6 +341,12 @@ function Perfil() {
     
             } else if(modDatos.modId === 'email') {
                 setUserInfo({ ...userInfo, email: editado });
+
+            } else if(modDatos.modId === 'trabajo') {
+                setUserInfo({ ...userInfo, trabajo: editado });
+
+            } else if(modDatos.modId === 'idiomas') {
+                setUserInfo({ ...userInfo, idiomas: editado });
 
             } else if(modDatos.modId === 'imagen') {
                 //cargar de nuevo la iamgen
@@ -290,6 +403,10 @@ function Perfil() {
             return crearAlerta('error', '¡No es posible usar esto!');
         }
 
+        if(window.confirm("¿Estás seguro de eliminar tu cuenta?") == false) {
+            return;
+        } 
+
         const data = await fetch('/perfil/' +tipo, {
             method: 'GET',
             
@@ -320,6 +437,12 @@ function Perfil() {
 
     //
 
+    const verPerfilPublico = () => {
+        window.open('/usuario/ver/' +userInfo.ID, '_blank');
+    };
+
+    //
+
     return (
 
         <div className="container-fluid">
@@ -342,6 +465,10 @@ function Perfil() {
                     <button className={vistaPerfil === 2 ? "btn-no-style btn-activo" : "btn-no-style"} onClick={() => { cambiarVistaPerfil(2) }} id="vista-2">
                         Eliminar cuenta
                     </button>
+
+                    <Button className="filtros-botones" size="sm" style={{ float: 'right' }} onClick={verPerfilPublico}>
+                        <FontAwesomeIcon icon={faUser} /> Ir a tu perfil público
+                    </Button>
 
                 </div>}
 
@@ -414,6 +541,30 @@ function Perfil() {
                                     <FontAwesomeIcon icon={faArrowRight} />
                                 </td>
                             </tr>
+                            
+                            <tr className="tabla-seleccion" onClick={() => { modificarOpcion('trabajo') }}>
+                                <td>
+                                    Trabajo:
+                                    <br/>
+                                    <small>{userInfo.trabajo}</small>
+                                </td>
+
+                                <td className="arrow-style">
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                </td>
+                            </tr>
+
+                            <tr className="tabla-seleccion" onClick={() => { modificarOpcion('idiomas') }}>
+                                <td>
+                                    Idiomas:
+                                    <br/>
+                                    <small>{userInfo.idiomas}</small>
+                                </td>
+
+                                <td className="arrow-style">
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                </td>
+                            </tr>
                             <tr className="tabla-seleccion" onClick={() => { modificarOpcion('presentacion') }}>
                                 <td>
                                     Sobre ti:
@@ -459,6 +610,16 @@ function Perfil() {
                                 </td>
                                 <td className="arrow-style">
                                     <FontAwesomeIcon icon={faArrowRight} />
+                                </td>
+                            </tr>
+                            <tr className="tabla-seleccion" onClick={() => { cambiarEstado('recibirCorreos') }}>
+                                <td>
+                                    Recibir recomendaciones y ofertas:
+                                    <br/>
+                                    <small>{userInfo.recibirCorreos}</small>
+                                </td>
+                                <td className="arrow-style">
+                                    <FontAwesomeIcon icon={faRepeat} />
                                 </td>
                             </tr>
                             <tr className="tabla-seleccion" onClick={() => { modificarOpcion('imagen') }}>
@@ -533,6 +694,68 @@ function Perfil() {
 
                                 <Form.Group className="mb-3" style={modDatos.modId === 'presentacion' ? {} : { display: 'none' }} >
                                     <Form.Control as="textarea" placeholder="Escribe aquí algo sobre ti" id="mod-presentacion"/>
+                                </Form.Group>
+
+                                <Form.Group className="mb-3" style={modDatos.modId === 'trabajo' ? {} : { display: 'none' }} >
+                                    <Form.Control type="text" placeholder="¿A qué te dedicas?" id="mod-trabajo"/>
+                                </Form.Group>
+
+                                <Form.Group className="mb-3" style={modDatos.modId === 'idiomas' ? {} : { display: 'none' }} >
+
+                                    <small id="mod-idiomas">
+                                        * Selecciona los idiomas que hablas:
+                                    </small>
+                                    
+                                    <br/>
+                                    <br/>
+
+                                    <div key='checkbox' className="mb-3">
+                                        <Form.Check
+                                            inline
+                                            id="idioma_esp"
+                                            label="Español"
+                                            name="group1"
+                                            defaultChecked={userIdiomas.idioma_esp}
+                                            type='checkbox'
+                                            value={userIdiomas.idioma_esp}
+                                        />
+                                        <Form.Check
+                                            inline
+                                            id="idioma_ing"
+                                            label="Inglés"
+                                            name="group1"
+                                            defaultChecked={userIdiomas.idioma_ing}
+                                            type='checkbox'
+                                            value={userIdiomas.idioma_ing}
+                                        />
+                                        <Form.Check
+                                            inline
+                                            id="idioma_fra"
+                                            label="Francés"
+                                            name="group1"
+                                            defaultChecked={userIdiomas.idioma_fra}
+                                            type='checkbox'
+                                            value={userIdiomas.idioma_fra}
+                                        />
+                                        <Form.Check
+                                            inline
+                                            id="idioma_por"
+                                            label="Portugués"
+                                            name="group1"
+                                            defaultChecked={userIdiomas.idioma_por}
+                                            type='checkbox'
+                                            value={userIdiomas.idioma_por}
+                                        />
+                                        <Form.Check
+                                            inline
+                                            id="idioma_chi"
+                                            label="Chino"
+                                            name="group1"
+                                            defaultChecked={userIdiomas.idioma_chi}
+                                            type='checkbox'
+                                            value={userIdiomas.idioma_chi}
+                                        />
+                                    </div>
                                 </Form.Group>
 
                                 <Form.Group className="mb-3" style={modDatos.modId === 'email' ? {} : { display: 'none' }} >

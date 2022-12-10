@@ -49,7 +49,7 @@ function UserAlojamientos() {
         obtenerAlojamientos();
     }, []);
 
-    const verAlojamiento = (e, key) => {
+    const editarAlojamiento = (e, key) => {
         console.log(key);
     };
 
@@ -84,7 +84,7 @@ function UserAlojamientos() {
 
                         {
                             userAlojamientos.map((x, index) => (
-                                <tr className="tabla-seleccion" onClick={e => { verAlojamiento(e, index) }} key={index}>
+                                <tr className="tabla-seleccion" onClick={e => { editarAlojamiento(e, index) }} key={index}>
                                     <td>
                                         <p>
                                             <FontAwesomeIcon icon={faLocationDot} /> {x.ubicacion}
@@ -97,7 +97,9 @@ function UserAlojamientos() {
                                         { new Date(x.creadoEn).toLocaleDateString('es-ES', crearOptions) }
                                     </td>
 
-                                    <td style={{ verticalAlign:'middle'}}>
+                                    <td>
+                                        {x.visitas} visitas
+                                        <br/>
                                         {x.vecesValorado} valoraciones
                                     </td>
 

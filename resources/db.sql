@@ -132,3 +132,54 @@ ALTER TABLE `usuarios_favoritos` ADD CONSTRAINT UQ_UsuarioID_AlojamientoID UNIQU
 DELETE FROM `favoritos`;
 
 ----------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `usuarios_valoraciones` (
+    `ID` int NOT NULL AUTO_INCREMENT,
+	`usuarioID` int NOT NULL,
+	`userValoradoID` int NOT NULL,
+	`sinLeer` tinyint NOT NULL default 0,
+	`creadoEn` datetime NOT NULL default NOW(),
+	`mensaje` varchar(300) NOT NULL,
+
+
+    CONSTRAINT FK_UsuarioValora FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
+    CONSTRAINT FK_UsuarioValorado FOREIGN KEY (userValoradoID) REFERENCES usuarios(ID),
+    PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+DELETE FROM `usuarios_valoraciones`;
+----------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `usuarios_denuncias` (
+    `ID` int NOT NULL AUTO_INCREMENT,
+	`usuarioID` int NOT NULL,
+	`reportadoID` int NOT NULL,
+	`creadoEn` datetime NOT NULL default NOW(),
+	`mensaje` varchar(150) NOT NULL,
+
+    CONSTRAINT FK_UsuarioReportante FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
+    CONSTRAINT FK_UsuarioReportado FOREIGN KEY (reportadoID) REFERENCES usuarios(ID),
+    PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+DELETE FROM `usuarios_denuncias`;
+
+----------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `usuarios_mensajes` (
+    `ID` int NOT NULL AUTO_INCREMENT,
+	`emisorID` int NOT NULL,
+	`receptorID` int NOT NULL,
+	`sinLeer` tinyint NOT NULL default 0,
+	`creadoEn` datetime NOT NULL default NOW(),
+	`mensaje` varchar(150) NOT NULL,
+
+
+    CONSTRAINT FK_EmisorMensaje FOREIGN KEY (emisorID) REFERENCES usuarios(ID),
+    CONSTRAINT FK_ReceptorMensaje FOREIGN KEY (receptorID) REFERENCES usuarios(ID),
+    PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+DELETE FROM `usuarios_mensajes`;
+
+----------------------------------------------------------------------------------
