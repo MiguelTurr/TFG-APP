@@ -6,7 +6,16 @@ import ToolTipRec from './ToolTipRec';
 
 function Recomendaciones() {
 
+    const [alojamientos, setAlojamientos] = useState([]);
+    const [imgAlojamientos, setImgAlojamientos] = useState([]);
 
+    useEffect(() => {
+        obtenerRecomendados();
+    }, []);
+
+    const obtenerRecomendados = async () => {
+
+    };
 
     return (
         <div className="container-fluid">

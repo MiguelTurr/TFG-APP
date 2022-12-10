@@ -5,7 +5,7 @@ import Ayuda from './components/General/Ayuda';
 import Condiciones from './components/General/Condiciones';
 import Privacidad from './components/General/Privacidad';
 
-import Cookies from './components/Cookies';
+import Cookies from './components/General/Cookies';
 
 import Buscar from './components/Buscar';
 import VerAlojamiento from './components/Alojamiento/VerAlojamiento';

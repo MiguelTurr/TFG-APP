@@ -1,5 +1,5 @@
 import React from "react";
-import '../css/Cookies.css';
+import './Cookies.css';
 
 import { useState, useEffect } from "react";
 

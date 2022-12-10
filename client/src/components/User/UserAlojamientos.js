@@ -89,7 +89,7 @@ function UserAlojamientos() {
                                         <p>
                                             <FontAwesomeIcon icon={faLocationDot} /> {x.ubicacion}
                                             <br/>
-                                            {x.precio}€ por noche
+                                            <small>{x.precio}€ por noche</small>
                                         </p>
                                     </td>
 
@@ -98,7 +98,11 @@ function UserAlojamientos() {
                                     </td>
 
                                     <td style={{ verticalAlign:'middle'}}>
-                                        <FontAwesomeIcon icon={faStar} /> {x.valoraciones}
+                                        {x.vecesValorado} valoraciones
+                                    </td>
+
+                                    <td style={{ verticalAlign:'middle'}}>
+                                        <FontAwesomeIcon icon={faStar} /> {parseFloat(x.valoracionMedia).toFixed(2)}
                                     </td>
 
                                     <td className="arrow-style">

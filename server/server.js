@@ -496,10 +496,6 @@ server.get('/perfil/misalojamientos', comprobarToken, (req, res) => {
             return;
         }
 
-        for(var i = 0; i < result.length; i++) {
-            result[i].valoraciones = 2.5;
-        }
-
         res.status(200).json({ respuesta: 'correcto', alojamientos: result });
     });
 });
@@ -624,6 +620,17 @@ server.get('/perfil/favoritos', comprobarToken, (req, res) => {
     });
 });
 
+server.get('/perfil/recomendados', comprobarToken, (req, res) => {
+
+    if(req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    
+    
+});
+
 //
 
 server.get('/alojamiento/hospedador/:id', (req, res) => {
@@ -662,6 +669,7 @@ server.get('/alojamiento/hospedador/foto/:id', comprobarToken, (req, res) => {
 
         if(err) {
             res.status(500).json({ respuesta: 'err_db' });
+
             console.log(err.message);
             return;
         }
@@ -683,23 +691,51 @@ server.get('/alojamiento/hospedador/foto/:id', comprobarToken, (req, res) => {
 
 server.get('/alojamiento/valoraciones/:id', (req, res) => {
 
-    const id = req.params.id;
+    const alojamientoId = req.params.id;
 
-    console.log('VALORACIONES: ' +id);
+    mysql.query('SELECT valLlegada,valVeracidad,valComunicacion,valUbicacion,valLimpieza,valCalidad FROM alojamientos_valoraciones WHERE alojamientoID=?', alojamientoId, function(err, result) {
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
 
-    var arrayValoraciones = {
-        valLlegada: 3.5,
-        valVeracidad: 4.5,
-        valComunicacion: 2.2,
-        valUbicacion: 5.0,
-        valLimpieza: 4.9,
-        valCalidad: 2.0,
+            console.log(err.message);
+            return;
+        }
 
-        valMedia: 4.4,
-        valComentarios: 200,
-    };
+        var final = {
+            llegada: 0.0,
+            veracidad: 0.0,
+            comunicacion: 0.0,
+            ubicacion: 0.0,
+            limpieza: 0.0,
+            calidad: 0.0,
+        };
 
-    res.status(200).json({ respuesta: 'correcto', valoraciones: arrayValoraciones });
+        const len = result.length;
+
+        if(len > 0) {
+
+            for(var i = 0; i < len; i++) {
+
+                var item = result[i];
+    
+                final.llegada += item.valLlegada;
+                final.veracidad += item.valVeracidad;
+                final.comunicacion += item.valComunicacion;
+                final.ubicacion += item.valUbicacion;
+                final.limpieza += item.valLimpieza;
+                final.calidad += item.valCalidad;
+            } 
+
+            final.llegada = (final.llegada / len).toFixed(1);
+            final.veracidad = (final.veracidad / len).toFixed(1);
+            final.comunicacion = (final.comunicacion / len).toFixed(1);
+            final.ubicacion = (final.ubicacion / len).toFixed(1);
+            final.limpieza = (final.limpieza / len).toFixed(1);
+            final.calidad = (final.calidad / len).toFixed(1);
+        }
+
+        res.status(200).json({ respuesta: 'correcto', valoraciones: final });
+    });
 });
 
 server.get('/alojamiento/add-favorito/:id', comprobarToken, (req, res) => {
@@ -842,21 +878,68 @@ server.get('/alojamiento/imagen/:id', (req, res) => {
 
 //
 
+server.get('/usuario/ver/:id', (req, res) => {
+
+    const userId = req.params.id;
+
+    mysql.query('SELECT nombre,apellidos,presentacion,residencia,trabajo,idiomas,fechaReg FROM usuarios WHERE ID=? LIMIT 1', userId, function(err, result) {
+
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+
+            console.log(err.message);
+            return;
+        }
+
+        if(result.length == 0) {
+            res.status(401).json({ respuesta: 'err_datos' });
+            return;
+        }
+
+        res.status(200).json({ respuesta: 'correcto', user: result });
+    });
+});
+
+//
+
 server.post('/buscar', (req, res) => {
 
 });
 
-server.get('/home', comprobarToken, (req, res) => {
+server.post('/home', comprobarToken, (req, res) => {
 
-    var queryStr = 'SELECT * FROM alojamientos ';
+    var queryStr = '';
 
     if(req.userId == undefined) {
-        queryStr += 'ORDER BY creadoEn DESC ';
+        queryStr += 'SELECT * FROM alojamientos as alo ';
 
     } else {
-        queryStr += 'WHERE usuarioID!=' +req.userId+ ' ';
-        queryStr += 'ORDER BY creadoEn DESC ';
+        queryStr += 'SELECT alo.*, fav.ID as favorito FROM `alojamientos` as alo ';
+        queryStr += 'LEFT JOIN `usuarios_favoritos` as fav ON fav.alojamientoID=alo.ID AND fav.usuarioID=' +req.userId+ ' ';
+        queryStr += 'WHERE alo.usuarioID!=' +req.userId+ ' ';
     }
+
+    // ORDENAR
+
+    var ordenadoPor = ['fecha', 'desc'];
+
+    if(req.body.ordenar !== null) {
+        ordenadoPor = req.body.ordenar.split('-');
+    }
+
+    if(ordenadoPor[0] === 'fecha') {
+        queryStr += 'ORDER BY alo.creadoEn ';
+
+    } else if(ordenadoPor[0] === 'relevancia') {
+        queryStr += 'ORDER BY alo.visitas ';
+
+    } else if(ordenadoPor[0] === 'precio') {
+        queryStr += 'ORDER BY alo.precio ';
+    }
+
+    queryStr += ordenadoPor[1]+ ' ';
+
+    //
 
     queryStr += 'LIMIT 30';
 
@@ -868,11 +951,6 @@ server.get('/home', comprobarToken, (req, res) => {
 
             console.log(err.message);
             return;
-        }
-
-        for(var i = 0; i < result.length; i++) {
-            result[i].valoraciones = (Math.random() * 5).toFixed(1);
-            result[i].favorito = false;
         }
 
         res.status(200).json({ respuesta: 'correcto', alojamientos: result });

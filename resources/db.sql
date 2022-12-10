@@ -17,8 +17,9 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 	`fechaNac` date NOT NULL,
 	`fechaReg` datetime NOT NULL DEFAULT NOW(),
 	`telefono` varchar(20) NOT NULL,
-	`residencia` text default 'Sin definir',
+	`residencia` text NOT NULL default '',
 	`trabajo` varchar(70) NOT NULL default '',
+	`idiomas` varchar(70) NOT NULL default 'Español',
 	`imgPerfil` varchar(100) NOT NULL default 'default.png',
 	`recibirCorreos` tinyint NOT NULL default 1,
 
@@ -58,6 +59,8 @@ CREATE TABLE IF NOT EXISTS `alojamientos` (
 	`imgCantidad` tinyint NOT NULL,
 
 	`visitas` int NOT NULL default 0,
+	`valoracionMedia` float NOT NULL default 0,
+	`vecesValorado` int NOT NULL default 0,
 
 	`viajeros` tinyint NOT NULL default 1,
 	`habitaciones` tinyint NOT NULL default 1,
@@ -89,6 +92,27 @@ CREATE TABLE IF NOT EXISTS `alojamientos_img` (
 
 DELETE FROM `alojamientos_img`;
 
+CREATE TABLE IF NOT EXISTS `alojamientos_valoraciones` (
+    `ID` int NOT NULL AUTO_INCREMENT,
+	`usuarioID` int NOT NULL,
+	`alojamientoID` int NOT NULL,
+	`creadaEn` datetime NOT NULL default NOW(),
+	`sinLeer` tinyint NOT NULL default 0,
+	`mensaje` varchar(300) NOT NULL,
+	`valLlegada` float NOT NULL,
+	`valVeracidad` float NOT NULL,
+	`valComunicacion` float NOT NULL,
+	`valUbicacion` float NOT NULL,
+	`valLimpieza` float NOT NULL,
+	`valCalidad` float NOT NULL,
+
+    CONSTRAINT FK_UsuarioValoracion FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
+    CONSTRAINT FK_AlojamientoValoracion FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID),
+    PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+DELETE FROM `alojamientos_valoraciones`;
+
 ----------------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `usuarios_favoritos` (
@@ -108,23 +132,3 @@ ALTER TABLE `usuarios_favoritos` ADD CONSTRAINT UQ_UsuarioID_AlojamientoID UNIQU
 DELETE FROM `favoritos`;
 
 ----------------------------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS `valoraciones` (
-    `ID` int NOT NULL AUTO_INCREMENT,
-	`usuarioID` int NOT NULL,
-	`alojamientoID` int NOT NULL,
-	`creadaEn` datetime NOT NULL default NOW(),
-	`mensaje` varchar(300) NOT NULL,
-	`valLlegada` float NOT NULL,
-	`valVeracidad` float NOT NULL,
-	`valComunicacion` float NOT NULL,
-	`valUbicacion` float NOT NULL,
-	`valLimpieza` float NOT NULL,
-	`valCalidad` float NOT NULL,
-
-    CONSTRAINT FK_UsuarioValoracion FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
-    CONSTRAINT FK_AlojamientoValoracion FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID),
-    PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
-DELETE FROM `valoraciones`;

@@ -26,7 +26,23 @@ function Home() {
 
         console.log(orden); // CAMBIAR QUERY CON ORDENAR
 
-        const data = await fetch('/home', { method: 'GET' });
+        const data = await fetch('/home', { 
+            method: 'POST',
+
+            body: JSON.stringify({
+                ordenar: orden,
+                filtros: {
+                    camas: 0,
+                    habitaciones: 0,
+                    aseos: 0,
+                }
+            }),
+            
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
         const items = await data.json();
 
         if(items.respuesta === 'err_db') {
@@ -90,9 +106,9 @@ function Home() {
                                         </div>
 
                                         <div className="col derecha-casa">
-                                            <FontAwesomeIcon icon={faStar} />&nbsp;{x.valoraciones}
+                                            <FontAwesomeIcon icon={faStar} />&nbsp;{parseFloat(x.valoracionMedia).toFixed(2)}
                                             <br/>
-                                            <FontAwesomeIcon icon={faHeart} style={x.favorito === false ? {} : { color: 'red' } } />
+                                            <FontAwesomeIcon icon={faHeart} style={x.favorito === null ? {} : { color: 'red' } } />
                                         </div>
                                     </div>
                                 </Card.Body>

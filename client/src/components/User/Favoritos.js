@@ -96,7 +96,7 @@ function Favoritos() {
                                         </div>
 
                                         <div className="col derecha-casa">
-                                            <FontAwesomeIcon icon={faStar} />&nbsp;3,5
+                                            <FontAwesomeIcon icon={faStar} />&nbsp;{parseFloat(x.valoracionMedia).toFixed(2)}
                                             <br/>
                                             <FontAwesomeIcon icon={faHeart} style={{ color: 'red' }} />
                                         </div>

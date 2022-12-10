@@ -178,7 +178,8 @@ function VerAlojamiento() {
     };
 
     const verValoraciones = () => {
-        crearAlerta('exito', 'quiere ver reseñas')
+
+
     };
 
     //
@@ -394,111 +395,124 @@ function VerAlojamiento() {
                     </div>
 
                 </div>
-                <div className="col">
-                    <h3>
-                        <FontAwesomeIcon icon={faStar} /> {valoraciones.valMedia} - {valoraciones.valComentarios} reseñas
-                    </h3>
-                    
-                    <ul className="lista-sin-numeros">
-                        <li>
-                            <div className="row">
-                                <div className="col">
-                                    Llegada
-                                </div> 
+                
+                {alojamiento.vecesValorado === 0 &&
 
-                                <div className="col">
-                                    <ProgressBar now={valoraciones.valLlegada} max="5"/>
-                                </div>
-
-                                <div className="col">
-                                    {valoraciones.valLlegada}
-                                </div> 
-                            </div>
-                        </li>
-                        <li>
-                            <div className="row">
-                                <div className="col">
-                                    Veracidad
-                                </div> 
-
-                                <div className="col">
-                                    <ProgressBar now={valoraciones.valVeracidad} max="5"/>
-                                </div>
-
-                                <div className="col">
-                                    {valoraciones.valVeracidad}
-                                </div> 
-                            </div>
-                        </li>
-                        <li>
-                            <div className="row">
-                                <div className="col">
-                                    Comunicación
-                                </div> 
-
-                                <div className="col">
-                                    <ProgressBar now={valoraciones.valComunicacion} max="5"/>
-                                </div>
-
-                                <div className="col">
-                                    {valoraciones.valComunicacion}
-                                </div> 
-                            </div>
-                        </li>
-                        <li>
-                            <div className="row">
-                                <div className="col">
-                                    Ubicación
-                                </div> 
-
-                                <div className="col">
-                                    <ProgressBar now={valoraciones.valUbicacion} max="5"/>
-                                </div>
-
-                                <div className="col">
-                                    {valoraciones.valUbicacion}
-                                </div> 
-                            </div>
-                        </li>
-                        <li>
-                            <div className="row">
-                                <div className="col">
-                                    Limpieza
-                                </div> 
-
-                                <div className="col">
-                                    <ProgressBar now={valoraciones.valLimpieza} max="5"/>
-                                </div>
-
-                                <div className="col">
-                                    {valoraciones.valLimpieza}
-                                </div> 
-                            </div>
-                        </li>
-                        <li>
-                            <div className="row">
-                                <div className="col">
-                                    Calidad
-                                </div> 
-
-                                <div className="col">
-                                    <ProgressBar now={valoraciones.valCalidad} max="5"/>
-                                </div>
-
-                                <div className="col">
-                                    {valoraciones.valCalidad}
-                                </div> 
-                            </div>
-                        </li>
-                    </ul>
-                    
-                    <div className="d-grid gap-2">
-                        <Button className="filtros-botones" size="sm" onClick={verValoraciones}>
-                            <FontAwesomeIcon icon={faStar} /> Mostrar reseñas
-                        </Button>
+                    <div className="col">
+                        <h3>
+                            No hay ninguna valoración.
+                        </h3>
                     </div>
+                }
 
-                </div>
+                {alojamiento.vecesValorado !== 0 &&
+                    <div className="col">
+                        <h3>
+                            {alojamiento.vecesValorado} reseñas [ <FontAwesomeIcon icon={faStar} /> {parseFloat(alojamiento.valoracionMedia).toFixed(2)} ]
+                        </h3>
+
+                        <ul className="lista-sin-numeros">
+                            <li>
+                                <div className="row">
+                                    <div className="col">
+                                        Llegada
+                                    </div>
+
+                                    <div className="col">
+                                        <ProgressBar now={valoraciones.llegada} max="5" />
+                                    </div>
+
+                                    <div className="col">
+                                        {valoraciones.llegada}
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="row">
+                                    <div className="col">
+                                        Veracidad
+                                    </div>
+
+                                    <div className="col">
+                                        <ProgressBar now={valoraciones.veracidad} max="5" />
+                                    </div>
+
+                                    <div className="col">
+                                        {valoraciones.veracidad}
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="row">
+                                    <div className="col">
+                                        Comunicación
+                                    </div>
+
+                                    <div className="col">
+                                        <ProgressBar now={valoraciones.comunicacion} max="5" />
+                                    </div>
+
+                                    <div className="col">
+                                        {valoraciones.comunicacion}
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="row">
+                                    <div className="col">
+                                        Ubicación
+                                    </div>
+
+                                    <div className="col">
+                                        <ProgressBar now={valoraciones.ubicacion} max="5" />
+                                    </div>
+
+                                    <div className="col">
+                                        {valoraciones.ubicacion}
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="row">
+                                    <div className="col">
+                                        Limpieza
+                                    </div>
+
+                                    <div className="col">
+                                        <ProgressBar now={valoraciones.limpieza} max="5" />
+                                    </div>
+
+                                    <div className="col">
+                                        {valoraciones.limpieza}
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="row">
+                                    <div className="col">
+                                        Calidad
+                                    </div>
+
+                                    <div className="col">
+                                        <ProgressBar now={valoraciones.calidad} max="5" />
+                                    </div>
+
+                                    <div className="col">
+                                        {valoraciones.calidad}
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <div className="d-grid gap-2">
+                            <Button className="filtros-botones" size="sm" onClick={verValoraciones}>
+                                <FontAwesomeIcon icon={faStar} /> Mostrar comentarios
+                            </Button>
+                        </div>
+
+                    </div>
+                }
+                
             </div>
 
             <hr/>
