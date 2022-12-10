@@ -2,7 +2,7 @@ import React from 'react';
 import '../css/Home.css';
 import Footer from './Home/Footer';
 
-import { useLocation} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useEffect, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -90,7 +90,7 @@ function Home() {
                                         </div>
 
                                         <div className="col derecha-casa">
-                                            <FontAwesomeIcon icon={faStar} />&nbsp;3,5
+                                            <FontAwesomeIcon icon={faStar} />&nbsp;{x.valoraciones}
                                             <br/>
                                             <FontAwesomeIcon icon={faHeart} style={x.favorito === false ? {} : { color: 'red' } } />
                                         </div>

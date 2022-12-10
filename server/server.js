@@ -604,15 +604,81 @@ server.post('/perfil/misalojamientos/editar/:id', comprobarToken, (req, res) => 
     //console.log(req.body);
 });
 
+server.get('/perfil/favoritos', comprobarToken, (req, res) => {
+
+    if(req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    mysql.query('SELECT alo.* FROM `usuarios_favoritos` as fav INNER JOIN `alojamientos` as alo ON fav.alojamientoID=alo.ID WHERE fav.usuarioID=?', req.userId, function(err, result) {
+
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+
+            console.log(err.message);
+            return;
+        }
+        
+        res.status(200).json({ respuesta: 'correcto', alojamientos: result });
+    });
+});
+
 //
 
 server.get('/alojamiento/hospedador/:id', (req, res) => {
 
-    const id = req.params.id;
+    const hospedadorId = req.params.id;
 
-    console.log('Hospedador: ' +id);
+    mysql.query('SELECT * FROM usuarios WHERE ID=? LIMIT 1', hospedadorId, function(err, result) {
 
-    res.status(200).json({ respuesta: 'correcto', hospedador: { nombre: 'Jose', apellidos: 'Prueba prueba', creadoEn: new Date() } });
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+
+            console.log(err.message);
+            return;
+        }
+
+        if(result.length == 0) {
+            res.status(401).json({ respuesta: 'err_datos' });
+            return;
+        }
+
+        var userJson = {
+            ID: hospedadorId,
+            nombre: result[0].nombre,
+            creadoEn: result[0].fechaReg
+        };
+
+        res.status(200).json({ respuesta: 'correcto', hospedador: userJson });
+    });
+});
+
+server.get('/alojamiento/hospedador/foto/:id', comprobarToken, (req, res) => {
+
+    const hospedadorId = req.params.id;
+
+    mysql.query("SELECT imgPerfil FROM usuarios WHERE ID=? LIMIT 1", hospedadorId, (err, result) => {
+
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+        
+        const imagen = result[0].imgPerfil;
+
+        fs.readFile('./imagenes/perfil/' +imagen, function(err, file) {
+
+            if(err) {
+                res.status(500).json({ respuesta: 'err_file' });
+                return;
+            }
+
+            res.set({'Content-Type': 'image/jpg'});
+            res.end(file);
+        });
+    });
 });
 
 server.get('/alojamiento/valoraciones/:id', (req, res) => {
@@ -700,13 +766,17 @@ server.get('/alojamiento/ver/:id', comprobarToken, (req, res) => {
         WHERE alo.ID=? LIMIT 1';
     }
 
-    console.log(queryStr);
-
     mysql.query(queryStr, id, (err, result) => {
 
         if(err) {
             res.status(500).json({ respuesta: 'err_db' });
             console.log(err.message);
+            return;
+        }
+
+        if(result.length == 0) {
+            
+            res.status(500).json({ respuesta: 'err_datos' });
             return;
         }
 
@@ -722,10 +792,19 @@ server.get('/alojamiento/ver/:id', comprobarToken, (req, res) => {
         result[0].calefaccion = servicios >> 1 & 0x0000001;
         result[0].television = servicios & 0x0000001;
 
-        console.log(result[0].favorito)
-
         if(result[0].favorito === undefined) {
             result[0].favorito = null;
+        }
+
+        var entrada = result[0].horaEntrada;
+        var salida = result[0].horaSalida;
+
+        if(entrada != null) {
+            result[0].horaEntrada = entrada.substring(0, 5);
+        }
+
+        if(salida != null) {
+            result[0].horaSalida = salida.substring(0, 5);
         }
 
         res.status(200).json({ respuesta: 'correcto', alojamiento: result });
@@ -761,6 +840,8 @@ server.get('/alojamiento/imagen/:id', (req, res) => {
     });
 });
 
+//
+
 server.post('/buscar', (req, res) => {
 
 });
@@ -773,7 +854,7 @@ server.get('/home', comprobarToken, (req, res) => {
         queryStr += 'ORDER BY creadoEn DESC ';
 
     } else {
-        //queryStr += 'WHERE usuarioID!=' +req.userId+ ' ';
+        queryStr += 'WHERE usuarioID!=' +req.userId+ ' ';
         queryStr += 'ORDER BY creadoEn DESC ';
     }
 
@@ -790,7 +871,7 @@ server.get('/home', comprobarToken, (req, res) => {
         }
 
         for(var i = 0; i < result.length; i++) {
-            result[i].valoraciones = 2.5;
+            result[i].valoraciones = (Math.random() * 5).toFixed(1);
             result[i].favorito = false;
         }
 

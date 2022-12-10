@@ -18,7 +18,9 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 	`fechaReg` datetime NOT NULL DEFAULT NOW(),
 	`telefono` varchar(20) NOT NULL,
 	`residencia` text default 'Sin definir',
+	`trabajo` varchar(70) NOT NULL default '',
 	`imgPerfil` varchar(100) NOT NULL default 'default.png',
+	`recibirCorreos` tinyint NOT NULL default 1,
 
 	
 

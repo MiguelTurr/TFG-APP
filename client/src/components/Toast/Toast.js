@@ -7,7 +7,7 @@ export async function crearAlerta(tipo, mensaje, tiempo=2000) {
 
     var toastPrincipal = document.createElement("div");
     toastPrincipal.classList.add('toast');
-    toastPrincipal.style.backgroundColor = tipo == 'error' ? '#ee5f5b' : '#62c462';
+    toastPrincipal.style.backgroundColor = tipo === 'error' ? '#ee5f5b' : '#62c462';
     toastPrincipal.style.padding = '5px';
     toastPrincipal.style.fontSize = '17px';
     toastPrincipal.style.textAlign = 'center';
@@ -17,10 +17,10 @@ export async function crearAlerta(tipo, mensaje, tiempo=2000) {
     var iconoElement = document.createElement('i');
     var icono;
 
-    if(tipo == 'error') {
+    if(tipo === 'error') {
         icono = icon({ prefix: 'fa', iconName: 'triangle-exclamation' }).html;
 
-    } else if(tipo == 'exito') {
+    } else if(tipo === 'exito') {
         icono = icon({ prefix: 'fa', iconName: 'square-check' }).html;
     }
 

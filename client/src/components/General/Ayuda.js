@@ -51,9 +51,9 @@ function Ayuda() {
         <div className="container-fluid">
             <div className="row">
 
-                <h3>
+                <h4 style={{ fontWeight: 'bold' }}>
                     <FontAwesomeIcon icon={faInfoCircle} /> Resuelve tus dudas en el centro de ayuda
-                </h3>
+                </h4>
                 
             </div>
             <hr/>

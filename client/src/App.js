@@ -9,6 +9,7 @@ import Cookies from './components/Cookies';
 
 import Buscar from './components/Buscar';
 import VerAlojamiento from './components/Alojamiento/VerAlojamiento';
+import PerfilPublico from './components/Usuario/PerfilPublico';
 
 import RegistroValidar from './components/RegistroValidar';
 import RecordarPassword from './components/RecordarPassword';
@@ -49,7 +50,7 @@ function App() {
 
           <Route path="/alojamiento/buscar" element={ <Buscar /> }/>
           <Route path="/alojamiento/ver" element={ <VerAlojamiento /> }/>
-
+          <Route path="/usuario/ver/:id" element={ <PerfilPublico /> }/>
 
           <Route path="*" element={<Home />} />
 

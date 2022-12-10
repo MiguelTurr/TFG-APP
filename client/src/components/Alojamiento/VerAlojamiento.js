@@ -3,13 +3,17 @@ import { useLocation } from "react-router-dom";
 
 import { crearAlerta } from '../Toast/Toast.js';
 
+import NoProfileImg from '../../img/no-profile-img.png';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faDownload, faLocationDot, faKitchenSet, faWifi, faPaw, faParking, faSwimmingPool, faWater, faAirFreshener, faThermometer, faTelevision, faStopwatch, faSmoking, faGift, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faMessage, faHeart, faDownload, faLocationDot, faKitchenSet, faWifi, faPaw, faParking, faSwimmingPool, faWater, faAirFreshener, faThermometer, faTelevision, faStopwatch, faSmoking, faGift, faStar } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
 import ProgressBar from 'react-bootstrap/ProgressBar';
 
 function VerAlojamiento() {
+
+    var regFecha = { year: 'numeric', month: 'long' };
 
     const location = useLocation();
     const params = new URLSearchParams(location.search);
@@ -17,6 +21,7 @@ function VerAlojamiento() {
     const [alojamiento, setAlojamiento] = useState({});
     const [alojamientoImagenes, setAlojamientoImagenes] = useState([]);
     const [alojamientoUsuario, setAlojamientoUsuario] = useState({});
+    const [usuarioImg, setusuarioImg] = useState(NoProfileImg);
     const [valoraciones, setValoraciones] = useState([]);
 
     useEffect(() => {
@@ -34,10 +39,14 @@ function VerAlojamiento() {
         if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
+        } else if(items.respuesta === 'err_datos') {
+            window.location.href = '/';
+
         } else if(items.respuesta === 'correcto') {
             setAlojamiento(items.alojamiento[0]);
             cargarAlojamientoImagenes(items.alojamiento[0].imgCantidad, items.alojamiento[0].ID);
             cargarHospedador(items.alojamiento[0].usuarioID);
+            cargarImagenHospedador(items.alojamiento[0].usuarioID);
         }   
     };
 
@@ -76,8 +85,19 @@ function VerAlojamiento() {
 
         if(items.respuesta === 'err_db') {
 
+        } else if(items.respuesta === 'err_datos') {
+
         } else if(items.respuesta === 'correcto') {
             setAlojamientoUsuario(items.hospedador);
+        }
+    };
+
+    const cargarImagenHospedador = async (userId) => {
+
+        const imagen = await fetch('/alojamiento/hospedador/foto/' +userId, { method: 'GET' });
+
+        if(imagen.status === 200) {
+            setusuarioImg(imagen.url);
         }
     };
 
@@ -149,6 +169,18 @@ function VerAlojamiento() {
         }
     };
 
+    const irPerfilHospedador = () => {
+        window.location.href = '/usuario/ver/' +alojamientoUsuario.ID;
+    };
+
+    const enviarMensaje = () => {
+        crearAlerta('exito', 'quiere enviar mensaje')
+    };
+
+    const verValoraciones = () => {
+        crearAlerta('exito', 'quiere ver reseñas')
+    };
+
     //
     
     return (
@@ -171,11 +203,11 @@ function VerAlojamiento() {
 
                 <div className="col" style={{ textAlign: 'right' }}>
 
-                    <Button size="sm" onClick={copiarAlojamiento}>
+                    <Button className="filtros-botones" size="sm" onClick={copiarAlojamiento}>
                         <FontAwesomeIcon icon={faDownload} /> Compartir
                     </Button>
                     &nbsp; &nbsp;
-                    <Button size="sm" onClick={addFavorito}>
+                    <Button className="filtros-botones" size="sm" onClick={addFavorito}>
                         <FontAwesomeIcon icon={faHeart} style={ alojamiento.favorito === null ? {} : { color: 'red' }}/> Favorito
                     </Button>
                 </div>
@@ -329,9 +361,38 @@ function VerAlojamiento() {
                         ¿Quién es tu hospedador?
                     </h3>
 
-                    {alojamientoUsuario.nombre} {alojamientoUsuario.apellidos}
-                    <br/>
-                    Registrado en {alojamientoUsuario.creadoEn}
+                    <div className="row mb-3">
+
+                        <div className="col-sm-2">
+                            <img src={usuarioImg} key={usuarioImg} className="img-fluid rounded-pill" alt="Imagen de perfil del usuario"></img>
+                        </div>
+
+                        <div className="col">
+                            <span style={{ fontSize: '20px' }}>
+                                Hospedador: {alojamientoUsuario.nombre}
+                            </span>
+
+                            <br/>
+
+                            <small>
+                                Registrado en {new Date(alojamientoUsuario.creadoEn).toLocaleDateString('es-ES', regFecha)}
+                            </small>
+
+                        </div>
+                    </div>
+
+                    <div className="mt-3">
+                        <Button className="filtros-botones" size="sm" onClick={irPerfilHospedador}>
+                            <FontAwesomeIcon icon={faUser} /> Ir al perfil
+                        </Button>
+
+                        &nbsp;&nbsp;
+
+                        <Button className="filtros-botones" size="sm" onClick={enviarMensaje}>
+                            <FontAwesomeIcon icon={faMessage} /> Enviar mensaje
+                        </Button>
+                    </div>
+
                 </div>
                 <div className="col">
                     <h3>
@@ -430,6 +491,13 @@ function VerAlojamiento() {
                             </div>
                         </li>
                     </ul>
+                    
+                    <div className="d-grid gap-2">
+                        <Button className="filtros-botones" size="sm" onClick={verValoraciones}>
+                            <FontAwesomeIcon icon={faStar} /> Mostrar reseñas
+                        </Button>
+                    </div>
+
                 </div>
             </div>
 
@@ -440,6 +508,11 @@ function VerAlojamiento() {
                     <h3>
                         Reserva ahora
                     </h3>
+                    <small>
+                        {alojamiento.precio}€ por noche
+                    </small>
+
+
                 </div>
             </div>
         </div>
