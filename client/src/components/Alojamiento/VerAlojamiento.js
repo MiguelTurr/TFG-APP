@@ -1,17 +1,28 @@
 import React, { useEffect, useState} from "react";
 import { useLocation } from "react-router-dom";
 
+import "react-modern-calendar-datepicker/lib/DatePicker.css";
+import { Calendar, utils } from "react-modern-calendar-datepicker";
+
+import ValoracionesModal from './ValoracionesModal';
+import LoginModal from '../LoginModal';
+
 import { crearAlerta } from '../Toast/Toast.js';
+import userLogin from '../../js/autorizado';
 
 import NoProfileImg from '../../img/no-profile-img.png';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faMessage, faHeart, faDownload, faLocationDot, faKitchenSet, faWifi, faPaw, faParking, faSwimmingPool, faWater, faAirFreshener, faThermometer, faTelevision, faStopwatch, faSmoking, faGift, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faHouse, faMinus, faPlus, faAward, faMessage, faHeart, faDownload, faLocationDot, faKitchenSet, faWifi, faPaw, faParking, faSwimmingPool, faWater, faAirFreshener, faThermometer, faTelevision, faStopwatch, faSmoking, faGift, faStar } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
 import ProgressBar from 'react-bootstrap/ProgressBar';
 
 function VerAlojamiento() {
+
+    const { autorizado, setAutorizado } = userLogin();
+
+    //
 
     var regFecha = { year: 'numeric', month: 'long' };
 
@@ -23,6 +34,7 @@ function VerAlojamiento() {
     const [alojamientoUsuario, setAlojamientoUsuario] = useState({});
     const [usuarioImg, setusuarioImg] = useState(NoProfileImg);
     const [valoraciones, setValoraciones] = useState([]);
+    const [diasReservados, setDiasReservados] = useState([]);
 
     useEffect(() => {
 
@@ -30,6 +42,7 @@ function VerAlojamiento() {
 
         cargarAlojamiento(alojamientoId);
         cargarValoraciones(alojamientoId);
+        cargarDiasReservados(alojamientoId);
     }, []);
 
     const cargarAlojamiento = async (id) => {
@@ -120,6 +133,25 @@ function VerAlojamiento() {
         }
     };
 
+    const cargarDiasReservados = async (alojamientoId) => {
+
+        const data = await fetch('/alojamiento/reservas/dias/' +alojamientoId, { 
+            method: 'GET',
+    
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        const items = await data.json();
+
+        if(items.respuesta === 'err_db') {
+
+        } else if(items.respuesta === 'correcto') {
+            setDiasReservados(items.reservados);
+        }
+    };
+
     //
 
     const copiarAlojamiento = () => {
@@ -127,11 +159,14 @@ function VerAlojamiento() {
         navigator.clipboard.writeText(window.location.href);
     };
 
-    const addFavorito = async () => {
-        /*
-        if(autorizado === false) {
+    var [loginModal, setShowLogin] = useState(false);
+    const cerrarLogin = () => setShowLogin(false);
 
-        }*/
+    const addFavorito = async () => {
+
+        if(autorizado === false) {
+            return setShowLogin(true);
+        }
 
         var opcion = 'remove-favorito';
 
@@ -174,12 +209,61 @@ function VerAlojamiento() {
     };
 
     const enviarMensaje = () => {
+
+        if(autorizado === false) {
+            return setShowLogin(true);
+        }
+
         crearAlerta('exito', 'quiere enviar mensaje')
     };
 
+    var [valoracionesModal, setShowValoraciones] = useState(false);
+    const cerrarValoraciones = () => setShowValoraciones(false);
+
     const verValoraciones = () => {
+        setShowValoraciones(true);
+    };
 
+    //
 
+    const [selectedDayRange, setSelectedDayRange] = useState({
+        from: null,
+        to: null,
+    });
+
+    const [reservaInfo, setReservaInfo] = useState({
+        huespedes: 1,
+        mascotas: 0,
+        noches: 1,
+    });
+
+    const reservarAlojamiento = () => {
+
+        if(autorizado === false) {
+            return setShowLogin(true);
+        }
+
+        var url = '/alojamiento/reservar/';
+        url += alojamiento.ID+ '?personas=' +reservaInfo.huespedes;
+        url += '&mascotas=' +reservaInfo.mascotas;
+        url += '&entrada=' +reservaInfo.fechaEntrada;
+        url += '&entrada=' +reservaInfo.fechaSalida;
+
+        console.log(selectedDayRange.from);
+        console.log(selectedDayRange.to);
+
+        //window.location.href = url;
+    };
+
+    const botonesSumaResta = (e) => {
+        var [opcion, operacion] = e.currentTarget.id.split('-');
+
+        var valorActual = reservaInfo[opcion];
+
+        if (operacion === 'resta') valorActual--;
+        else valorActual++;
+
+        setReservaInfo({ ...reservaInfo, [opcion]: valorActual, });
     };
 
     //
@@ -519,16 +603,96 @@ function VerAlojamiento() {
 
             <div className="row">
                 <div className="col">
-                    <h3>
-                        Reserva ahora
-                    </h3>
-                    <small>
-                        {alojamiento.precio}€ por noche
-                    </small>
 
+                    <h5>
+                        ¿Interesado en el alojamiento?
+                    </h5>
+
+                    <span style={{ fontWeight: 'bold' }}>
+
+                        {alojamiento.precio}€ por noche
+                        <br />
+                        <FontAwesomeIcon icon={faAward} /> Descuento de {alojamiento.descuento}%
+
+                    </span>
+
+                    <h3>
+                        <Button className="reservar-botones mt-2" onClick={reservarAlojamiento}>
+                            <FontAwesomeIcon icon={faHouse} /> Reserva desde {reservaInfo.huespedes * alojamiento.precio * reservaInfo.noches}€
+                        </Button>
+                    </h3>
+                </div>
+                <div className="col">
+
+                    <h5>
+                        ¿Qué fechas quieres viajar?
+                    </h5>
+
+                    <br/>
+
+                    <Calendar
+                        minimumDate={utils().getToday()}
+                        value={selectedDayRange}
+                        onChange={setSelectedDayRange}
+                        calendarClassName="responsive-calendar"
+                        disabledDays={diasReservados}
+                    />
 
                 </div>
+                <div className="col">
+
+                    <h5>
+                        ¿Quiénes van a viajar?
+                    </h5>
+
+                    <div className="row mt-4">
+
+                        <div className="col">
+                            Viajeros
+                        </div>
+                        <div className="col">
+                            <Button id="huespedes-resta" disabled={reservaInfo.huespedes <= 1} className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
+                                <FontAwesomeIcon icon={faMinus} style={{ color: 'black' }} />
+                            </Button>
+                        </div>
+                        <div className="col">
+                            <h5>
+                                {reservaInfo.huespedes}
+                            </h5>
+                        </div>
+                        <div className="col">
+                            <Button id="huespedes-suma" disabled={reservaInfo.huespedes >= alojamiento.viajeros} className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
+                                <FontAwesomeIcon icon={faPlus} style={{ color: 'black' }} />
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="row mt-3" style={ alojamiento.animales === true ? {} : { display: 'none' }}>
+                        <div className="col">
+                            Mascotas
+                        </div>
+                        <div className="col">
+                            <Button id="mascota-resta" disabled={reservaInfo.mascotas <= 1} className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
+                                <FontAwesomeIcon icon={faMinus} style={{ color: 'black' }} />
+                            </Button>
+                        </div>
+                        <div className="col">
+                            <h5>
+                                {reservaInfo.mascotas}
+                            </h5>
+                        </div>
+                        <div className="col">
+                            <Button id="mascota-suma" className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
+                                <FontAwesomeIcon icon={faPlus} style={{ color: 'black' }} />
+                            </Button>
+                        </div>
+                    </div>
+                </div>
             </div>
+            
+
+            <LoginModal mostrar={loginModal} funcionCerrar={cerrarLogin} />
+            <ValoracionesModal mostrar={valoracionesModal} funcionCerrar={cerrarValoraciones} />
         </div>
     );
 }

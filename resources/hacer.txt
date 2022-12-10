@@ -6,7 +6,6 @@ OBTENER LATITUD Y LONGITUD A PARTIR DE DIRECCIÓN
 DENUNCIAR PERFIL
 RESERVAR ALOJAMIENTO
 ENVIAR MENSAJE A HOSPEDADOR
-VALORACIONES Y VER COMENTARIOS DE VALORACIONES
 
 fast for holidays
 ff-hs
@@ -18,6 +17,9 @@ https://developers.google.com/maps/documentation/javascript/overview
 https://developers.google.com/maps/documentation/javascript/geocoding
 https://developers.google.com/maps/documentation/javascript/place-autocomplete
 https://www.npmjs.com/package/@react-google-maps/api
+
+DATEPICKER
+https://kiarash-z.github.io/react-modern-calendar-datepicker/docs/disabled-days
 
 SELENIUM
 https://www.npmjs.com/package/selenium-webdriver

@@ -163,6 +163,25 @@ CREATE TABLE IF NOT EXISTS `usuarios_denuncias` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 DELETE FROM `usuarios_denuncias`;
+----------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `usuarios_reservas` (
+    `ID` int NOT NULL AUTO_INCREMENT,
+	`usuarioID` int NOT NULL,
+	`alojamientoID` int NOT NULL,
+	`estado` int NOT NULL default 0,
+	`creadoEn` datetime NOT NULL default NOW(),
+	`fechaEntrada` datetime NOT NULL,
+	`fechaSalida` datetime NOT NULL,
+	`costeTotal` int NOT NULL,
+	`valoraEstancia` tinyint NOT NULL default 0,
+
+    CONSTRAINT FK_UsuarioReserva FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
+    CONSTRAINT FK_AlojamientoReserva FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID),
+    PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+DELETE FROM `usuarios_reservas`;
 
 ----------------------------------------------------------------------------------
 

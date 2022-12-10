@@ -69,3 +69,16 @@
     background-color: #00681f !important;
     border-color: black !important;
 }
+
+.reservar-botones {
+    background-color: #ff57bc !important;
+    border-color: black !important;
+
+    color: black !important;
+    font-weight: bold !important;
+}
+
+.reservar-botones:hover {
+    background-color: #a3006a !important;
+    border-color: black !important;
+}

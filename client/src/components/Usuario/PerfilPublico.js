@@ -443,7 +443,6 @@ function PerfilPublico() {
                         <FontAwesomeIcon icon={faStar} />&nbsp;{userValoraciones.length} valoraciones de hospedadores
                     </h3>
 
-                   
                     <ul className="lista-sin-numeros mt-3">
                         {
                             userValoraciones.map((x, index) => (

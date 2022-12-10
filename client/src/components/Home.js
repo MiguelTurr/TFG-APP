@@ -24,8 +24,6 @@ function Home() {
 
     const fetchItems = async (orden) => {
 
-        console.log(orden); // CAMBIAR QUERY CON ORDENAR
-
         const data = await fetch('/home', { 
             method: 'POST',
 

@@ -776,6 +776,27 @@ server.get('/alojamiento/valoraciones/:id', (req, res) => {
     });
 });
 
+server.get('/alojamiento/comentarios/:id', (req, res) => {
+
+    const alojamientoId = req.params.id;
+
+    mysql.query(`SELECT val.creadaEn,val.mensaje,usu.ID as usuarioId,usu.nombre,usu.residencia,usu.fechaReg FROM alojamientos_valoraciones as val 
+        INNER JOIN usuarios as usu ON val.usuarioID=usu.ID
+        WHERE val.alojamientoID=? ORDER BY val.creadaEn DESC`, alojamientoId,
+        function(err, result) {
+
+            if(err) {
+                res.status(500).json({ respuesta: 'err_db' });
+
+                console.log(err.message);
+                return;
+            }
+
+            res.status(200).json({ respuesta: 'correcto', valoraciones: result });
+        }
+    );
+});
+
 server.get('/alojamiento/add-favorito/:id', comprobarToken, (req, res) => {
 
     const alojamientoId = req.params.id;
@@ -914,6 +935,55 @@ server.get('/alojamiento/imagen/:id', (req, res) => {
     });
 });
 
+server.get('/alojamiento/reservas/dias/:id', (req, res) => {
+
+    const alojamientoId = req.params.id;
+
+    mysql.query('SELECT fechaEntrada,fechaSalida FROM usuarios_reservas WHERE alojamientoID=? AND fechaEntrada >= CURDATE()', alojamientoId,
+    function(err, result) {
+ 
+        if(err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        var len = result.length;
+        var arrayReservados = [];
+
+        for(var i = 0; i < len; i++) {
+            var inicio = new Date(result[i].fechaEntrada);
+            const final = new Date(result[i].fechaSalida);
+
+            var diff = (final - inicio) / (1000 * 60 * 60 * 24);
+
+            for(var w = 0; w < diff; w++) {
+
+                var objeto = {
+                    day: inicio.getDate(),
+                    month: inicio.getMonth() + 1,
+                    year: inicio.getFullYear(),
+                }
+    
+                arrayReservados.push(objeto);
+                inicio.setDate(objeto.day + 1);
+            }
+        }
+
+        res.status(200).json({ respuesta: 'correcto', reservados: arrayReservados });
+    });
+});
+
+server.post('/alojamiento/reservar', comprobarToken, (req, res) => {
+
+    if(req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    // HACER
+});
+
 //
 
 server.get('/usuario/ver/:id', (req, res) => {
@@ -980,7 +1050,7 @@ server.get('/usuario/valoraciones/:id', (req, res) => {
 
     const userId = req.params.id;
 
-    mysql.query(`SELECT val.creadoEn,val.mensaje,usu.ID as usuarioId,usu.nombre,usu.residencia,usu.fechaReg FROM usuarios_valoraciones as val
+    mysql.query(`SELECT val.creadoEn,val.mensaje,usu.ID as usuarioId,usu.nombre,usu.residencia,usu.fechaReg FROM usuarios_valoraciones as val 
         INNER JOIN usuarios as usu ON val.usuarioID=usu.ID
         WHERE val.userValoradoID=? ORDER BY val.creadoEn DESC`, userId,
         function(err, result) {

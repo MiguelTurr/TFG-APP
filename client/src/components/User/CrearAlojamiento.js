@@ -223,7 +223,6 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
         } else if (items.respuesta === 'correcto') {
-
             crearAlerta('exito', '¡Has creado un nuevo alojamiento!');
             vistaAlojamientos(false);
 
