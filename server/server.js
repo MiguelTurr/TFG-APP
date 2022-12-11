@@ -14,12 +14,13 @@ const randomstring = require("randomstring");
 
 const utils = require('./services/utils.js');
 const { bcrypt_salt, cookie_secret, dev_state } = require('./services/config.js');
+const { resolve } = require('path');
 
 //
 
 const server = express();
 
-server.use(express.json({limit: '50mb'}));
+server.use(express.json({ limit: '50mb' }));
 server.use(express.urlencoded({ extended: true, limit: '50mb' }));
 server.use(express.static('imagenes'));
 
@@ -42,7 +43,7 @@ const port = 8000;
 
 //
 
-server.listen(port, function() {
+server.listen(port, function () {
     console.log(`El servidor se está ejecutando en http://${hostname}:${port}/`);
 });
 
@@ -52,12 +53,12 @@ const comprobarToken = (req, _, next) => {
 
     const token = req.cookies.token;
 
-    if(token) {
-        try {
+    if (token) {
+        try {
             const decoded = jwt.verify(token, cookie_secret);
             req.userId = decoded.id;
 
-        } catch(err) {
+        } catch (err) {
         }
     }
 
@@ -68,11 +69,11 @@ const comprobarToken = (req, _, next) => {
 
 server.get('/cookies/aceptar', (req, res) => {
 
-    res.status(200).cookie('cookiesAceptadas', true, { 
-        httpOnly: false, 
-        expires: new Date(Date.now() + 31536000000), 
-        secure: false, 
-        sameSite: true 
+    res.status(200).cookie('cookiesAceptadas', true, {
+        httpOnly: false,
+        expires: new Date(Date.now() + 31536000000),
+        secure: false,
+        sameSite: true
     }).end();
 
 });
@@ -86,57 +87,57 @@ server.post('/registrar', async (req, res) => {
         charset: 'alphanumeric',
     });
 
-    mysql.query("INSERT INTO usuarios (verificacion, email, password, nombre, apellidos, genero, fechaNac, telefono, residencia) VALUES (?)", 
-    [
+    mysql.query("INSERT INTO usuarios (verificacion, email, password, nombre, apellidos, genero, fechaNac, telefono, residencia) VALUES (?)",
         [
-            validarEmail,
-            req.body.email,
-            passwordHash,
-            req.body.nombre,
-            req.body.apellidos,
-            req.body.genero,
-            req.body.fechaNac,
-            req.body.telefono,
-            req.body.residencia
-        ]
-    ], (err) => {
+            [
+                validarEmail,
+                req.body.email,
+                passwordHash,
+                req.body.nombre,
+                req.body.apellidos,
+                req.body.genero,
+                req.body.fechaNac,
+                req.body.telefono,
+                req.body.residencia
+            ]
+        ], (err) => {
 
-        if(err) {
+            if (err) {
 
-            console.log(err);
-            console.log(err.message);
+                console.log(err);
+                console.log(err.message);
 
-            if(err.code == 'ER_DUP_ENTRY') {
-                res.status(500).json({ respuesta: 'err_email' });
+                if (err.code == 'ER_DUP_ENTRY') {
+                    res.status(500).json({ respuesta: 'err_email' });
+                    return;
+                }
+
+                res.status(500).json({ respuesta: 'err_db' });
                 return;
             }
 
-            res.status(500).json({ respuesta: 'err_db' });
-            return;
-        }
+            // CORREO VERIFICACIÓN
 
-        // CORREO VERIFICACIÓN
+            try {
 
-        try {
+                var texto = 'Hola ' + req.body.nombre + ' ' + req.body.apellidos + ', su cuenta se ha creado correctamente, para verificarla pulsa el siguiente link:';
+                texto += '\n\n';
+                texto += 'localhost:3000/validar/' + validarEmail;
+                texto += '\n\nUn saludo desde 2FH.'
 
-            var texto = 'Hola '+req.body.nombre+ ' ' +req.body.apellidos+ ', su cuenta se ha creado correctamente, para verificarla pulsa el siguiente link:';
-            texto += '\n\n';
-            texto += 'localhost:3000/validar/' +validarEmail;
-            texto += '\n\nUn saludo desde 2FH.'
+                email.sendMail({
+                    from: 'FastForHolidays',
+                    to: req.body.email,
+                    subject: 'Código de verificación - 2FH',
+                    text: texto
+                });
 
-            email.sendMail({
-                from: 'FastForHolidays',
-                to: req.body.email,
-                subject: 'Código de verificación - 2FH',
-                text: texto
-            });
+                res.status(201).json({ respuesta: 'correcto' });
 
-            res.status(201).json({ respuesta: 'correcto' });
-        
-        } catch(err) {
-            res.status(401).json({ respuesta: 'err_envia_correo' });
-        }
-    });
+            } catch (err) {
+                res.status(401).json({ respuesta: 'err_envia_correo' });
+            }
+        });
 });
 
 server.post('/login', (req, res) => {
@@ -146,7 +147,7 @@ server.post('/login', (req, res) => {
 
     mysql.query("SELECT * FROM usuarios WHERE email=? LIMIT 1", userEmail, async (err, result) => {
 
-        if(err) {
+        if (err) {
             console.log(err);
             console.log(err.message);
 
@@ -154,18 +155,18 @@ server.post('/login', (req, res) => {
             return;
         }
 
-        if(result.length == 0) {
+        if (result.length == 0) {
             res.status(401).json({ respuesta: 'err_datos' });
             return;
         }
 
         const match = await bcrypt.compare(userPassword, result[0].password);
-        if(!match) {
+        if (!match) {
             res.status(401).json({ respuesta: 'err_datos' });
             return;
         }
 
-        if(result[0].activo == 0) {
+        if (result[0].activo == 0) {
             res.status(401).json({ respuesta: 'err_validado' });
             return;
         }
@@ -174,16 +175,16 @@ server.post('/login', (req, res) => {
         const token = jwt.sign({ id }, cookie_secret);
 
         res.status(201)
-        .cookie('token', token, { 
-            httpOnly: true,
-            expires: new Date(Date.now() + 31536000000), 
-            secure: true
+            .cookie('token', token, {
+                httpOnly: true,
+                expires: new Date(Date.now() + 31536000000),
+                secure: true
 
-        }).json({ 
-            respuesta: 'correcto',
-            autorizacion: true,
-            nombre: result[0].nombre
-        });
+            }).json({
+                respuesta: 'correcto',
+                autorizacion: true,
+                nombre: result[0].nombre
+            });
     });
 });
 
@@ -198,7 +199,7 @@ server.post('/noPassword', (req, res) => {
 
     mysql.query("SELECT passReset,nombre FROM usuarios WHERE email=? AND activo=1 LIMIT 1", emailRequest, async (err, result) => {
 
-        if(err) {
+        if (err) {
             console.log(err);
             console.log(err.message);
 
@@ -206,7 +207,7 @@ server.post('/noPassword', (req, res) => {
             return;
         }
 
-        if(result.length == 0) {
+        if (result.length == 0) {
             res.status(401).json({ respuesta: 'err_datos' });
             return;
         }
@@ -214,7 +215,7 @@ server.post('/noPassword', (req, res) => {
         const fechaHoy = new Date().getTime() / 1000;
         const fechaReset = result[0].passReset;
 
-        if(fechaReset > fechaHoy) {
+        if (fechaReset > fechaHoy) {
             res.status(401).json({ respuesta: 'err_reset' });
             return;
         }
@@ -229,21 +230,21 @@ server.post('/noPassword', (req, res) => {
 
         const userNombre = result[0].nombre;
 
-        mysql.query("UPDATE usuarios SET password=?,passReset=? WHERE email=? LIMIT 1", [passwordHash, nuevoReset, emailRequest], function(err) {
+        mysql.query("UPDATE usuarios SET password=?,passReset=? WHERE email=? LIMIT 1", [passwordHash, nuevoReset, emailRequest], function (err) {
 
-            if(err) {
+            if (err) {
                 console.log(err);
                 console.log(err.message);
-    
+
                 res.status(500).json({ respuesta: 'err_db' });
                 return;
             }
 
             try {
 
-                var texto = 'Hola ' +userNombre+ ', la contraseña vinculada a este correo ha sido reseteada correctamente:';
+                var texto = 'Hola ' + userNombre + ', la contraseña vinculada a este correo ha sido reseteada correctamente:';
                 texto += '\n\n';
-                texto += 'Nueva contraseña: ' +nuevaPassword;
+                texto += 'Nueva contraseña: ' + nuevaPassword;
                 texto += '\n\nUn saludo desde 2FH.'
 
                 email.sendMail({
@@ -253,8 +254,8 @@ server.post('/noPassword', (req, res) => {
                 });
 
                 res.status(201).json({ respuesta: 'correcto' });
-            
-            } catch(err) {
+
+            } catch (err) {
                 res.status(401).json({ respuesta: 'err_envia_correo' });
                 console.log(err);
             }
@@ -268,25 +269,25 @@ server.get('/validar/:id', (req, res) => {
 
     mysql.query("SELECT * FROM usuarios WHERE activo=0 AND verificacion=? LIMIT 1", verificacion, async (err, result) => {
 
-        if(err) {
+        if (err) {
             console.log(err);
             console.log(err.message);
-            
+
             res.status(500).json({ respuesta: 'err_db' });
             return;
         }
 
-        if(result.length == 0) {
+        if (result.length == 0) {
             res.status(401).json({ respuesta: 'err_datos' });
             return;
         }
 
         mysql.query("UPDATE usuarios SET activo=1 WHERE activo=0 AND verificacion=? LIMIT 1", verificacion, async (err) => {
 
-            if(err) {
+            if (err) {
                 console.log(err);
                 console.log(err.message);
-                
+
                 res.status(500).json({ respuesta: 'err_db' });
                 return;
             }
@@ -298,20 +299,20 @@ server.get('/validar/:id', (req, res) => {
 
 server.get('/perfil', comprobarToken, (req, res) => {
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
     mysql.query("SELECT * FROM usuarios WHERE ID=? LIMIT 1", req.userId, (err, result) => {
-        if(err) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
 
             console.log(err.message);
             return;
         }
 
-        res.status(201).json({ 
+        res.status(201).json({
             ID: result[0].ID,
             nombre: result[0].nombre,
             apellidos: result[0].apellidos,
@@ -333,26 +334,26 @@ server.get('/perfil', comprobarToken, (req, res) => {
 
 server.post('/perfil/editar', comprobarToken, (req, res) => {
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
     mysql.query("SELECT password FROM usuarios WHERE ID=? LIMIT 1", req.userId, async (err, result) => {
-        
-        if(err) {
+
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
             console.log(err.message);
             return;
         }
 
-        if(result.length == 0) {
+        if (result.length == 0) {
             res.status(500).json({ respuesta: 'err_user' });
             return;
         }
 
         const match = await bcrypt.compare(req.body.password, result[0].password);
-        if(!match) {
+        if (!match) {
             res.status(401).json({ respuesta: 'err_datos' });
             return;
         }
@@ -362,35 +363,35 @@ server.post('/perfil/editar', comprobarToken, (req, res) => {
         var query = 'UPDATE usuarios SET ';
 
         var datoEditado = req.body.editado;
-        if(req.body.tipo == 'password') {
+        if (req.body.tipo == 'password') {
             datoEditado = await bcrypt.hash(datoEditado, bcrypt_salt);
 
-        } else if(req.body.tipo == 'imagen') {
+        } else if (req.body.tipo == 'imagen') {
             const extension = req.body.editado.split('.')[1];
             datoEditado = utils.nombreFotoPerfil(req.userId, extension);
 
             req.body.tipo = 'imgPerfil';
         }
 
-        query += req.body.tipo+ '="' +datoEditado+ '" ';
-        query += 'WHERE ID=' +req.userId+ ' LIMIT 1';
-        
-        mysql.query(query, function(err, result) {
-            if(err) {
+        query += req.body.tipo + '="' + datoEditado + '" ';
+        query += 'WHERE ID=' + req.userId + ' LIMIT 1';
+
+        mysql.query(query, function (err, result) {
+            if (err) {
                 res.status(500).json({ respuesta: 'err_db' });
-    
+
                 console.log(err.message);
                 return;
             }
-    
-            if(result.affectedRows == 0) {
+
+            if (result.affectedRows == 0) {
                 res.status(500).json({ respuesta: 'err_datos' });
                 return;
             }
 
-            if(req.files != undefined) {
+            if (req.files != undefined) {
                 const avatar = req.files.imagen;
-                avatar.mv('./imagenes/perfil/' +datoEditado);
+                avatar.mv('./imagenes/perfil/' + datoEditado);
             }
 
             res.status(200).json({ respuesta: 'correcto' });
@@ -400,32 +401,32 @@ server.post('/perfil/editar', comprobarToken, (req, res) => {
 
 server.post('/perfil/editar/estado', comprobarToken, (req, res) => {
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
     var query = 'UPDATE usuarios SET ';
 
-    query += req.body.tipo+ '=' +parseInt(req.body.editado)+ ' ';
-    query += 'WHERE ID=' +req.userId+ ' LIMIT 1';
+    query += req.body.tipo + '=' + parseInt(req.body.editado) + ' ';
+    query += 'WHERE ID=' + req.userId + ' LIMIT 1';
 
-    mysql.query(query, function(err, result) {
-        if(err) {
+    mysql.query(query, function (err, result) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
 
             console.log(err.message);
             return;
         }
 
-        if(result.affectedRows == 0) {
+        if (result.affectedRows == 0) {
             res.status(500).json({ respuesta: 'err_datos' });
             return;
         }
 
-        if(req.files != undefined) {
+        if (req.files != undefined) {
             const avatar = req.files.imagen;
-            avatar.mv('./imagenes/perfil/' +datoEditado);
+            avatar.mv('./imagenes/perfil/' + datoEditado);
         }
 
         res.status(200).json({ respuesta: 'correcto' });
@@ -434,19 +435,19 @@ server.post('/perfil/editar/estado', comprobarToken, (req, res) => {
 
 server.post('/perfil/borrar', comprobarToken, (req, res) => {
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
     var query = 'UPDATE usuarios SET ';
 
-    if(req.body.tipo == 'imagen') {
+    if (req.body.tipo == 'imagen') {
 
         query += "imgPerfil='default.png' ";
 
-        fs.unlink('./imagenes/perfil/' +req.body.borrar, (err) => {
-            if(err) {
+        fs.unlink('./imagenes/perfil/' + req.body.borrar, (err) => {
+            if (err) {
                 res.status(500).json({ respuesta: 'err_server' });
 
                 console.log(err);
@@ -455,11 +456,11 @@ server.post('/perfil/borrar', comprobarToken, (req, res) => {
         });
     }
 
-    query += 'WHERE ID=' +req.userId+ ' LIMIT 1';
+    query += 'WHERE ID=' + req.userId + ' LIMIT 1';
 
-    mysql.query(query, function(err) {
+    mysql.query(query, function (err) {
 
-        if(err) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
 
             console.log(err.message);
@@ -472,29 +473,29 @@ server.post('/perfil/borrar', comprobarToken, (req, res) => {
 
 server.get('/perfil/foto', comprobarToken, (req, res) => {
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
     mysql.query("SELECT imgPerfil FROM usuarios WHERE ID=? LIMIT 1", req.userId, (err, result) => {
 
-        if(err) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
             console.log(err.message);
             return;
         }
-        
+
         const imagen = result[0].imgPerfil;
 
-        fs.readFile('./imagenes/perfil/' +imagen, function(err, file) {
+        fs.readFile('./imagenes/perfil/' + imagen, function (err, file) {
 
-            if(err) {
+            if (err) {
                 res.status(500).json({ respuesta: 'err_file' });
                 return;
             }
 
-            res.set({'Content-Type': 'image/jpg'});
+            res.set({ 'Content-Type': 'image/jpg' });
             res.end(file);
         });
     });
@@ -502,14 +503,14 @@ server.get('/perfil/foto', comprobarToken, (req, res) => {
 
 server.get('/perfil/eliminar', comprobarToken, (req, res) => {
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
-    mysql.query('DELETE FROM usuarios WHERE ID=? LIMIT 1', req.userId, function(err) {
+    mysql.query('DELETE FROM usuarios WHERE ID=? LIMIT 1', req.userId, function (err) {
 
-        if(err) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
             console.log(err.message);
             return;
@@ -521,13 +522,13 @@ server.get('/perfil/eliminar', comprobarToken, (req, res) => {
 
 server.get('/perfil/misalojamientos', comprobarToken, (req, res) => {
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
-    mysql.query('SELECT * FROM alojamientos WHERE usuarioID=? ORDER BY creadoEn DESC', req.userId, function(err, result) {
-        if(err) {
+    mysql.query('SELECT ID,ubicacion,precio,descuento,creadoEn,visitas,valoracionMedia,vecesValorado,valoracionesNuevas FROM alojamientos WHERE usuarioID=? ORDER BY creadoEn DESC', req.userId, function (err, result) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
 
             console.log(err.message);
@@ -540,7 +541,7 @@ server.get('/perfil/misalojamientos', comprobarToken, (req, res) => {
 
 server.post('/perfil/misalojamientos/crear', comprobarToken, (req, res) => {
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
@@ -559,78 +560,78 @@ server.post('/perfil/misalojamientos/crear', comprobarToken, (req, res) => {
 
     const horaEntrada = req.body.horaEntrada === 'undefined' ? null : req.body.horaEntrada;
     const horaSalida = req.body.horaSalida === 'undefined' ? null : req.body.horaSalida;
-    
-    mysql.query('INSERT INTO alojamientos (usuarioID, titulo, descripcion, precio, ubicacion, lat, lng, viajeros, habitaciones, camas, aseos, horaEntrada, horaSalida, puedeFumar, puedeFiestas, servicios) VALUES (?)', 
-    [
+
+    mysql.query('INSERT INTO alojamientos (usuarioID, titulo, descripcion, precio, ubicacion, lat, lng, viajeros, habitaciones, camas, aseos, horaEntrada, horaSalida, puedeFumar, puedeFiestas, servicios) VALUES (?)',
         [
-            req.userId,
-            req.body.titulo,
-            req.body.descripcion,
-            parseInt(req.body.precio),
-            req.body.ubicacion,
-            parseFloat(req.body.lat),
-            parseFloat(req.body.long),
-            parseInt(req.body.viajeros),
-            parseInt(req.body.habitaciones),
-            parseInt(req.body.camas),
-            parseInt(req.body.aseos),
-            horaEntrada,
-            horaSalida,
-            utils.boolToInt(req.body.puedeFumar),
-            utils.boolToInt(req.body.puedeFiestas),
-            servicios_final
-        ]
-    ], (err, result) => {
-        if(err) {
-            res.status(500).json({ respuesta: 'err_db' });
+            [
+                req.userId,
+                req.body.titulo,
+                req.body.descripcion,
+                parseInt(req.body.precio),
+                req.body.ubicacion,
+                parseFloat(req.body.lat),
+                parseFloat(req.body.long),
+                parseInt(req.body.viajeros),
+                parseInt(req.body.habitaciones),
+                parseInt(req.body.camas),
+                parseInt(req.body.aseos),
+                horaEntrada,
+                horaSalida,
+                utils.boolToInt(req.body.puedeFumar),
+                utils.boolToInt(req.body.puedeFiestas),
+                servicios_final
+            ]
+        ], (err, result) => {
+            if (err) {
+                res.status(500).json({ respuesta: 'err_db' });
 
-            console.log(err.message);
-            return;
-        }
+                console.log(err.message);
+                return;
+            }
 
-        const alojamientoId = result.insertId;
+            const alojamientoId = result.insertId;
 
-        var arrayNombreImagenes = [];
+            var arrayNombreImagenes = [];
 
-        const imagenLen = req.files.imagen.length;
-        if(imagenLen === undefined) {
+            const imagenLen = req.files.imagen.length;
+            if (imagenLen === undefined) {
 
-            const file = req.files.imagen;
-
-            const extension = file.name.split('.')[1];
-            const nombreFile = utils.nombreFotoAlojamiento(alojamientoId, 0, extension);
-            
-            file.mv('./imagenes/casas/' +nombreFile);
-
-            arrayNombreImagenes.push([alojamientoId, nombreFile]);
-
-        } else {
-
-            for(var i = 0; i < imagenLen; i++) {
-
-                const file = req.files.imagen[i];
+                const file = req.files.imagen;
 
                 const extension = file.name.split('.')[1];
-                const nombreFile = utils.nombreFotoAlojamiento(alojamientoId, i, extension);
-                
-                file.mv('./imagenes/casas/' +nombreFile);
+                const nombreFile = utils.nombreFotoAlojamiento(alojamientoId, 0, extension);
+
+                file.mv('./imagenes/casas/' + nombreFile);
 
                 arrayNombreImagenes.push([alojamientoId, nombreFile]);
+
+            } else {
+
+                for (var i = 0; i < imagenLen; i++) {
+
+                    const file = req.files.imagen[i];
+
+                    const extension = file.name.split('.')[1];
+                    const nombreFile = utils.nombreFotoAlojamiento(alojamientoId, i, extension);
+
+                    file.mv('./imagenes/casas/' + nombreFile);
+
+                    arrayNombreImagenes.push([alojamientoId, nombreFile]);
+                }
             }
-        }
-        
-        mysql.query('INSERT INTO alojamientos_img (alojamientoID, nombre) VALUES ?', [arrayNombreImagenes]);
 
-        //
+            mysql.query('INSERT INTO alojamientos_img (alojamientoID, nombre) VALUES ?', [arrayNombreImagenes]);
 
-        res.status(200).json({ respuesta: 'correcto', alojamientoId: alojamientoId });
+            //
 
-    });
+            res.status(200).json({ respuesta: 'correcto', alojamientoId: alojamientoId });
+
+        });
 });
 
 server.post('/perfil/misalojamientos/editar/:id', comprobarToken, (req, res) => {
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
@@ -640,214 +641,221 @@ server.post('/perfil/misalojamientos/editar/:id', comprobarToken, (req, res) => 
 
 server.get('/perfil/mis-reservas/activas', comprobarToken, (req, res) => {
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
     mysql.query(`SELECT res.*,alo.ubicacion,alo.valoracionMedia,alo.vecesValorado FROM usuarios_reservas as res 
         INNER JOIN alojamientos as alo ON res.alojamientoID=alo.ID
-        WHERE res.usuarioID=? AND res.valoraEstancia=-1 AND res.estado!=-1 ORDER BY res.creadoEn DESC`, req.userId, function(err, result) {
+        WHERE res.usuarioID=? AND res.valoraEstancia=-1 AND res.estado!=-1 ORDER BY res.creadoEn DESC`, req.userId, function (err, result) {
 
-            if(err) {
-                res.status(500).json({ respuesta: 'err_db' });
-
-                console.log(err.message);
-                return;
-            }
-
-            var itemFinal = [];
-            var len = result.length;
-
-            for(var i = 0; i < len; i++) {
-
-                var element = result[i];
-
-                const inicio = new Date(element.fechaEntrada);
-                const final = new Date(element.fechaSalida);
-
-                var dias = (final - inicio) / (1000 * 60 * 60 * 24);
-
-                var objeto = {
-
-                    // RESERVA
-
-                    reservaID: element.ID,
-                    alojamientoID: element.alojamientoID,
-
-                    fechaEntrada: inicio,
-                    fechaSalida: final,
-                    dias: dias,
-                    costeTotal: element.costeTotal,
-                    estado: utils.estadoReserva(element.estado, final),
-
-                    // ALOJAMIENTO
-
-                    ubicacion: element.ubicacion,
-                    vecesValorado: element.vecesValorado,
-                    valoracionMedia: element.valoracionMedia,
-                };
-
-                itemFinal.push(objeto);
-            }
-    
-            res.status(200).json({ respuesta: 'correcto', reservas: itemFinal });
-        }
-    );
-});
-
-server.get('/perfil/mis-reservas/antiguas', comprobarToken, (req, res) => {
-
-    if(req.userId == undefined) {
-        res.status(500).json({ respuesta: 'err_user' });
-        return;
-    }
-
-    mysql.query(`SELECT res.*,alo.ubicacion,alo.valoracionMedia,alo.vecesValorado FROM usuarios_reservas as res 
-        INNER JOIN alojamientos as alo ON res.alojamientoID=alo.ID
-        WHERE res.usuarioID=? AND (res.valoraEstancia!=-1 OR res.estado=-1) ORDER BY res.creadoEn DESC`, req.userId, function(err, result) {
-
-            if(err) {
-                res.status(500).json({ respuesta: 'err_db' });
-
-                console.log(err.message);
-                return;
-            }
-
-            var itemFinal = [];
-            var len = result.length;
-
-            for(var i = 0; i < len; i++) {
-
-                var element = result[i];
-
-                const inicio = new Date(element.fechaEntrada);
-                const final = new Date(element.fechaSalida);
-
-                var dias = (final - inicio) / (1000 * 60 * 60 * 24);
-
-                var objeto = {
-
-                    // RESERVA
-
-                    reservaID: element.ID,
-                    alojamientoID: element.alojamientoID,
-                    userValoracion: element.valoraEstancia,
-                    hospedadorValoracion: element.valoraHospedador,
-
-                    fechaEntrada: inicio,
-                    fechaSalida: final,
-                    dias: dias,
-                    costeTotal: element.costeTotal,
-                    estado: utils.estadoReserva(element.estado, final),
-
-                    // ALOJAMIENTO
-
-                    ubicacion: element.ubicacion,
-                    vecesValorado: element.vecesValorado,
-                    valoracionMedia: element.valoracionMedia,
-                };
-
-                itemFinal.push(objeto);
-            }
-    
-            res.status(200).json({ respuesta: 'correcto', reservas: itemFinal });
-        }
-    );
-});
-
-server.post('/perfil/valorar/alojamiento', comprobarToken, (req, res) => {
-
-    if(req.userId == undefined) {
-        res.status(500).json({ respuesta: 'err_user' });
-        return;
-    }
-
-    mysql.query('INSERT INTO alojamientos_valoraciones (usuarioID,alojamientoID,mensaje,valLlegada,valVeracidad,valComunicacion,valUbicacion,valLimpieza,valCalidad) VALUES (?)', 
-    [
-        [  
-            req.userId,
-            req.body.alojamientoID,
-            req.body.mensaje,
-            req.body.llegada,
-            req.body.veracidad,
-            req.body.comunicacion,
-            req.body.ubicacion,
-            req.body.limpieza,
-            req.body.calidad,
-        ]
-    ], function(err, result) {
-        
-        if(err) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
 
             console.log(err.message);
             return;
         }
 
-        // ACTUALIZAR RESERVA
+        var itemFinal = [];
+        var len = result.length;
 
-        var valoracionId = result.insertId;
+        for (var i = 0; i < len; i++) {
 
-        mysql.query('UPDATE usuarios_reservas SET estado=2,valoraEstancia=? WHERE ID=?', [valoracionId, req.body.reservaID]);
+            var element = result[i];
 
-        //
+            const inicio = new Date(element.fechaEntrada);
+            const final = new Date(element.fechaSalida);
 
-        const llegada = parseFloat(req.body.llegada);
-        const veracidad = parseFloat(req.body.veracidad);
-        const comunicacion = parseFloat(req.body.comunicacion);
-        const ubicacion = parseFloat(req.body.ubicacion);
-        const limpieza = parseFloat(req.body.limpieza);
-        const calidad = parseFloat(req.body.calidad);
+            var dias = (final - inicio) / (1000 * 60 * 60 * 24);
 
-        const media = (llegada + veracidad + comunicacion + ubicacion + limpieza + calidad) / 6;
+            var objeto = {
 
-        const vecesValorado = parseInt(req.body.vecesValorado) + 1;
-        var valoracionMedia = (req.body.valoracionMedia + media) / 2; 
+                // RESERVA
 
-        mysql.query('UPDATE alojamientos SET vecesValorado=?,valoracionMedia=?,valoracionesNuevas=1 WHERE ID=? LIMIT 1', [vecesValorado, valoracionMedia.toFixed(2), req.body.alojamientoID]);
+                reservaID: element.ID,
+                alojamientoID: element.alojamientoID,
 
-        // ENVIAR CORREO AL DUEÑO ALOJAMIENTO
-        
-        mysql.query('SELECT usu.email,alo.titulo,alo.ubicacion FROM alojamientos as alo INNER JOIN usuarios as usu ON alo.usuarioID=usu.ID WHERE alo.ID=?', req.body.alojamientoID, function(err, result) {
-            if(err) {
+                fechaEntrada: inicio,
+                fechaSalida: final,
+                dias: dias,
+                costeTotal: element.costeTotal,
+                estado: utils.estadoReserva(element.estado, final),
+
+                // ALOJAMIENTO
+
+                ubicacion: element.ubicacion,
+                vecesValorado: element.vecesValorado,
+                valoracionMedia: element.valoracionMedia,
+            };
+
+            itemFinal.push(objeto);
+        }
+
+        res.status(200).json({ respuesta: 'correcto', reservas: itemFinal });
+    }
+    );
+});
+
+server.get('/perfil/mis-reservas/antiguas', comprobarToken, (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    mysql.query(`SELECT res.*,alo.ubicacion,alo.valoracionMedia,alo.vecesValorado FROM usuarios_reservas as res 
+        INNER JOIN alojamientos as alo ON res.alojamientoID=alo.ID
+        WHERE res.usuarioID=? AND (res.valoraEstancia!=-1 OR res.estado=-1) ORDER BY res.creadoEn DESC`, req.userId, function (err, result) {
+
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+
+            console.log(err.message);
+            return;
+        }
+
+        var itemFinal = [];
+        var len = result.length;
+
+        for (var i = 0; i < len; i++) {
+
+            var element = result[i];
+
+            const inicio = new Date(element.fechaEntrada);
+            const final = new Date(element.fechaSalida);
+
+            var dias = (final - inicio) / (1000 * 60 * 60 * 24);
+
+            var objeto = {
+
+                // RESERVA
+
+                reservaID: element.ID,
+                alojamientoID: element.alojamientoID,
+                userValoracion: element.valoraEstancia,
+                hospedadorValoracion: element.valoraHospedador,
+
+                fechaEntrada: inicio,
+                fechaSalida: final,
+                dias: dias,
+                costeTotal: element.costeTotal,
+                estado: utils.estadoReserva(element.estado, final),
+
+                // ALOJAMIENTO
+
+                ubicacion: element.ubicacion,
+                vecesValorado: element.vecesValorado,
+                valoracionMedia: element.valoracionMedia,
+            };
+
+            itemFinal.push(objeto);
+        }
+
+        res.status(200).json({ respuesta: 'correcto', reservas: itemFinal });
+    }
+    );
+});
+
+server.post('/perfil/valorar/alojamiento', comprobarToken, (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    mysql.query('INSERT INTO alojamientos_valoraciones (usuarioID,alojamientoID,mensaje,valLlegada,valVeracidad,valComunicacion,valUbicacion,valLimpieza,valCalidad) VALUES (?)',
+        [
+            [
+                req.userId,
+                req.body.alojamientoID,
+                req.body.mensaje,
+                req.body.llegada,
+                req.body.veracidad,
+                req.body.comunicacion,
+                req.body.ubicacion,
+                req.body.limpieza,
+                req.body.calidad,
+            ]
+        ], function (err, result) {
+
+            if (err) {
+                res.status(500).json({ respuesta: 'err_db' });
+
                 console.log(err.message);
                 return;
             }
 
-            if(result.length === 0) {
-                return;
-            }
+            // ACTUALIZAR RESERVA
 
-            // ENVIA
+            var valoracionId = result.insertId;
 
-            if(dev_state === false) {
+            mysql.query('UPDATE usuarios_reservas SET estado=2,valoraEstancia=? WHERE ID=?', [valoracionId, req.body.reservaID]);
 
-                try {
+            //
 
-                    var texto = 'Hola, nuevas valoraciones sobre su alojamiento en ' +result[0].ubicacion+ ' se han hecho, visite su perfil para leerlas.';
-                    texto += '\n\nUn saludo desde 2FH.'
+            const llegada = parseFloat(req.body.llegada);
+            const veracidad = parseFloat(req.body.veracidad);
+            const comunicacion = parseFloat(req.body.comunicacion);
+            const ubicacion = parseFloat(req.body.ubicacion);
+            const limpieza = parseFloat(req.body.limpieza);
+            const calidad = parseFloat(req.body.calidad);
 
-                    email.sendMail({
-                        from: 'FastForHolidays',
-                        to: (dev_state === true) ? 'pepecortezri@gmail.com' : result[0].email,
-                        subject: result[0].titulo+ ' ha recibido una valoración',
-                        text: texto
-                    });
+            const media = (llegada + veracidad + comunicacion + ubicacion + limpieza + calidad) / 6;
 
-                } catch (err) {
-                    console.log(err);
+            const vecesValorado = parseInt(req.body.vecesValorado) + 1;
+            var valoracionMedia = (req.body.valoracionMedia + media) / 2;
+
+            mysql.query('UPDATE alojamientos SET vecesValorado=?,valoracionMedia=?,valoracionesNuevas=1 WHERE ID=? LIMIT 1', [vecesValorado, valoracionMedia.toFixed(2), req.body.alojamientoID]);
+
+            // ENVIAR CORREO AL DUEÑO ALOJAMIENTO
+
+            mysql.query('SELECT usu.email,alo.titulo,alo.ubicacion FROM alojamientos as alo INNER JOIN usuarios as usu ON alo.usuarioID=usu.ID WHERE alo.ID=?', req.body.alojamientoID, function (err, result) {
+                if (err) {
+                    console.log(err.message);
+                    return;
                 }
-            }
-        }); 
 
-        //
-        
-        res.status(200).json({ respuesta: 'correcto', userValoracion: valoracionId });
-    });
+                if (result.length === 0) {
+                    return;
+                }
+
+                // ENVIA
+
+                if (dev_state === false) {
+
+                    try {
+
+                        var texto = 'Hola, nuevas valoraciones sobre su alojamiento en ' + result[0].ubicacion + ' se han hecho, visite su perfil para leerlas.';
+                        texto += '\n\nUn saludo desde 2FH.'
+
+                        email.sendMail({
+                            from: 'FastForHolidays',
+                            to: (dev_state === true) ? 'pepecortezri@gmail.com' : result[0].email,
+                            subject: result[0].titulo + ' ha recibido una valoración',
+                            text: texto
+                        });
+
+                    } catch (err) {
+                        console.log(err);
+                    }
+                }
+            });
+
+            //
+
+            res.status(200).json({ respuesta: 'correcto', userValoracion: valoracionId });
+        });
 });
 
 server.post('/perfil/valorar/inquilino', comprobarToken, (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    // HACER
 
 });
 
@@ -858,19 +866,17 @@ server.get('/perfil/valoracion-hospedador/ver/:id', (req, res) => {
     mysql.query(`SELECT val.creadoEn,val.mensaje,usu.fechaReg,usu.ID,usu.nombre,usu.residencia
         FROM usuarios_valoraciones as val 
         INNER JOIN usuarios as usu ON val.usuarioID=usu.ID 
-        WHERE val.ID=? LIMIT 1`, valoracionId, 
-        
-        function(err, result) {
+        WHERE val.ID=? LIMIT 1`, valoracionId,
 
-            if(err) {
+        function (err, result) {
+
+            if (err) {
                 res.status(500).json({ respuesta: 'err_db' });
 
                 console.log(err.message);
                 return;
             }
 
-            console.log(result);
-            
             res.status(200).json({ respuesta: 'correcto', valoracion: result });
         }
     );
@@ -884,17 +890,17 @@ server.get('/perfil/valoracion-cliente/ver/:id', (req, res) => {
     mysql.query(`SELECT val.creadaEn,val.mensaje,usu.fechaReg,usu.ID,usu.nombre,usu.residencia
         FROM alojamientos_valoraciones as val 
         INNER JOIN usuarios as usu ON val.usuarioID=usu.ID 
-        WHERE val.ID=? LIMIT 1`, valoracionId, 
-        
-        function(err, result) {
+        WHERE val.ID=? LIMIT 1`, valoracionId,
 
-            if(err) {
+        function (err, result) {
+
+            if (err) {
                 res.status(500).json({ respuesta: 'err_db' });
 
                 console.log(err.message);
                 return;
             }
-            
+
             res.status(200).json({ respuesta: 'correcto', valoracion: result });
         }
     );
@@ -905,35 +911,162 @@ server.get('/perfil/valoracion-hospedador/ver/:id', (req, res) => {
 
 });
 
-server.get('/perfil/favoritos', comprobarToken, (req, res) => {
+server.get('/perfil/mis-chats', comprobarToken, (req, res) => {
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
-    mysql.query('SELECT alo.* FROM `usuarios_favoritos` as fav INNER JOIN `alojamientos` as alo ON fav.alojamientoID=alo.ID WHERE fav.usuarioID=?', req.userId, function(err, result) {
+    const mensajes = [
+        {
+           texto: 'Hola esto es una prueba de mensaje',
+           propio: false
+        },
+        {
+           texto: 'otro mensaje',
+           propio: false
+        },
+        {
+           texto: 'Hola hola',
+           propio: false
+        },
+        {
+           texto: 'xddddddddddddddddddddddd',
+           propio: true
+        },
+        {
+           texto: 'xddddddddddddddddddddddd',
+           propio: true
+        },
+        {
+           texto: 'xddddddddddddddddddddddd',
+           propio: true
+        },
+        {
+           texto: 'xddddddddddddddddddddddd',
+           propio: false
+        },
+        {
+           texto: 'xddddddddddddddddddddddd',
+           propio: false
+        },
+    ];
 
-        if(err) {
+    const basico = [
+        {
+            texto: 'Primer mensaje de prueba',
+            propio: true
+        }
+    ]
+
+    const array = [
+        {
+            nombre: 'Juan Ángel',
+            mensajes: mensajes,
+            fecha: '20/10/2022',
+        },
+        {
+            nombre: 'Federico',
+            mensajes: basico,
+            fecha: '20/10/2022',
+        },
+        {
+            nombre: 'Maria',
+            mensajes: basico,
+            fecha: '20/12/2022',
+        }
+    ];
+
+    // HACER
+
+    res.status(200).json({ respuesta: 'correcto', chats: array });
+});
+
+server.post('/perfil/mis-chats/mensaje', comprobarToken, (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    
+});
+
+server.get('/perfil/favoritos', comprobarToken, (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    mysql.query('SELECT alo.* FROM `usuarios_favoritos` as fav INNER JOIN `alojamientos` as alo ON fav.alojamientoID=alo.ID WHERE fav.usuarioID=?', req.userId, function (err, result) {
+
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
 
             console.log(err.message);
             return;
         }
-        
+
         res.status(200).json({ respuesta: 'correcto', alojamientos: result });
     });
 });
 
-server.get('/perfil/recomendados', comprobarToken, (req, res) => {
+server.get('/perfil/recomendados',  comprobarToken, async (req, res) => {
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
-    // HACER    
+    var arrayTotal = [];
+
+    const arrayFav = await new Promise((resolve) => {
+        mysql.query(`SELECT alo.precio,alo.ubicacion,alo.lat,alo.lng FROM usuarios_favoritos as fav 
+            INNER JOIN alojamientos as alo ON fav.alojamientoID=alo.ID
+            WHERE fav.usuarioID=?`, req.userId, function (err, result) {
+
+            if (err) {
+                res.status(500).json({ respuesta: 'err_db' });
+
+                console.log(err.message);
+                return;
+            }
+
+            return resolve(result);
+        });
+    });
+
+    const arrayReservados = await new Promise((resolve) => {
+        mysql.query(`SELECT alo.precio,alo.ubicacion,alo.lat,alo.lng FROM usuarios_reservas as res 
+            INNER JOIN alojamientos as alo ON res.alojamientoID=alo.ID
+            WHERE res.usuarioID=? GROUP BY res.alojamientoID`, req.userId, function (err, result) {
+
+            if (err) {
+                res.status(500).json({ respuesta: 'err_db' });
+
+                console.log(err.message);
+                return;
+            }
+
+            return resolve(result);
+        });
+    }); 
     
+    arrayTotal = arrayFav.concat(arrayReservados);
+
+    if (arrayTotal.length === 0) {
+        res.status(500).json({ respuesta: 'correcto', recomendados: [] });
+        return;
+    }
+
+    console.log(arrayTotal);
+
+    res.status(500).json({ respuesta: 'correcto', recomendados: arrayTotal });
+
+    // HACER   
+
 });
 
 //
@@ -942,16 +1075,16 @@ server.get('/alojamiento/hospedador/:id', (req, res) => {
 
     const hospedadorId = req.params.id;
 
-    mysql.query('SELECT * FROM usuarios WHERE ID=? LIMIT 1', hospedadorId, function(err, result) {
+    mysql.query('SELECT * FROM usuarios WHERE ID=? LIMIT 1', hospedadorId, function (err, result) {
 
-        if(err) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
 
             console.log(err.message);
             return;
         }
 
-        if(result.length == 0) {
+        if (result.length == 0) {
             res.status(401).json({ respuesta: 'err_datos' });
             return;
         }
@@ -972,23 +1105,23 @@ server.get('/alojamiento/hospedador/foto/:id', comprobarToken, (req, res) => {
 
     mysql.query("SELECT imgPerfil FROM usuarios WHERE ID=? LIMIT 1", hospedadorId, (err, result) => {
 
-        if(err) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
 
             console.log(err.message);
             return;
         }
-        
+
         const imagen = result[0].imgPerfil;
 
-        fs.readFile('./imagenes/perfil/' +imagen, function(err, file) {
+        fs.readFile('./imagenes/perfil/' + imagen, function (err, file) {
 
-            if(err) {
+            if (err) {
                 res.status(500).json({ respuesta: 'err_file' });
                 return;
             }
 
-            res.set({'Content-Type': 'image/jpg'});
+            res.set({ 'Content-Type': 'image/jpg' });
             res.end(file);
         });
     });
@@ -998,8 +1131,8 @@ server.get('/alojamiento/valoraciones/:id', (req, res) => {
 
     const alojamientoId = req.params.id;
 
-    mysql.query('SELECT valLlegada,valVeracidad,valComunicacion,valUbicacion,valLimpieza,valCalidad FROM alojamientos_valoraciones WHERE alojamientoID=?', alojamientoId, function(err, result) {
-        if(err) {
+    mysql.query('SELECT valLlegada,valVeracidad,valComunicacion,valUbicacion,valLimpieza,valCalidad FROM alojamientos_valoraciones WHERE alojamientoID=?', alojamientoId, function (err, result) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
 
             console.log(err.message);
@@ -1017,19 +1150,19 @@ server.get('/alojamiento/valoraciones/:id', (req, res) => {
 
         const len = result.length;
 
-        if(len > 0) {
+        if (len > 0) {
 
-            for(var i = 0; i < len; i++) {
+            for (var i = 0; i < len; i++) {
 
                 var item = result[i];
-    
+
                 final.llegada += item.valLlegada;
                 final.veracidad += item.valVeracidad;
                 final.comunicacion += item.valComunicacion;
                 final.ubicacion += item.valUbicacion;
                 final.limpieza += item.valLimpieza;
                 final.calidad += item.valCalidad;
-            } 
+            }
 
             final.llegada = (final.llegada / len).toFixed(1);
             final.veracidad = (final.veracidad / len).toFixed(1);
@@ -1050,9 +1183,9 @@ server.get('/alojamiento/comentarios/:id', (req, res) => {
     mysql.query(`SELECT val.creadaEn,val.mensaje,usu.ID as usuarioId,usu.nombre,usu.residencia,usu.fechaReg FROM alojamientos_valoraciones as val 
         INNER JOIN usuarios as usu ON val.usuarioID=usu.ID
         WHERE val.alojamientoID=? ORDER BY val.creadaEn DESC`, alojamientoId,
-        function(err, result) {
+        function (err, result) {
 
-            if(err) {
+            if (err) {
                 res.status(500).json({ respuesta: 'err_db' });
 
                 console.log(err.message);
@@ -1068,7 +1201,7 @@ server.get('/alojamiento/add-favorito/:id', comprobarToken, (req, res) => {
 
     const alojamientoId = req.params.id;
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
@@ -1078,36 +1211,36 @@ server.get('/alojamiento/add-favorito/:id', comprobarToken, (req, res) => {
             req.userId,
             parseInt(alojamientoId)
         ]
-    ], function(err) {
+    ], function (err) {
 
-            if(err) {
-                res.status(500).json({ respuesta: 'err_db' });
-                console.log(err.message);
-                console.log(err);
-                return;
-            }
-
-            res.status(200).json({ respuesta: 'correcto', fav: true });
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            console.log(err);
+            return;
         }
+
+        res.status(200).json({ respuesta: 'correcto', fav: true });
+    }
     );
 });
 
 server.get('/alojamiento/remove-favorito/:id', comprobarToken, (req, res) => {
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
     const alojamientoId = req.params.id;
 
-    mysql.query('DELETE FROM usuarios_favoritos WHERE usuarioID=? AND alojamientoID=?', [ req.userId, parseInt(alojamientoId) ], function(err) {
+    mysql.query('DELETE FROM usuarios_favoritos WHERE usuarioID=? AND alojamientoID=?', [req.userId, parseInt(alojamientoId)], function (err) {
 
-         if(err) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
             console.log(err.message);
             return;
-         }
+        }
 
         res.status(200).json({ respuesta: 'correcto', fav: false });
     });
@@ -1119,25 +1252,25 @@ server.get('/alojamiento/ver/:id', comprobarToken, (req, res) => {
 
     var queryStr = '';
 
-    if(req.userId === undefined) {
+    if (req.userId === undefined) {
         queryStr += 'SELECT * FROM alojamientos WHERE ID=? LIMIT 1';
 
     } else {
         queryStr = 'SELECT alo.*, fav.ID as favorito FROM alojamientos as alo \
-        LEFT JOIN usuarios_favoritos as fav ON fav.alojamientoID=alo.ID AND fav.usuarioID=' +req.userId+ ' \
+        LEFT JOIN usuarios_favoritos as fav ON fav.alojamientoID=alo.ID AND fav.usuarioID=' + req.userId + ' \
         WHERE alo.ID=? LIMIT 1';
     }
 
     mysql.query(queryStr, id, (err, result) => {
 
-        if(err) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
             console.log(err.message);
             return;
         }
 
-        if(result.length == 0) {
-            
+        if (result.length == 0) {
+
             res.status(500).json({ respuesta: 'err_datos' });
             return;
         }
@@ -1154,18 +1287,18 @@ server.get('/alojamiento/ver/:id', comprobarToken, (req, res) => {
         result[0].calefaccion = servicios >> 1 & 0x0000001;
         result[0].television = servicios & 0x0000001;
 
-        if(result[0].favorito === undefined) {
+        if (result[0].favorito === undefined) {
             result[0].favorito = null;
         }
 
         var entrada = result[0].horaEntrada;
         var salida = result[0].horaSalida;
 
-        if(entrada != null) {
+        if (entrada != null) {
             result[0].horaEntrada = entrada.substring(0, 5);
         }
 
-        if(salida != null) {
+        if (salida != null) {
             result[0].horaSalida = salida.substring(0, 5);
         }
 
@@ -1177,31 +1310,31 @@ server.get('/alojamiento/ver/:id', comprobarToken, (req, res) => {
 
 server.get('/alojamiento/imagen/:id', (req, res) => {
 
-    const [ id, index ] = req.params.id.split('-');
+    const [id, index] = req.params.id.split('-');
 
     mysql.query("SELECT nombre FROM alojamientos_img WHERE alojamientoID=?", id, (err, result) => {
 
-        if(err) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
             console.log(err.message);
             return;
         }
 
-        if(result.length === 0) {
+        if (result.length === 0) {
             res.status(500).json({ respuesta: 'err_db' });
             return;
         }
-        
+
         const imagen = result[index].nombre;
 
-        fs.readFile('./imagenes/casas/' +imagen, function(err, file) {
+        fs.readFile('./imagenes/casas/' + imagen, function (err, file) {
 
-            if(err) {
+            if (err) {
                 res.status(500).json({ respuesta: 'err_file' });
                 return;
             }
 
-            res.set({'Content-Type': 'image/*'});
+            res.set({ 'Content-Type': 'image/*' });
             res.end(file);
         });
     });
@@ -1212,43 +1345,43 @@ server.get('/alojamiento/reservas/dias/:id', (req, res) => {
     const alojamientoId = req.params.id;
 
     mysql.query('SELECT fechaEntrada,fechaSalida FROM usuarios_reservas WHERE alojamientoID=? AND fechaEntrada >= CURDATE()', alojamientoId,
-    function(err, result) {
- 
-        if(err) {
-            res.status(500).json({ respuesta: 'err_db' });
-            console.log(err.message);
-            return;
-        }
+        function (err, result) {
 
-        var len = result.length;
-        var arrayReservados = [];
-
-        for(var i = 0; i < len; i++) {
-            var inicio = new Date(result[i].fechaEntrada);
-            const final = new Date(result[i].fechaSalida);
-
-            var diff = (final - inicio) / (1000 * 60 * 60 * 24);
-
-            for(var w = 0; w < diff; w++) {
-
-                var objeto = {
-                    day: inicio.getDate(),
-                    month: inicio.getMonth() + 1,
-                    year: inicio.getFullYear(),
-                }
-    
-                arrayReservados.push(objeto);
-                inicio.setDate(objeto.day + 1);
+            if (err) {
+                res.status(500).json({ respuesta: 'err_db' });
+                console.log(err.message);
+                return;
             }
-        }
 
-        res.status(200).json({ respuesta: 'correcto', reservados: arrayReservados });
-    });
+            var len = result.length;
+            var arrayReservados = [];
+
+            for (var i = 0; i < len; i++) {
+                var inicio = new Date(result[i].fechaEntrada);
+                const final = new Date(result[i].fechaSalida);
+
+                var diff = (final - inicio) / (1000 * 60 * 60 * 24);
+
+                for (var w = 0; w < diff; w++) {
+
+                    var objeto = {
+                        day: inicio.getDate(),
+                        month: inicio.getMonth() + 1,
+                        year: inicio.getFullYear(),
+                    }
+
+                    arrayReservados.push(objeto);
+                    inicio.setDate(objeto.day + 1);
+                }
+            }
+
+            res.status(200).json({ respuesta: 'correcto', reservados: arrayReservados });
+        });
 });
 
 server.post('/alojamiento/reservar', comprobarToken, (req, res) => {
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
@@ -1262,16 +1395,16 @@ server.get('/usuario/ver/:id', (req, res) => {
 
     const userId = req.params.id;
 
-    mysql.query('SELECT nombre,apellidos,presentacion,residencia,trabajo,idiomas,fechaReg FROM usuarios WHERE ID=? LIMIT 1', userId, function(err, result) {
+    mysql.query('SELECT nombre,apellidos,presentacion,residencia,trabajo,idiomas,fechaReg FROM usuarios WHERE ID=? LIMIT 1', userId, function (err, result) {
 
-        if(err) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
 
             console.log(err.message);
             return;
         }
 
-        if(result.length == 0) {
+        if (result.length == 0) {
             res.status(401).json({ respuesta: 'err_datos' });
             return;
         }
@@ -1284,8 +1417,8 @@ server.get('/usuario/alojamientos/:id', (req, res) => {
 
     const userId = req.params.id;
 
-    mysql.query('SELECT ID,valoracionMedia,vecesValorado,ubicacion FROM alojamientos WHERE usuarioID=? ORDER BY creadoEn DESC', userId, function(err, result) {
-        if(err) {
+    mysql.query('SELECT ID,valoracionMedia,vecesValorado,ubicacion FROM alojamientos WHERE usuarioID=? ORDER BY creadoEn DESC', userId, function (err, result) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
 
             console.log(err.message);
@@ -1303,10 +1436,10 @@ server.get('/usuario/alojamientos/valoraciones/:id', (req, res) => {
     mysql.query(`SELECT val.creadaEn,val.mensaje,alo.ID as alojamientoId,alo.ubicacion,usu.ID as usuarioId,usu.nombre,usu.residencia,usu.fechaReg FROM alojamientos as alo
         INNER JOIN alojamientos_valoraciones as val ON val.alojamientoID=alo.ID
         INNER JOIN usuarios as usu ON val.usuarioID=usu.ID 
-        WHERE alo.usuarioID=? ORDER BY val.creadaEn DESC`, userId, 
+        WHERE alo.usuarioID=? ORDER BY val.creadaEn DESC`, userId,
 
-        function(err, result) {
-            if(err) {
+        function (err, result) {
+            if (err) {
                 res.status(500).json({ respuesta: 'err_db' });
 
                 console.log(err.message);
@@ -1325,9 +1458,9 @@ server.get('/usuario/valoraciones/:id', (req, res) => {
     mysql.query(`SELECT val.creadoEn,val.mensaje,usu.ID as usuarioId,usu.nombre,usu.residencia,usu.fechaReg FROM usuarios_valoraciones as val 
         INNER JOIN usuarios as usu ON val.usuarioID=usu.ID
         WHERE val.userValoradoID=? ORDER BY val.creadoEn DESC`, userId,
-        function(err, result) {
+        function (err, result) {
 
-            if(err) {
+            if (err) {
                 res.status(500).json({ respuesta: 'err_db' });
 
                 console.log(err.message);
@@ -1340,30 +1473,30 @@ server.get('/usuario/valoraciones/:id', (req, res) => {
 });
 
 server.post('/usuario/denuncia', comprobarToken, (req, res) => {
-    
-    if(req.userId == undefined) {
+
+    if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
-    mysql.query('INSERT INTO usuarios_denuncias (usuarioID, reportadoID, mensaje) VALUES (?)', 
-    [
+    mysql.query('INSERT INTO usuarios_denuncias (usuarioID, reportadoID, mensaje) VALUES (?)',
         [
-            req.userId,
-            req.body.denunciadoId,
-            req.body.mensaje,
-        ]
-    ], function(err) {
-        
-        if(err) {
-            res.status(500).json({ respuesta: 'err_db' });
+            [
+                req.userId,
+                req.body.denunciadoId,
+                req.body.mensaje,
+            ]
+        ], function (err) {
 
-            console.log(err.message);
-            return;
-        }
+            if (err) {
+                res.status(500).json({ respuesta: 'err_db' });
 
-        res.status(200).json({ respuesta: 'correcto' });
-    });
+                console.log(err.message);
+                return;
+            }
+
+            res.status(200).json({ respuesta: 'correcto' });
+        });
 });
 
 //
@@ -1376,34 +1509,34 @@ server.post('/home', comprobarToken, (req, res) => {
 
     var queryStr = '';
 
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         queryStr += 'SELECT * FROM alojamientos as alo ';
 
     } else {
         queryStr += 'SELECT alo.*, fav.ID as favorito FROM `alojamientos` as alo ';
-        queryStr += 'LEFT JOIN `usuarios_favoritos` as fav ON fav.alojamientoID=alo.ID AND fav.usuarioID=' +req.userId+ ' ';
-        queryStr += 'WHERE alo.usuarioID!=' +req.userId+ ' ';
+        queryStr += 'LEFT JOIN `usuarios_favoritos` as fav ON fav.alojamientoID=alo.ID AND fav.usuarioID=' + req.userId + ' ';
+        queryStr += 'WHERE alo.usuarioID!=' + req.userId + ' ';
     }
 
     // ORDENAR
 
     var ordenadoPor = ['fecha', 'desc'];
 
-    if(req.body.ordenar !== null) {
+    if (req.body.ordenar !== null) {
         ordenadoPor = req.body.ordenar.split('-');
     }
 
-    if(ordenadoPor[0] === 'fecha') {
+    if (ordenadoPor[0] === 'fecha') {
         queryStr += 'ORDER BY alo.creadoEn ';
 
-    } else if(ordenadoPor[0] === 'relevancia') {
+    } else if (ordenadoPor[0] === 'relevancia') {
         queryStr += 'ORDER BY alo.visitas ';
 
-    } else if(ordenadoPor[0] === 'precio') {
+    } else if (ordenadoPor[0] === 'precio') {
         queryStr += 'ORDER BY alo.precio ';
     }
 
-    queryStr += ordenadoPor[1]+ ' ';
+    queryStr += ordenadoPor[1] + ' ';
 
     //
 
@@ -1411,8 +1544,8 @@ server.post('/home', comprobarToken, (req, res) => {
 
     //
 
-    mysql.query(queryStr, function(err, result) {
-        if(err) {
+    mysql.query(queryStr, function (err, result) {
+        if (err) {
             res.status(500).json({ respuesta: 'err_db' });
 
             console.log(err.message);

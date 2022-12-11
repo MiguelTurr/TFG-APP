@@ -5,9 +5,7 @@ import { faLocationDot, faStar } from '@fortawesome/free-solid-svg-icons';
 
 import NoProfileImg from '../../img/no-profile-img.png';
 
-import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
 
 const ValorarModal = ({ valoraciones, funcionCerrar }) => {
 
@@ -44,7 +42,8 @@ const ValorarModal = ({ valoraciones, funcionCerrar }) => {
 
     const obtenerValoracionUser = async () => {
 
-        if (valoraciones !== null && valoraciones.userValoracion === -1) {
+        if (valoraciones === null || valoraciones.userValoracion === -1) {
+            setValoracionUser(null);
             return;
         }
 
@@ -64,7 +63,8 @@ const ValorarModal = ({ valoraciones, funcionCerrar }) => {
 
     const obtenerValoracionHospedador = async () => {
 
-        if (valoraciones !== null && valoraciones.hospedadorValoracion === -1) {
+        if (valoraciones === null || valoraciones.hospedadorValoracion === -1) {
+            setValoracionHospedador(null);
             return;
         }
 

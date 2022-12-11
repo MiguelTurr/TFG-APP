@@ -273,9 +273,10 @@ function Nav() {
                                     <Dropdown.Item eventKey="1" href="/perfil">Perfil</Dropdown.Item>
                                     <Dropdown.Item eventKey="2" href="/perfil/mis-alojamientos">Mis alojamientos</Dropdown.Item>
                                     <Dropdown.Item eventKey="4" href="/perfil/mis-reservas">Mis reservas</Dropdown.Item>
-                                    <Dropdown.Item eventKey="3" href="/ayuda">Ayuda</Dropdown.Item>
+                                    <Dropdown.Item eventKey="5" href="/perfil/mis-chats">Mis mensajes</Dropdown.Item>
+                                    <Dropdown.Item eventKey="6" href="/ayuda">Ayuda</Dropdown.Item>
                                     <Dropdown.Divider />
-                                    <Dropdown.Item eventKey="5" onClick={cerrarSesion}>Cerrar sesión</Dropdown.Item>
+                                    <Dropdown.Item eventKey="7" onClick={cerrarSesion}>Cerrar sesión</Dropdown.Item>
                                 </>
                             }
                         </Dropdown.Menu>

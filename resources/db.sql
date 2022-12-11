@@ -188,6 +188,13 @@ DELETE FROM `usuarios_reservas`;
 
 ----------------------------------------------------------------------------------
 
+CREATE TABLE IF NOT EXISTS `usuarios_chats` (
+    `ID` int NOT NULL AUTO_INCREMENT,
+
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+DELETE FROM `usuarios_mensajes`;
+
 CREATE TABLE IF NOT EXISTS `usuarios_mensajes` (
     `ID` int NOT NULL AUTO_INCREMENT,
 	`emisorID` int NOT NULL,

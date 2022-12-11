@@ -1,4 +1,5 @@
 import Nav from './components/Nav';
+import Footer from './components/Home/Footer';
 import Home from './components/Home';
 
 import Ayuda from './components/General/Ayuda';
@@ -13,6 +14,7 @@ import PerfilPublico from './components/Usuario/PerfilPublico';
 
 import ReservarAlojamiento from './components/Reservas/ReservarAlojamiento';
 import UserReservas from './components/User/UserReservas';
+import UserChats from './components/Mensajes/UserChats';
 
 import RegistroValidar from './components/Sesion/RegistroValidar';
 import RecordarPassword from './components/Sesion/RecordarPassword';
@@ -49,6 +51,7 @@ function App() {
           <Route path="/perfil" element={ <Perfil /> }/>
           <Route path="/perfil/mis-alojamientos" element={ <UserAlojamientos /> }/>
           <Route path='/perfil/mis-reservas' element={ <UserReservas /> }/>
+          <Route path='/perfil/mis-chats' element={ <UserChats /> }/>
           <Route path="/perfil/favoritos" element={ <Favoritos /> }/>
           <Route path="/perfil/recomendados" element={ <Recomendaciones /> }/>
 
@@ -60,7 +63,8 @@ function App() {
           <Route path="*" element={<Home />} />
 
         </Routes>
-        
+
+        <Footer />
         <Cookies/>
       </div>
       

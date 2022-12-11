@@ -4,6 +4,7 @@ import '../../css/UserAlojamientos.css';
 import userLogin from '../../js/autorizado.js';
 
 import CrearAlojamiento from './CrearAlojamiento.js';
+import EditarAlojamiento from './EditarAlojamiento.js';
 import { crearAlerta } from '../Toast/Toast.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -20,7 +21,7 @@ function UserAlojamientos() {
     //
 
     const [userAlojamientos, setUserAlojamientos] = useState([]);
-    const [vistaCrear, setVistaCrear] = useState(false);
+    const [vista, setVista] = useState('principal');
 
     const obtenerAlojamientos = async () => {
         const data = await fetch('/perfil/misalojamientos', {
@@ -49,18 +50,30 @@ function UserAlojamientos() {
         obtenerAlojamientos();
     }, []);
 
+    //
+
+    const [editAlojamiento, setEditalojamiento] = useState(null);
+
     const editarAlojamiento = (e, key) => {
-        console.log(key);
+        setVista('editar');
+        setEditalojamiento(userAlojamientos[key].ID)
     };
 
+    //
+
     const crearAlojamiento = () => {
-        setVistaCrear(true);
+        setVista('crear');
+    };
+
+    const addNuevoAlojamiento = (info) => {
+        setUserAlojamientos([info, ...userAlojamientos]);
     };
 
     return(
         <div className="container-fluid">
 
-            {vistaCrear === false && <>
+            <div style={ vista === 'principal' ? {} : {display: 'none'}}>
+
                 <div className="row">
 
                     <div className="col">
@@ -114,8 +127,10 @@ function UserAlojamientos() {
 
                     </tbody>
                 </table>
-            </>}
-            <CrearAlojamiento show={vistaCrear} vistaAlojamientos={setVistaCrear}/>
+            </div>
+
+            <CrearAlojamiento show={vista} vistaAlojamientos={setVista} nuevoAlojamiento={addNuevoAlojamiento}/>
+            <EditarAlojamiento show={vista} vistaAlojamientos={setVista} alojamientoId={editAlojamiento} />
         </div>
     )
 }

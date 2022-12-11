@@ -17,10 +17,9 @@ import Row from 'react-bootstrap/Row';
 const center = {
     lat: -3.745,
     lng: -38.523
-  };
+};
   
-
-function CrearAlojamiento({ show, vistaAlojamientos }) {
+function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
 
     const [map, setMap] = React.useState(null)
 
@@ -224,16 +223,25 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
 
         } else if (items.respuesta === 'correcto') {
             crearAlerta('exito', '¡Has creado un nuevo alojamiento!');
-            vistaAlojamientos(false);
+            vistaAlojamientos('principal');
 
             // AÑADIR A LA LISTA
 
-            //console.log('alojamientoId: ' +items.alojamientoId)
+            nuevoAlojamiento({
+                ID: items.alojamientoId,
+                ubicacion: form.ubicacion,
+                precio: form.precio,
+                creadoEn: new Date(),
+                valoracionMedia: 0,
+                vecesValorado: 0,
+                visitas: 0,
+                valoracionesNuevas: 0,
+            });
         }
     };
 
-    return (<>
-        {show === true && <div className="container-fluid mb-5">
+    return (
+        <div className="container-fluid mb-5" style={show === 'crear' ? {} : { display: 'none' }}>
 
             <Form onSubmit={crearNuevoAlojamiento}>
                     <div className="row">
@@ -291,7 +299,7 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
                         <Form.Group className="mb-3">
 
                             <Row>
-                                <Col>
+                                <Col xs={4}>
                                     <Form.Label>Viajeros</Form.Label>
                                 </Col>
                                 <Col>
@@ -314,7 +322,7 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
 
                         <Form.Group className="mb-3">
                             <Row>
-                                <Col>
+                                <Col xs={4}>
                                     <Form.Label>Habitaciones</Form.Label>
                                 </Col>
                                 <Col>
@@ -338,7 +346,7 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
                         <Form.Group className="mb-3">
 
                             <Row>
-                                <Col>
+                                <Col xs={4}>
                                     <Form.Label>Camas</Form.Label>
                                 </Col>
                                 <Col>
@@ -362,7 +370,7 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
                         <Form.Group className="mb-3">
 
                             <Row>
-                                <Col>
+                                <Col xs={4}>
                                     <Form.Label htmlFor="viajeros">Aseos</Form.Label>
                                 </Col>
                                 <Col>
@@ -527,7 +535,7 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
 
                     </div>
 
-                    <div className="col-sm separador-izquierda">
+                    <div className={window.innerWidth < 600 ? "col-sm" : "col-sm separador-izquierda"}>
 
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="mod-password-2">Ubicación</Form.Label>
@@ -598,7 +606,7 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
 
                 <hr />
 
-                <Button className="filtros-botones" size="sm" onClick={() => { vistaAlojamientos(false) }}>
+                <Button className="filtros-botones" size="sm" onClick={() => { vistaAlojamientos('principal') }}>
                     <FontAwesomeIcon icon={faArrowLeft} /> Volver
                 </Button>
                 &nbsp;&nbsp;
@@ -607,8 +615,8 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
                 </Button>
 
             </Form>
-        </div>}
-    </>);
+        </div>
+    );
 }
 
 export default CrearAlojamiento;

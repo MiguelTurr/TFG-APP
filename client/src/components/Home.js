@@ -1,6 +1,5 @@
 import React from 'react';
 import '../css/Home.css';
-import Footer from './Home/Footer';
 
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from 'react';
@@ -117,8 +116,6 @@ function Home() {
                 }
             </div>
         </div>
-
-        <Footer />  
     </>
     );
 }

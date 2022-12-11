@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from "react-router-dom";
+
 import '../../css/Footer.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -6,12 +8,26 @@ import { faGlobe } from '@fortawesome/free-solid-svg-icons'
 
 function Footer() {
 
+    const [posicion, setPosicion] = useState('sticky');
+    const location = useLocation();
+
+    useEffect(() => {
+
+        if (location.pathname === '/' || location.pathname === '/home') {
+            setPosicion('sticky');
+
+        } else {
+            setPosicion('fixed');
+        }
+
+    }, [location]);
+
     return (
-        <div className="footer">
-            <hr/>
+        <div className="footer" style={{ position: posicion }}>
 
-            <div className="container-fluid">
+            <hr style={posicion === 'sticky' ? {} : {display: 'none'}}/>
 
+            <div className={posicion === 'sticky' ? "container-fluid" : "container-fluid mt-2 mb-2"}>
                 <div className="row">
 
                     <div className="col">
@@ -34,8 +50,8 @@ function Footer() {
                     </div>
                 </div>
             </div>
-            <hr/>
 
+            <br style={posicion === 'sticky' ? {} : {display: 'none'}}/>
         </div>
     );
 }
