@@ -1,6 +1,6 @@
 import React from "react";
 
-import { crearAlerta } from './Toast/Toast.js';
+import { crearAlerta } from '../Toast/Toast.js';
 
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';

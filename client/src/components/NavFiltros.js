@@ -51,7 +51,7 @@ function NavFiltros({ fav, rec }) {
 
             <div className="row mb-2">
 
-                <div className="col">
+                <div className={window.innerWidth < 600 ? "mb-4" : "col"}>
 
                     <strong>Ordenar por:&nbsp;</strong>
 
@@ -81,14 +81,14 @@ function NavFiltros({ fav, rec }) {
 
                 </div>
 
-                <div className="col text-center">
+                <div className={window.innerWidth < 600 ? "mb-4" : "col text-center"}>
 
                     <Button className="filtros-botones" size="sm">
                         <FontAwesomeIcon icon={faSliders} /> Otros filtros
                     </Button>
                 </div>
 
-                <div className="col filtros-derecha">
+                <div className={window.innerWidth < 600 ? "" : "col filtros-derecha"}>
                     <strong>Ir a:&nbsp;</strong>
 
                     <div className="btn-group" role="group">

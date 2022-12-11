@@ -1,7 +1,7 @@
 import React from "react";
 
-import { crearAlerta } from './Toast/Toast.js';
-import userLogin from '../js/autorizado';
+import { crearAlerta } from '../Toast/Toast.js';
+import userLogin from '../../js/autorizado';
 
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';

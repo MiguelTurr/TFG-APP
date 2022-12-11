@@ -1,11 +1,11 @@
 import React from "react";
-import '../css/RegistroModal.css';
+import '../../css/RegistroModal.css';
 
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
-import phonePrefix from '../resources/phone-prefix.json';
+import phonePrefix from '../../resources/phone-prefix.json';
 
 const Registro = ({ mostrar, funcionCerrar, funcionRegistro }) => {
     return (

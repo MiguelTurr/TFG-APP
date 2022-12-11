@@ -4,8 +4,8 @@ import '../css/Nav.css';
 import { crearAlerta } from './Toast/Toast.js';
 import BuscarLugar from "./Maps/buscarLugar.js";
 
-import LoginModal from './LoginModal';
-import RegistroModal from './RegistroModal';
+import LoginModal from './Sesion/LoginModal';
+import RegistroModal from './Sesion/RegistroModal';
 import NavFiltros from './NavFiltros';
 import userLogin from '../js/autorizado';
 
@@ -14,7 +14,6 @@ import NoProfileImg from '../img/no-profile-img.png';
 
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
-import Navbar from 'react-bootstrap/Navbar';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faBars } from '@fortawesome/free-solid-svg-icons';
@@ -273,9 +272,10 @@ function Nav() {
                                 <>
                                     <Dropdown.Item eventKey="1" href="/perfil">Perfil</Dropdown.Item>
                                     <Dropdown.Item eventKey="2" href="/perfil/mis-alojamientos">Mis alojamientos</Dropdown.Item>
+                                    <Dropdown.Item eventKey="4" href="/perfil/mis-reservas">Mis reservas</Dropdown.Item>
                                     <Dropdown.Item eventKey="3" href="/ayuda">Ayuda</Dropdown.Item>
                                     <Dropdown.Divider />
-                                    <Dropdown.Item eventKey="4" onClick={cerrarSesion}>Cerrar sesión</Dropdown.Item>
+                                    <Dropdown.Item eventKey="5" onClick={cerrarSesion}>Cerrar sesión</Dropdown.Item>
                                 </>
                             }
                         </Dropdown.Menu>

@@ -5,7 +5,7 @@ import "react-modern-calendar-datepicker/lib/DatePicker.css";
 import { Calendar, utils } from "react-modern-calendar-datepicker";
 
 import ValoracionesModal from './ValoracionesModal';
-import LoginModal from '../LoginModal';
+import LoginModal from '../Sesion/LoginModal';
 
 import { crearAlerta } from '../Toast/Toast.js';
 import userLogin from '../../js/autorizado';
@@ -281,12 +281,12 @@ function VerAlojamiento() {
             </div>
 
             <div className="row">  
-                <div className="col">
+                <div className={window.innerWidth < 600 ? "mb-2" : "col"}>
                     {alojamiento.viajeros} viajeros &#183; {alojamiento.habitaciones} habitaciones &#183; {alojamiento.camas} camas &#183; {alojamiento.aseos} baños
                 
                 </div>
 
-                <div className="col" style={{ textAlign: 'right' }}>
+                <div className="col" style={ window.innerWidth < 600 ? {} : { textAlign: 'right' }}>
 
                     <Button className="filtros-botones" size="sm" onClick={copiarAlojamiento}>
                         <FontAwesomeIcon icon={faDownload} /> Compartir
@@ -334,7 +334,7 @@ function VerAlojamiento() {
 
             <div className="row">
 
-                <div className="col">
+                <div className={window.innerWidth < 600 ? "mb-2" : "col"}>
                     <h3>
                         ¿Qué hay en la casa?
                     </h3>
@@ -441,7 +441,7 @@ function VerAlojamiento() {
             <hr/>
 
             <div className="row">
-                <div className="col">
+                <div className={window.innerWidth < 600 ? "mb-2" : "col"}>
                     <h3>
                         ¿Quién es tu hospedador?
                     </h3>
@@ -452,7 +452,7 @@ function VerAlojamiento() {
                             <img src={usuarioImg} key={usuarioImg} className="img-fluid rounded-pill" alt="Imagen de perfil del usuario"></img>
                         </div>
 
-                        <div className="col">
+                        <div className={window.innerWidth < 600 ? "col text-center" : "col"}>
                             <span style={{ fontSize: '20px' }}>
                                 Hospedador: {alojamientoUsuario.nombre}
                             </span>
@@ -465,6 +465,8 @@ function VerAlojamiento() {
 
                         </div>
                     </div>
+
+                    <hr style={window.innerWidth < 600 ? {} : {display: 'none'}}/>
 
                     <div className="mt-3">
                         <Button className="filtros-botones" size="sm" onClick={irPerfilHospedador}>
@@ -492,7 +494,7 @@ function VerAlojamiento() {
                 {alojamiento.vecesValorado !== 0 &&
                     <div className="col">
                         <h3>
-                            {alojamiento.vecesValorado} reseñas [ <FontAwesomeIcon icon={faStar} /> {parseFloat(alojamiento.valoracionMedia).toFixed(2)} ]
+                            <FontAwesomeIcon icon={faStar} /> {parseFloat(alojamiento.valoracionMedia).toFixed(2)} <span className="text-muted">({alojamiento.vecesValorado})</span>
                         </h3>
 
                         <ul className="lista-sin-numeros">

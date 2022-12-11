@@ -1,9 +1,15 @@
 import React from "react";
 
 function Privacidad() {
-    return(<>
-        <h1>Privacidad</h1>
-    </>);
+    return(
+        <div className="container-fluid">
+            <div className="row">
+                <div className="col">
+                    Privacidad
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default Privacidad;

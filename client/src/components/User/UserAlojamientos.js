@@ -84,7 +84,7 @@ function UserAlojamientos() {
 
                         {
                             userAlojamientos.map((x, index) => (
-                                <tr className="tabla-seleccion" onClick={e => { editarAlojamiento(e, index) }} key={index}>
+                                <tr className="tabla-seleccion" onClick={e => { editarAlojamiento(e, index) }} key={index} style={{ verticalAlign:'middle'}}>
                                     <td>
                                         <p>
                                             <FontAwesomeIcon icon={faLocationDot} /> {x.ubicacion}
@@ -93,18 +93,16 @@ function UserAlojamientos() {
                                         </p>
                                     </td>
 
-                                    <td style={{ verticalAlign:'middle'}}>
+                                    <td>
                                         { new Date(x.creadoEn).toLocaleDateString('es-ES', crearOptions) }
                                     </td>
 
                                     <td>
                                         {x.visitas} visitas
-                                        <br/>
-                                        {x.vecesValorado} valoraciones
                                     </td>
 
-                                    <td style={{ verticalAlign:'middle'}}>
-                                        <FontAwesomeIcon icon={faStar} /> {parseFloat(x.valoracionMedia).toFixed(2)}
+                                    <td>
+                                        <FontAwesomeIcon icon={faStar} /> {parseFloat(x.valoracionMedia).toFixed(2)} <span className="text-muted">({x.vecesValorado})</span>
                                     </td>
 
                                     <td className="arrow-style">

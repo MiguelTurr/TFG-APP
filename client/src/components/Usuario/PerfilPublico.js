@@ -3,7 +3,7 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from 'react';
 
-import LoginModal from '../LoginModal';
+import LoginModal from '../Sesion/LoginModal';
 import DenunciaModal from './DenunciarModal';
 
 import { crearAlerta } from '../Toast/Toast.js';
@@ -276,7 +276,7 @@ function PerfilPublico() {
 
                 </div>
 
-                <div className="col" style={{ marginLeft: '100px' }}>
+                <div className="col" style={window.innerWidth < 600 ? {} : { marginLeft: '100px' }}>
                     <span style={{ fontSize: '25px' }}>
                         Soy {infoPerfil.nombre} {infoPerfil.apellidos}
                     </span>

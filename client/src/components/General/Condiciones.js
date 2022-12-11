@@ -1,9 +1,15 @@
 import React from "react";
 
 function Condiciones() {
-    return(<>
-        <h1>Condiciones</h1>
-    </>);
+    return(
+        <div className="container-fluid">
+            <div className="row">
+                <div className="col">
+                    Condiciones
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default Condiciones;

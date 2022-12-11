@@ -226,6 +226,8 @@ function CrearAlojamiento({ show, vistaAlojamientos }) {
             crearAlerta('exito', '¡Has creado un nuevo alojamiento!');
             vistaAlojamientos(false);
 
+            // AÑADIR A LA LISTA
+
             //console.log('alojamientoId: ' +items.alojamientoId)
         }
     };

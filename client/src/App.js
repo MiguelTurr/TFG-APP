@@ -12,9 +12,10 @@ import VerAlojamiento from './components/Alojamiento/VerAlojamiento';
 import PerfilPublico from './components/Usuario/PerfilPublico';
 
 import ReservarAlojamiento from './components/Reservas/ReservarAlojamiento';
+import UserReservas from './components/User/UserReservas';
 
-import RegistroValidar from './components/RegistroValidar';
-import RecordarPassword from './components/RecordarPassword';
+import RegistroValidar from './components/Sesion/RegistroValidar';
+import RecordarPassword from './components/Sesion/RecordarPassword';
 import Perfil from './components/User/Perfil';
 import UserAlojamientos from './components/User/UserAlojamientos';
 import Favoritos from './components/User/Favoritos';
@@ -47,6 +48,7 @@ function App() {
           <Route path="/nopassword" element={ <RecordarPassword /> }/>
           <Route path="/perfil" element={ <Perfil /> }/>
           <Route path="/perfil/mis-alojamientos" element={ <UserAlojamientos /> }/>
+          <Route path='/perfil/mis-reservas' element={ <UserReservas /> }/>
           <Route path="/perfil/favoritos" element={ <Favoritos /> }/>
           <Route path="/perfil/recomendados" element={ <Recomendaciones /> }/>
 
