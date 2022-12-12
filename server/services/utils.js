@@ -49,9 +49,14 @@ function estadoReserva(estado, fechaFinal) {
     return resultado;
 }
 
+function diasEntreFechas(inicio, final) {
+    return (final - inicio) / (1000 * 60 * 60 * 24);
+}
+
 module.exports = {
     nombreFotoPerfil,
     nombreFotoAlojamiento,
     boolToInt,
     estadoReserva,
+    diasEntreFechas
 }

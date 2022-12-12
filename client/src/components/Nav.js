@@ -175,6 +175,8 @@ function Nav() {
         if(data.status === 200) {
             const items = await data.json();
             setMensajes(items.nuevosMensajes);
+
+            console.log(items);
         }
     };
 

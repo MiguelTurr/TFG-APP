@@ -192,7 +192,7 @@ CREATE TABLE IF NOT EXISTS `usuarios_chats` (
     `ID` int NOT NULL AUTO_INCREMENT,
 	`usuario1` int NOT NULL,
 	`usuario2` int NOT NULL,
-	`nuevosMensajes` tinyint NOT NULL default 0,
+	`nuevosMensajes` tinyint NOT NULL default 1,
 	`nuevoEn` datetime NOT NULL default NOW(),
 
     CONSTRAINT FK_ChatUsuarioUno FOREIGN KEY (usuario1) REFERENCES usuarios(ID),
@@ -206,7 +206,6 @@ CREATE TABLE IF NOT EXISTS `usuarios_chats_mensajes` (
     `ID` int NOT NULL AUTO_INCREMENT,
 	`chatID` int NOT NULL,
 	`emisorID` int NOT NULL,
-	`sinLeer` tinyint NOT NULL default 0,
 	`creadoEn` datetime NOT NULL default NOW(),
 	`mensaje` varchar(150) NOT NULL,
 

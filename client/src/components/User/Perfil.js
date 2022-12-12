@@ -445,7 +445,7 @@ function Perfil() {
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid mb-5">
 
             <div className="row">
 

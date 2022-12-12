@@ -213,8 +213,7 @@ function VerAlojamiento() {
         if(autorizado === false) {
             return setShowLogin(true);
         }
-
-        crearAlerta('exito', 'quiere enviar mensaje')
+        window.location.href = '/perfil/mis-chats?user=' +alojamientoUsuario.ID+ '&nombre=' +alojamientoUsuario.nombre;
     };
 
     var [valoracionesModal, setShowValoraciones] = useState(false);

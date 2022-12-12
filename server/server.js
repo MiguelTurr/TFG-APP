@@ -668,7 +668,7 @@ server.get('/perfil/mis-reservas/activas', comprobarToken, (req, res) => {
             const inicio = new Date(element.fechaEntrada);
             const final = new Date(element.fechaSalida);
 
-            var dias = (final - inicio) / (1000 * 60 * 60 * 24);
+            var dias = utils.diasEntreFechas(inicio, final);
 
             var objeto = {
 
@@ -726,7 +726,7 @@ server.get('/perfil/mis-reservas/antiguas', comprobarToken, (req, res) => {
             const inicio = new Date(element.fechaEntrada);
             const final = new Date(element.fechaSalida);
 
-            var dias = (final - inicio) / (1000 * 60 * 60 * 24);
+            var dias = utils.diasEntreFechas(inicio, final);
 
             var objeto = {
 
@@ -912,29 +912,65 @@ server.get('/perfil/valoracion-hospedador/ver/:id', (req, res) => {
 
 });
 
-server.get('/perfil/nuevos-mensajes', comprobarToken, (req, res) => {
+server.get('/perfil/nuevos-mensajes', comprobarToken, async (req, res) => {
 
     if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
-    mysql.query(`SELECT COUNT(*) AS count FROM usuarios_chats as chat
-        INNER JOIN usuarios_chats_mensajes as men
-        ON men.chatID=chat.ID AND men.emisorID!=9
-        WHERE (chat.usuario1=9 OR chat.usuario2=9) AND chat.nuevosMensajes>0`, [req.userId, req.userId], function(err, result) {
+    // NUEVOS MENSAJES
 
-            if(err) {
-                console.log(err.message);
-                res.status(200).json({ nuevosMensajes: 0 });
-                return;
+    const mensajes = await new Promise((resolve) => {
+        mysql.query(`SELECT chat.nuevosMensajes AS count FROM usuarios_chats as chat
+            INNER JOIN usuarios_chats_mensajes as men
+            ON men.chatID=chat.ID AND men.emisorID!=?
+            WHERE (chat.usuario1=? OR chat.usuario2=?) AND chat.nuevosMensajes>0 AND chat.nuevoEn=men.creadoEn`, [req.userId, req.userId, req.userId], function(err, result) {
+
+                if(err) {
+                    return resolve(0);
+                }
+
+                if(result.length === 0) {
+                    return resolve(0);
+                }
+
+                resolve(result[0].count);
             }
+        );
+    });
 
-            res.status(200).json({ nuevosMensajes: result[0].count });
-        }
-    );
+    // VALORACIONES COMO CLIENTE
 
-    // AÑADIR VALORACIONES SIN LEER
+    const userVal = await new Promise((resolve) => {
+        mysql.query('SELECT COUNT(*) as count FROM usuarios_valoraciones WHERE sinLeer=0 AND userValoradoID=?', req.userId, function(err, result) {
+            if(err) {
+                return resolve(0);
+            }
+            resolve(result[0].count);
+        });
+    });
+
+    // VALORACIONES COMO HOSPEDADOR
+
+    const hospedadorVal = await new Promise((resolve) => {
+        mysql.query(`SELECT COUNT(*) as count FROM alojamientos_valoraciones as val
+            INNER JOIN alojamientos as alo ON  alo.usuarioID=?
+            WHERE val.sinLeer=0 AND val.alojamientoID=alo.ID`, req.userId, function(err, result) {
+                if(err) {
+                    return resolve(0);
+                }
+                resolve(result[0].count);
+            }
+        );
+    });
+
+    // ENVIA TODO
+    
+    res.status(200).json({ 
+        nuevosMensajes: mensajes,
+        valoraciones: userVal + hospedadorVal,
+    });
 });
 
 server.get('/perfil/mis-chats', comprobarToken, (req, res) => {
@@ -944,7 +980,10 @@ server.get('/perfil/mis-chats', comprobarToken, (req, res) => {
         return;
     }
 
-    mysql.query('SELECT * FROM usuarios_chats WHERE usuario1=? OR usuario2=? ORDER BY nuevoEn DESC', [req.userId, req.userId], async function(err, result) {
+    mysql.query(`SELECT chat.*, usu.nombre FROM usuarios_chats as chat 
+        INNER JOIN usuarios as usu ON usu.ID!=? AND (chat.usuario1=usu.ID OR chat.usuario2=usu.ID)
+        WHERE chat.usuario1=? OR chat.usuario2=?
+        ORDER BY chat.nuevoEn DESC`, [req.userId, req.userId, req.userId], async function(err, result) {
 
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
@@ -953,102 +992,132 @@ server.get('/perfil/mis-chats', comprobarToken, (req, res) => {
             return;
         }
 
-        console.log(result);
+        var arrayFinal = [];
 
+        const fechaHoy = new Date().getTime();
         const len = result.length;
         for(var i = 0; i < len; i++) {
 
             const mensaje = await new Promise((resolve) => {
 
-                mysql.query('SELECT mensaje,creadoEn,emisorID FROM usuarios_chats_mensajes WHERE chatID=? ORDER BY creadoEn DESC LIMIT 1', [result[i].ID], function(err, result) {
+                mysql.query('SELECT mensaje,emisorID FROM usuarios_chats_mensajes WHERE chatID=? ORDER BY creadoEn DESC LIMIT 1', [result[i].ID], function(err, result) {
                     if(err) {
                         return resolve([]);
                     }
                     return resolve(result);
                 })
             });
-            console.log(mensaje);
+
+            var fechaFin = new Date(result[i].nuevoEn).getTime();
+            var diff = utils.diasEntreFechas(fechaFin, fechaHoy);
+
+            var objeto = {
+                chatID: result[i].ID,
+                hablarID: result[i].usuario1 === req.userId ? result[i].usuario2 : result[i].usuario1,
+                nombre: result[i].nombre,
+                fecha: result[i].nuevoEn,
+                hoy: diff <= 1 ? true : false,
+                sinLeer: mensaje[0].emisorID === req.userId ? 0 : result[i].nuevosMensajes,
+
+                // MENSAJE
+
+                propio: mensaje[0].emisorID === req.userId ? true : false,
+                mensaje: mensaje[0].mensaje,
+            }
+
+            arrayFinal.push(objeto);
         }
+        
+        res.status(200).json({ respuesta: 'correcto', chats: arrayFinal });
     });
-
-    console.log('envia');
-
-    const mensajes = [
-        {
-           texto: 'Hola esto es una prueba de mensaje',
-           propio: false
-        },
-        {
-           texto: 'otro mensaje',
-           propio: false
-        },
-        {
-           texto: 'Hola hola',
-           propio: false
-        },
-        {
-           texto: 'xddddddddddddddddddddddd',
-           propio: true
-        },
-        {
-           texto: 'xddddddddddddddddddddddd',
-           propio: true
-        },
-        {
-           texto: 'xddddddddddddddddddddddd',
-           propio: true
-        },
-        {
-           texto: 'xddddddddddddddddddddddd',
-           propio: false
-        },
-        {
-           texto: 'xddddddddddddddddddddddd',
-           propio: false
-        },
-    ];
-
-    const basico = [
-        {
-            texto: 'Primer mensaje de prueba',
-            propio: true
-        }
-    ]
-
-    const array = [
-        {
-            nombre: 'Juan Ángel',
-            mensajes: mensajes,
-            fecha: '20/10/2022',
-            sinLeer: 5
-        },
-        {
-            nombre: 'Federico',
-            mensajes: basico,
-            fecha: '20/10/2022',
-            sinLeer: 0
-        },
-        {
-            nombre: 'Maria',
-            mensajes: basico,
-            fecha: '20/12/2022',
-            sinLeer: 0
-        }
-    ];
-
-    // HACER
-
-    res.status(200).json({ respuesta: 'correcto', chats: array });
 });
 
-server.post('/perfil/mis-chats/mensaje', comprobarToken, (req, res) => {
+server.get('/perfil/mis-chats/chat/:id', comprobarToken, (req, res) => {
 
     if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
-    
+    const chatId = req.params.id;
+
+    mysql.query('SELECT emisorID,creadoEn,mensaje FROM usuarios_chats_mensajes WHERE chatID=? LIMIT 50', chatId, function(err, result) {
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        var len = result.length;
+
+        if(result[len-1].emisorID !== req.userId) {
+            mysql.query('UPDATE usuarios_chats SET nuevosMensajes=0 WHERE ID=?', chatId);
+        }
+
+        for(var i = 0; i < len; i++) {
+            result[i].propio = result[i].emisorID === req.userId ? true : false;
+        }
+
+        res.status(200).json({ respuesta: 'correcto', mensajes: result });
+    });
+});
+
+server.post('/perfil/mis-chats/nuevo-mensaje', comprobarToken, (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    if(req.body.chatID === undefined) {
+
+        mysql.query('INSERT INTO usuarios_chats (usuario1, usuario2) VALUES (?)', [
+            [
+                req.userId,
+                req.body.hablarId
+            ]
+        ], function(err, result) {
+            if(err) {
+                res.status(500).json({ respuesta: 'err_db' });
+                console.log(err.message);
+                return;
+            }
+
+            //
+
+            mysql.query('INSERT INTO usuarios_chats_mensajes (chatID, emisorID, mensaje) VALUES (?)', [
+                [
+                    result.insertId,
+                    req.userId,
+                    req.body.mensaje,
+                ]
+            ]);
+
+            //
+            
+            res.status(200).json({ respuesta: 'correcto', chatID: result.insertId });
+        });
+
+        return;
+    }
+
+    mysql.query('INSERT INTO usuarios_chats_mensajes (chatID, emisorID, mensaje) VALUES (?)', [
+        [
+            req.body.chatID,
+            req.userId,
+            req.body.mensaje,
+        ]
+    ], function(err) {
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        mysql.query('UPDATE usuarios_chats SET nuevosMensajes=nuevosMensajes+1,nuevoEn=NOW() WHERE ID=?', req.body.chatID);
+
+        res.status(200).json({ respuesta: 'correcto' });
+    });
 });
 
 server.get('/perfil/favoritos', comprobarToken, (req, res) => {
@@ -1418,7 +1487,7 @@ server.get('/alojamiento/reservas/dias/:id', (req, res) => {
                 var inicio = new Date(result[i].fechaEntrada);
                 const final = new Date(result[i].fechaSalida);
 
-                var diff = (final - inicio) / (1000 * 60 * 60 * 24);
+                var diff = utils.diasEntreFechas(inicio, final);
 
                 for (var w = 0; w < diff; w++) {
 

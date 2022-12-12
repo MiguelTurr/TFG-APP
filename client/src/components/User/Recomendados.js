@@ -38,7 +38,7 @@ function Recomendaciones() {
     };
 
     return (
-        <div className="container-fluid">
+        <div className="container-fluid mb-5">
 
             <div className="row">
 
@@ -62,7 +62,8 @@ function Recomendaciones() {
                                  <img
                                     className="card-img-top"
                                     height="250px"
-                                    src={imgAlojamientos[index]}/>
+                                    src={imgAlojamientos[index]}
+                                    alt="Imagen del alojamiento"/>
 
                                 <Card.Body className="card-body info-casa">
 
