@@ -7,7 +7,7 @@ import { faPaperPlane, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
 
-function Item({ children }) {
+function Mensaje({ children }) {
     const ref = useRef();
   
     useEffect(() => {
@@ -96,15 +96,23 @@ function UserChats() {
                                     <td style={{ width: '20%' }}>
                                         <img
                                             className="img-fluid rounded-pill"
-                                            src={NoProfileImg} />
+                                            src={NoProfileImg}
+                                            alt="Imagen de perfil del usuario" />
                                     </td>
                                     <td>
                                         {x.nombre}
                                         <br />
                                         {x.mensajes[0].texto.substring(0, 12)} {x.mensajes[0].texto.length > 12 ? '...' : ''}
                                     </td>
-                                    <td>
+
+                                    <td style={{ textAlign: 'right'}}>
                                         {x.fecha}
+                                        <span style={ x.sinLeer > 0 ? {} : { display: 'none'}}>
+                                            &nbsp;&nbsp;
+                                            <span style={{backgroundColor: '#ffaf2b', padding: '8px', borderRadius: '20px' }}>
+                                                &nbsp;{x.sinLeer}&nbsp;
+                                            </span>
+                                        </span>
                                     </td>
                                 </tr>
                                 ))
@@ -140,7 +148,7 @@ function UserChats() {
 
                             {
                                 chatMensajes.map((x, index) => (<>
-                                    <Item key={index}>{x}</Item>
+                                    <Mensaje key={index}>{x}</Mensaje>
                                 </>))
                             }
 

@@ -190,25 +190,32 @@ DELETE FROM `usuarios_reservas`;
 
 CREATE TABLE IF NOT EXISTS `usuarios_chats` (
     `ID` int NOT NULL AUTO_INCREMENT,
+	`usuario1` int NOT NULL,
+	`usuario2` int NOT NULL,
+	`nuevosMensajes` tinyint NOT NULL default 0,
+	`nuevoEn` datetime NOT NULL default NOW(),
 
+    CONSTRAINT FK_ChatUsuarioUno FOREIGN KEY (usuario1) REFERENCES usuarios(ID),
+    CONSTRAINT FK_ChatUsuarioDos FOREIGN KEY (usuario2) REFERENCES usuarios(ID),
+    PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-DELETE FROM `usuarios_mensajes`;
+DELETE FROM `usuarios_chats`;
 
-CREATE TABLE IF NOT EXISTS `usuarios_mensajes` (
+CREATE TABLE IF NOT EXISTS `usuarios_chats_mensajes` (
     `ID` int NOT NULL AUTO_INCREMENT,
+	`chatID` int NOT NULL,
 	`emisorID` int NOT NULL,
-	`receptorID` int NOT NULL,
 	`sinLeer` tinyint NOT NULL default 0,
 	`creadoEn` datetime NOT NULL default NOW(),
 	`mensaje` varchar(150) NOT NULL,
 
 
+    CONSTRAINT FK_ChatMensaje FOREIGN KEY (chatID) REFERENCES usuarios_chats(ID),
     CONSTRAINT FK_EmisorMensaje FOREIGN KEY (emisorID) REFERENCES usuarios(ID),
-    CONSTRAINT FK_ReceptorMensaje FOREIGN KEY (receptorID) REFERENCES usuarios(ID),
     PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-DELETE FROM `usuarios_mensajes`;
+DELETE FROM `usuarios_chats_mensajes`;
 
 ----------------------------------------------------------------------------------

@@ -15,6 +15,7 @@ const randomstring = require("randomstring");
 const utils = require('./services/utils.js');
 const { bcrypt_salt, cookie_secret, dev_state } = require('./services/config.js');
 const { resolve } = require('path');
+const { json } = require('express');
 
 //
 
@@ -911,12 +912,66 @@ server.get('/perfil/valoracion-hospedador/ver/:id', (req, res) => {
 
 });
 
+server.get('/perfil/nuevos-mensajes', comprobarToken, (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    mysql.query(`SELECT COUNT(*) AS count FROM usuarios_chats as chat
+        INNER JOIN usuarios_chats_mensajes as men
+        ON men.chatID=chat.ID AND men.emisorID!=9
+        WHERE (chat.usuario1=9 OR chat.usuario2=9) AND chat.nuevosMensajes>0`, [req.userId, req.userId], function(err, result) {
+
+            if(err) {
+                console.log(err.message);
+                res.status(200).json({ nuevosMensajes: 0 });
+                return;
+            }
+
+            res.status(200).json({ nuevosMensajes: result[0].count });
+        }
+    );
+
+    // AÑADIR VALORACIONES SIN LEER
+});
+
 server.get('/perfil/mis-chats', comprobarToken, (req, res) => {
 
     if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
+
+    mysql.query('SELECT * FROM usuarios_chats WHERE usuario1=? OR usuario2=? ORDER BY nuevoEn DESC', [req.userId, req.userId], async function(err, result) {
+
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+
+            console.log(err.message);
+            return;
+        }
+
+        console.log(result);
+
+        const len = result.length;
+        for(var i = 0; i < len; i++) {
+
+            const mensaje = await new Promise((resolve) => {
+
+                mysql.query('SELECT mensaje,creadoEn,emisorID FROM usuarios_chats_mensajes WHERE chatID=? ORDER BY creadoEn DESC LIMIT 1', [result[i].ID], function(err, result) {
+                    if(err) {
+                        return resolve([]);
+                    }
+                    return resolve(result);
+                })
+            });
+            console.log(mensaje);
+        }
+    });
+
+    console.log('envia');
 
     const mensajes = [
         {
@@ -965,16 +1020,19 @@ server.get('/perfil/mis-chats', comprobarToken, (req, res) => {
             nombre: 'Juan Ángel',
             mensajes: mensajes,
             fecha: '20/10/2022',
+            sinLeer: 5
         },
         {
             nombre: 'Federico',
             mensajes: basico,
             fecha: '20/10/2022',
+            sinLeer: 0
         },
         {
             nombre: 'Maria',
             mensajes: basico,
             fecha: '20/12/2022',
+            sinLeer: 0
         }
     ];
 

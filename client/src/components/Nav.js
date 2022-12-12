@@ -161,8 +161,22 @@ function Nav() {
     useEffect(() => {
         if(autorizado === true) {
             cargarFotoPerfil();
+            cargarNovedades();
         }
-    });
+    }, [autorizado]);
+
+    // MENSAJES NUEVOS
+
+    const [mensajes, setMensajes] = useState(0);
+
+    const cargarNovedades = async () => {
+        const data = await fetch('/perfil/nuevos-mensajes', { method: 'GET' });
+
+        if(data.status === 200) {
+            const items = await data.json();
+            setMensajes(items.nuevosMensajes);
+        }
+    };
 
     // BUSCAR
 
@@ -259,28 +273,39 @@ function Nav() {
                                                     />
                         </Dropdown.Toggle>
 
-                        <Dropdown.Menu>{autorizado === false &&
-                                <>
-                                    <Dropdown.Item eventKey="1" onClick={mostrarRegistro}>Regístrate</Dropdown.Item>
-                                    <Dropdown.Item eventKey="2" onClick={mostrarLogin}>Inicia sesión</Dropdown.Item>
-                                    <Dropdown.Divider />
-                                    <Dropdown.Item eventKey="3" href="/ayuda">Ayuda</Dropdown.Item>
-                                </>
-                            }
+                        <Dropdown.Menu>
 
-                            {autorizado === true &&
-                                <>
-                                    <Dropdown.Item eventKey="1" href="/perfil">Perfil</Dropdown.Item>
-                                    <Dropdown.Item eventKey="2" href="/perfil/mis-alojamientos">Mis alojamientos</Dropdown.Item>
-                                    <Dropdown.Item eventKey="4" href="/perfil/mis-reservas">Mis reservas</Dropdown.Item>
-                                    <Dropdown.Item eventKey="5" href="/perfil/mis-chats">Mis mensajes</Dropdown.Item>
-                                    <Dropdown.Item eventKey="6" href="/ayuda">Ayuda</Dropdown.Item>
-                                    <Dropdown.Divider />
-                                    <Dropdown.Item eventKey="7" onClick={cerrarSesion}>Cerrar sesión</Dropdown.Item>
-                                </>
-                            }
+                            <span style={autorizado === false ? {} : { display: 'none' }}>
+                                <Dropdown.Item eventKey="1" onClick={mostrarRegistro}>Regístrate</Dropdown.Item>
+                                <Dropdown.Item eventKey="2" onClick={mostrarLogin}>Inicia sesión</Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item eventKey="3" href="/ayuda">Ayuda</Dropdown.Item>
+                            </span>
+
+                            <span style={autorizado === true ? {} : { display: 'none' }}>
+                                <Dropdown.Item eventKey="1" href="/perfil">Perfil</Dropdown.Item>
+                                <Dropdown.Item eventKey="2" href="/perfil/mis-alojamientos">Mis alojamientos</Dropdown.Item>
+                                <Dropdown.Item eventKey="4" href="/perfil/mis-reservas">Mis reservas</Dropdown.Item>
+
+                                <Dropdown.Item eventKey="5" href="/perfil/mis-chats">
+                                    Mis mensajes
+                                    <span style={mensajes > 0 ? {} : { display: 'none' }}>
+                                        &nbsp;
+                                        <span style={{backgroundColor: '#ffaf2b', fontSize: '12px', padding: '3px', borderRadius: '20px', fontWeight: 'bold' }}>
+                                            &nbsp;&nbsp;{mensajes}&nbsp;&nbsp;
+                                        </span>
+                                    </span>
+
+                                </Dropdown.Item>
+
+                                <Dropdown.Item eventKey="6" href="/ayuda">Ayuda</Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item eventKey="7" onClick={cerrarSesion}>Cerrar sesión</Dropdown.Item>
+                            </span>
                         </Dropdown.Menu>
 
+                        <span style={mensajes > 0 ? {} : { display: 'none' }} className="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+                        </span>
                     </Dropdown>
                     
                 </div>
