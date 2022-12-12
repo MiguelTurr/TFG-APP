@@ -80,7 +80,8 @@ function Favoritos() {
                                  <img
                                     className="card-img-top"
                                     height="250px"
-                                    src={imgAlojamientos[index]}/>
+                                    src={imgAlojamientos[index]}
+                                    alt="Imagen del alojamiento"/>
 
                                 <Card.Body className="card-body info-casa">
 
@@ -98,7 +99,7 @@ function Favoritos() {
                                         <div className="col derecha-casa">
                                             <FontAwesomeIcon icon={faStar} />&nbsp;{parseFloat(x.valoracionMedia).toFixed(2)}
                                             <br/>
-                                            <FontAwesomeIcon icon={faHeart} style={{ color: 'red' }} />
+                                            <FontAwesomeIcon icon={faHeart} style={{ color: '#c80000' }} />
                                         </div>
                                     </div>
                                 </Card.Body>

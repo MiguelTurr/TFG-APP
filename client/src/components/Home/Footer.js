@@ -17,7 +17,7 @@ function Footer() {
             setPosicion('sticky');
 
         } else {
-            setPosicion('fixed');
+            setPosicion('');
         }
 
     }, [location]);
@@ -25,9 +25,9 @@ function Footer() {
     return (
         <div className="footer" style={{ position: posicion }}>
 
-            <hr style={posicion === 'sticky' ? {} : {display: 'none'}}/>
+            <hr/>
 
-            <div className={posicion === 'sticky' ? "container-fluid" : "container-fluid mt-2 mb-2"}>
+            <div className="container-fluid">
                 <div className="row">
 
                     <div className="col">
@@ -51,7 +51,7 @@ function Footer() {
                 </div>
             </div>
 
-            <br style={posicion === 'sticky' ? {} : {display: 'none'}}/>
+            <br/>
         </div>
     );
 }

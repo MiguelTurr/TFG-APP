@@ -288,8 +288,9 @@ function Nav() {
                                 <Dropdown.Item eventKey="1" href="/perfil">Perfil</Dropdown.Item>
                                 <Dropdown.Item eventKey="2" href="/perfil/mis-alojamientos">Mis alojamientos</Dropdown.Item>
                                 <Dropdown.Item eventKey="4" href="/perfil/mis-reservas">Mis reservas</Dropdown.Item>
+                                <Dropdown.Item eventKey="5" href="/perfil/mis-valoraciones">Mis valoraciones</Dropdown.Item>
 
-                                <Dropdown.Item eventKey="5" href="/perfil/mis-chats">
+                                <Dropdown.Item eventKey="6" href="/perfil/mis-chats">
                                     Mis mensajes
                                     <span style={mensajes > 0 ? {} : { display: 'none' }}>
                                         &nbsp;
@@ -300,9 +301,9 @@ function Nav() {
 
                                 </Dropdown.Item>
 
-                                <Dropdown.Item eventKey="6" href="/ayuda">Ayuda</Dropdown.Item>
+                                <Dropdown.Item eventKey="7" href="/ayuda">Ayuda</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="7" onClick={cerrarSesion}>Cerrar sesión</Dropdown.Item>
+                                <Dropdown.Item eventKey="8" onClick={cerrarSesion}>Cerrar sesión</Dropdown.Item>
                             </span>
                         </Dropdown.Menu>
 

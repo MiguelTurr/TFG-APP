@@ -22,13 +22,14 @@
 
         function initAutocomplete() {
             autocomplete = new google.maps.places.Autocomplete(document.getElementById('prueba'), {
-                fields: ['geometry']
+                fields: ["address_components", 'geometry']
             });
         }
 
         function prueba() {
-            console.log(autocomplete.getPlace().geometry.location.lat());
-            console.log(autocomplete.getPlace().geometry.location.lng());
+            console.log(autocomplete.getPlace().geometry.location.lat()+ ' ' +autocomplete.getPlace().geometry.location.lng());
+
+            //console.log(autocomplete.getPlace());
         }
     </script>
     

@@ -24,6 +24,7 @@ function Perfil() {
     const [userInfo, setUserInfo] = useState([]);
     const [userImg, setUserImg] = useState(NoProfileImg);
     const [userIdiomas, setUserIdiomas] = useState([]);
+    const [fotoCargada, setFotoCargada] = useState(null);
 
     const perfilInfo = async () => {
 
@@ -213,8 +214,7 @@ function Perfil() {
             var element = document.getElementById('mod-' +modDatos.modId);
 
             if(modDatos.modId === 'imagen') {
-                element.addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
-                
+
             } else if(modDatos.modId === 'idiomas') {
                 document.getElementById('idioma_esp').addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
                 document.getElementById('idioma_ing').addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
@@ -226,7 +226,12 @@ function Perfil() {
                 element.addEventListener("keyup", function() { setModDatos({ ...modDatos, modificado: true }); });
             }
         }
-    });
+    }, []);
+
+    const addImagen = (e) => {
+        setModDatos({ ...modDatos, modificado: true }); 
+        setFotoCargada(URL.createObjectURL(e.target.files[0]));
+    };
 
     const enviarDatoModificado = async (event) => {
         event.preventDefault();
@@ -349,8 +354,15 @@ function Perfil() {
                 setUserInfo({ ...userInfo, idiomas: editado });
 
             } else if(modDatos.modId === 'imagen') {
-                //cargar de nuevo la iamgen
-                //cargarImagenPerfil();
+
+                // NO ACTUALIZA
+                
+                /*const imagen = await fetch('/perfil/foto', { method: 'GET' });
+
+                if(imagen.status === 200) {
+                    setUserImg(imagen.url);
+                    console.log(imagen.url);
+                }*/
             }
 
             setCambiarDatos(false);
@@ -767,8 +779,22 @@ function Perfil() {
                                 </Form.Group>
 
                                 <Form.Group className="mb-3" style={modDatos.modId === 'imagen' ? {} : { display: 'none' }} >
-                                    <Form.Label htmlFor="mod-password-2"><small>512x512 dimensiones recomendadas (.png / .jpg)</small></Form.Label>
-                                    <Form.Control type="file" accept="image/*" id="mod-imagen" />
+                                    <div style={ fotoCargada !== null ? { } : { display: 'none'}}>
+
+                                        <img
+                                            alt="Nueva imagen de perfil"
+                                            src={fotoCargada}
+                                            width="40%"
+                                            className="img-fluid"/>
+
+                                        <br/>
+                                    </div>
+
+                                    <Form.Label htmlFor="mod-password-2">
+                                        <small>512x512 dimensiones recomendadas (.png / .jpg)</small>
+                                    </Form.Label>
+
+                                    <Form.Control type="file" accept="image/*" id="mod-imagen" onChange={addImagen}/>
                                 </Form.Group>
 
                                 <Form.Group className="mb-3" style={modDatos.modificado === true ? {} : { display: 'none' }}>
