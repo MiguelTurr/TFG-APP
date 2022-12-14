@@ -6,7 +6,7 @@ import { crearAlerta } from '../Toast/Toast.js';
 //import userLogin from '../../js/autorizado';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowDown, faLocationDot, faPen, faHouse, faStar, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown, faLocationDot, faPen, faStar, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 
 import Button from 'react-bootstrap/Button';
 
@@ -16,8 +16,6 @@ function UserReservas() {
 
     const [reservasActivas, setReservasActivas] = useState([]);
     const [reservasInactivas, setReservasinActivas] = useState(null);
-
-    //const [alojamientosReservas, setAlojamientosReservas] = useState([]);
 
     //
 
@@ -164,11 +162,13 @@ function UserReservas() {
                                                 {x.estado.texto}
                                             </span>
                                         </td>
-                                        <td>
+
+                                        <td className="tabla-seleccion" onClick={() => { verAlojamiento(index) }}>
                                             <FontAwesomeIcon icon={faLocationDot} /> {x.ubicacion}
                                             <br/>
                                             <FontAwesomeIcon icon={faStar} /> {x.valoracionMedia} <span className="text-muted">({x.vecesValorado})</span>
                                         </td>
+
                                         <td>
                                                 {x.costeTotal}€
                                                 <br/>
@@ -183,11 +183,7 @@ function UserReservas() {
                                         <td>
                                             <div className="d-grid gap-2">
 
-                                                <Button size="sm" className="filtros-botones" onClick={() => { verAlojamiento(index) }}>
-                                                    <FontAwesomeIcon icon={faHouse} />&nbsp; Ver alojamiento
-                                                </Button>
-
-                                                <Button size="sm" className="crear-botones" style={x.estado.puedeValorar ? {} : { display: 'none'}} onClick={() => { valorarReserva(index) }}>
+                                                <Button size="sm" className="crear-botones" disabled={x.estado.puedeValorar ? {} : { display: 'none'}} onClick={() => { valorarReserva(index) }}>
                                                     <FontAwesomeIcon icon={faPen} />&nbsp; Valorar
                                                 </Button>
                                             </div>
@@ -227,11 +223,13 @@ function UserReservas() {
                                                     {x.estado.texto}
                                                 </span>
                                             </td>
-                                            <td>
+
+                                            <td className="tabla-seleccion" onClick={() => { verAlojamientoAntiguo(index) }}>
                                                 <FontAwesomeIcon icon={faLocationDot} /> {x.ubicacion}
                                                 <br/>
                                                 <FontAwesomeIcon icon={faStar} /> {x.valoracionMedia} <span className="text-muted">({x.vecesValorado})</span>
                                             </td>
+                                            
                                             <td>
                                                     {x.costeTotal}€
                                                     <br/>
@@ -245,10 +243,6 @@ function UserReservas() {
                                             </td>
                                             <td>
                                                 <div className="d-grid gap-2">
-
-                                                    <Button size="sm" className="filtros-botones" onClick={() => { verAlojamientoAntiguo(index) }}>
-                                                        <FontAwesomeIcon icon={faHouse} />&nbsp; Ver alojamiento
-                                                    </Button>
 
                                                     <Button size="sm" className="crear-botones" style={x.estado.texto === 'Valorada' ? {} : { display: 'none'}} onClick={() => { verValoracion(index) }}>
                                                         <FontAwesomeIcon icon={faMagnifyingGlass} />&nbsp; Ver valoración

@@ -13,7 +13,7 @@ import userLogin from '../../js/autorizado';
 import NoProfileImg from '../../img/no-profile-img.png';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faHouse, faMinus, faPlus, faAward, faMessage, faHeart, faDownload, faLocationDot, faKitchenSet, faWifi, faPaw, faParking, faSwimmingPool, faWater, faAirFreshener, faThermometer, faTelevision, faStopwatch, faSmoking, faGift, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faCodeCompare, faHouse, faMinus, faPlus, faAward, faMessage, faHeart, faDownload, faLocationDot, faKitchenSet, faWifi, faPaw, faParking, faSwimmingPool, faWater, faAirFreshener, faThermometer, faTelevision, faStopwatch, faSmoking, faGift, faStar } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
 import ProgressBar from 'react-bootstrap/ProgressBar';
@@ -159,6 +159,12 @@ function VerAlojamiento() {
         navigator.clipboard.writeText(window.location.href);
     };
 
+    const compararAlojamiento = () => {
+        window.location.href = '/alojamiento/comparar/' +alojamiento.ID;
+    }
+
+    //
+
     var [loginModal, setShowLogin] = useState(false);
     const cerrarLogin = () => setShowLogin(false);
 
@@ -287,6 +293,10 @@ function VerAlojamiento() {
 
                 <div className="col" style={ window.innerWidth < 600 ? {} : { textAlign: 'right' }}>
 
+                    <Button className="filtros-botones" size="sm" onClick={compararAlojamiento}>
+                        <FontAwesomeIcon icon={faCodeCompare} /> Comparar
+                    </Button>
+                    &nbsp; &nbsp;
                     <Button className="filtros-botones" size="sm" onClick={copiarAlojamiento}>
                         <FontAwesomeIcon icon={faDownload} /> Compartir
                     </Button>

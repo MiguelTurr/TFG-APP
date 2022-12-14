@@ -8,8 +8,9 @@ import Privacidad from './components/General/Privacidad';
 
 import Cookies from './components/General/Cookies';
 
-import Buscar from './components/Buscar';
+import Buscar from './components/Buscar/Buscar';
 import VerAlojamiento from './components/Alojamiento/VerAlojamiento';
+import Comparar from './components/Comparar/Comparar';
 import PerfilPublico from './components/Usuario/PerfilPublico';
 
 import ReservarAlojamiento from './components/Reservas/ReservarAlojamiento';
@@ -20,6 +21,7 @@ import RegistroValidar from './components/Sesion/RegistroValidar';
 import RecordarPassword from './components/Sesion/RecordarPassword';
 import Perfil from './components/User/Perfil';
 import UserAlojamientos from './components/User/UserAlojamientos';
+import UserValoraciones from './components/User/UserValoraciones';
 import Favoritos from './components/User/Favoritos';
 import Recomendaciones from './components/User/Recomendados';
 
@@ -50,6 +52,7 @@ function App() {
           <Route path="/nopassword" element={ <RecordarPassword /> }/>
           <Route path="/perfil" element={ <Perfil /> }/>
           <Route path="/perfil/mis-alojamientos" element={ <UserAlojamientos /> }/>
+          <Route path="/perfil/mis-valoraciones" element={ <UserValoraciones /> }/>
           <Route path='/perfil/mis-reservas' element={ <UserReservas /> }/>
           <Route path='/perfil/mis-chats' element={ <UserChats /> }/>
           <Route path="/perfil/favoritos" element={ <Favoritos /> }/>
@@ -58,6 +61,7 @@ function App() {
           <Route path="/alojamiento/buscar" element={ <Buscar /> }/>
           <Route path="/alojamiento/ver" element={ <VerAlojamiento /> }/>
           <Route path="/alojamiento/reservar/:id" element={ <ReservarAlojamiento /> }/>
+          <Route path="/alojamiento/comparar/:id" element={ <Comparar /> }/>
           <Route path="/usuario/ver/:id" element={ <PerfilPublico /> }/>
 
           <Route path="*" element={<Home />} />

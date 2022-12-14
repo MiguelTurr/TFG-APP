@@ -12,11 +12,10 @@ import userLogin from '../js/autorizado';
 import Logo from '../img/logo.png';
 import NoProfileImg from '../img/no-profile-img.png';
 
-import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faBars } from '@fortawesome/free-solid-svg-icons';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 function Nav() {
 
@@ -168,44 +167,20 @@ function Nav() {
     // MENSAJES NUEVOS
 
     const [mensajes, setMensajes] = useState(0);
+    const [valoraciones, setValoraciones] = useState(0);
 
     const cargarNovedades = async () => {
         const data = await fetch('/perfil/nuevos-mensajes', { method: 'GET' });
 
         if(data.status === 200) {
             const items = await data.json();
+
             setMensajes(items.nuevosMensajes);
+            setValoraciones(items.valoraciones);
 
             console.log(items);
         }
     };
-
-    // BUSCAR
-
-    const buscarLugar = () => {
-        const lugar = document.getElementById('buscar-lugar').value;
-
-        if(lugar === '') {
-            return crearAlerta('error', '¡Escribe un lugar para visitar!');
-        }
-
-        window.location.href = '/alojamiento/buscar?place=' +lugar;
-    };
-
-    /*const initAutocomplete = useRef();
-    const inputRef = useRef();
-
-    useEffect(() => {
-        initAutocomplete.current = new window.google.maps.places.Autocomplete(
-         inputRef.current,
-         {fields: ['geometry']}
-        );
-        
-        initAutocomplete.current.addListener("place_changed", async function () {
-            const place = await initAutocomplete.current.getPlace();
-            console.log({ place });
-        });
-    }, []);*/
 
     //
 
@@ -250,16 +225,7 @@ function Nav() {
                 </div>
 
                 <div className="col-sm-4 mt-3">
-
-                    <BuscarLugar  id='buscar-lugar' />
-                    <div className="input-group">
-                        <input type="text" className="form-control" id='buscar-lugar' placeholder="Escribe un lugar" aria-label="Lugar para visitar"/>
-                        
-                        <Button className="color-boton" size="sm" onClick={buscarLugar}>
-                            <FontAwesomeIcon icon={faSearch} />
-                        </Button>
-                    </div>
-
+                    <BuscarLugar buscar={true} />
                 </div>
 
                 <div className={isMobile ? "col-sm-4 mt-3" : "col-sm-4 mt-3 user-col"}>
@@ -269,10 +235,10 @@ function Nav() {
                         <Dropdown.Toggle variant="link" bsPrefix className="user-btn-no">
                             <FontAwesomeIcon icon={faBars} className="user-icon" />
                             
-                            <img className="img-fluid rounded-pill user-img" 
-                                                        src={fotoPerfil}
-                                                        alt="Imagen de perfil del usuario"
-                                                    />
+                            <img 
+                                className="img-fluid rounded-pill user-img" 
+                                src={fotoPerfil}
+                                alt="Imagen de perfil del usuario"/>
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
@@ -288,13 +254,22 @@ function Nav() {
                                 <Dropdown.Item eventKey="1" href="/perfil">Perfil</Dropdown.Item>
                                 <Dropdown.Item eventKey="2" href="/perfil/mis-alojamientos">Mis alojamientos</Dropdown.Item>
                                 <Dropdown.Item eventKey="4" href="/perfil/mis-reservas">Mis reservas</Dropdown.Item>
-                                <Dropdown.Item eventKey="5" href="/perfil/mis-valoraciones">Mis valoraciones</Dropdown.Item>
+
+                                <Dropdown.Item eventKey="5" href="/perfil/mis-valoraciones">
+                                    Mis valoraciones
+                                    <span style={valoraciones > 0 ? {} : { display: 'none' }}>
+                                        &nbsp;
+                                        <span className="noti-style">
+                                            &nbsp;&nbsp;{valoraciones}&nbsp;&nbsp;
+                                        </span>
+                                    </span>
+                                </Dropdown.Item>
 
                                 <Dropdown.Item eventKey="6" href="/perfil/mis-chats">
                                     Mis mensajes
                                     <span style={mensajes > 0 ? {} : { display: 'none' }}>
                                         &nbsp;
-                                        <span style={{backgroundColor: '#ffaf2b', fontSize: '12px', padding: '3px', borderRadius: '20px', fontWeight: 'bold' }}>
+                                        <span className="noti-style">
                                             &nbsp;&nbsp;{mensajes}&nbsp;&nbsp;
                                         </span>
                                     </span>
@@ -307,7 +282,7 @@ function Nav() {
                             </span>
                         </Dropdown.Menu>
 
-                        <span style={mensajes > 0 ? {} : { display: 'none' }} className="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+                        <span style={mensajes > 0 || valoraciones > 0 ? {} : { display: 'none' }} className="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
                         </span>
                     </Dropdown>
                     

@@ -15,7 +15,7 @@ const randomstring = require("randomstring");
 const utils = require('./services/utils.js');
 const { bcrypt_salt, cookie_secret, dev_state } = require('./services/config.js');
 const { resolve } = require('path');
-const { json } = require('express');
+const { json, query } = require('express');
 
 //
 
@@ -562,16 +562,22 @@ server.post('/perfil/misalojamientos/crear', comprobarToken, (req, res) => {
     const horaEntrada = req.body.horaEntrada === 'undefined' ? null : req.body.horaEntrada;
     const horaSalida = req.body.horaSalida === 'undefined' ? null : req.body.horaSalida;
 
-    mysql.query('INSERT INTO alojamientos (usuarioID, titulo, descripcion, precio, ubicacion, lat, lng, viajeros, habitaciones, camas, aseos, horaEntrada, horaSalida, puedeFumar, puedeFiestas, servicios) VALUES (?)',
+    mysql.query('INSERT INTO alojamientos (usuarioID, titulo, descripcion, precio, ubicacion, localidad, provincia, comunidad, pais, lat, lng, viajeros, habitaciones, camas, aseos, horaEntrada, horaSalida, puedeFumar, puedeFiestas, servicios) VALUES (?)',
         [
             [
                 req.userId,
                 req.body.titulo,
                 req.body.descripcion,
                 parseInt(req.body.precio),
+
                 req.body.ubicacion,
+                req.body.localidad,
+                req.body.provincia,
+                req.body.comunidad,
+                req.body.pais,
                 parseFloat(req.body.lat),
                 parseFloat(req.body.long),
+
                 parseInt(req.body.viajeros),
                 parseInt(req.body.habitaciones),
                 parseInt(req.body.camas),
@@ -1221,14 +1227,12 @@ server.get('/perfil/recomendados',  comprobarToken, async (req, res) => {
         precioMedio += arrayTotal[i].precio;
         latMedia += arrayTotal[i].lat;
         lngMedia += arrayTotal[i].lng;
-
-        console.log(arrayTotal[i].lat+ ' ' +arrayTotal[i].lng);
     }
     precioMedio /= len;
     latMedia /= len;
     lngMedia /= len;
 
-    console.log('MEDIA: ' +latMedia+ ' ' +lngMedia);
+    // RECOMENDACIONES
 
     const recomendaciones = await new Promise((resolve) => {
         mysql.query(`SELECT t1.ID,t1.ubicacion,t1.precio,t1.descuento,t1.creadoEn,t1.visitas,t1.valoracionMedia,t1.vecesValorado,t1.valoracionesNuevas FROM alojamientos t1
@@ -1713,8 +1717,53 @@ server.post('/usuario/denuncia', comprobarToken, (req, res) => {
 
 //
 
-server.post('/buscar', (req, res) => {
+server.post('/buscar', comprobarToken, (req, res) => {
 
+    var queryStr = '';
+
+    if (req.userId == undefined) {
+        queryStr += 'SELECT * FROM alojamientos as alo ';
+
+    } else {
+        queryStr += 'SELECT alo.*, fav.ID as favorito FROM `alojamientos` as alo ';
+        queryStr += 'LEFT JOIN `usuarios_favoritos` as fav ON fav.alojamientoID=alo.ID AND fav.usuarioID=' + req.userId + ' ';
+        queryStr += 'WHERE alo.usuarioID!=' + req.userId + ' ';
+    }
+
+    // FILTROS
+
+    // DIRECCIÓN
+
+    queryStr += 'AND alo.pais="' +req.body.pais+ '" ';
+
+    if(req.body.comunidad !== undefined) {
+        queryStr += 'AND alo.comunidad="' +req.body.comunidad+ '" ';
+    }
+
+    if(req.body.provincia !== undefined) {
+        queryStr += 'AND alo.provincia="' +req.body.provincia+ '" ';
+    }
+
+    if(req.body.localidad !== undefined) {
+        queryStr += 'AND alo.localidad="' +req.body.localidad+ '" ';
+    }
+    
+    //
+
+    queryStr += utils.queryOrdenar(req.body.ordenar);
+
+    //
+
+    mysql.query(queryStr, function(err, result) {
+        
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        res.status(200).json({ respuesta: 'correcto', busqueda: result });
+    });
 });
 
 server.post('/home', comprobarToken, (req, res) => {
@@ -1730,25 +1779,12 @@ server.post('/home', comprobarToken, (req, res) => {
         queryStr += 'WHERE alo.usuarioID!=' + req.userId + ' ';
     }
 
+    // FILTROS
+
+
     // ORDENAR
 
-    var ordenadoPor = ['fecha', 'desc'];
-
-    if (req.body.ordenar !== null) {
-        ordenadoPor = req.body.ordenar.split('-');
-    }
-
-    if (ordenadoPor[0] === 'fecha') {
-        queryStr += 'ORDER BY alo.creadoEn ';
-
-    } else if (ordenadoPor[0] === 'relevancia') {
-        queryStr += 'ORDER BY alo.visitas ';
-
-    } else if (ordenadoPor[0] === 'precio') {
-        queryStr += 'ORDER BY alo.precio ';
-    }
-
-    queryStr += ordenadoPor[1] + ' ';
+    queryStr += utils.queryOrdenar(req.body.ordenar);
 
     //
 

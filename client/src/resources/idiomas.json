@@ -1,0 +1,27 @@
+[
+    {
+        "idioma": "Español",
+        "lugar": "España",
+        "acortado": "esp"
+    },
+    {
+        "idioma": "Español",
+        "lugar": "México",
+        "acortado": "mex"
+    },
+    {
+        "idioma": "Español",
+        "lugar": "Argentina",
+        "acortado": "arg"
+    },
+    {
+        "idioma": "English",
+        "lugar": "England",
+        "acortado": "eng"
+    },
+    {
+        "idioma": "English",
+        "lugar": "Canada",
+        "acortado": "can"
+    }
+]

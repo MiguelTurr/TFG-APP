@@ -44,22 +44,10 @@
     vertical-align: middle;
 }
 
-#buscar-lugar {
-    border-color: black !important;
-}
-
-/*
-
-*/
-
-.color-boton {
-    background-color: #ffe841 !important;
-    border-color: black !important;
-
-    color: black !important;
-}
-
-.color-boton:hover {
-    background-color: #d6c437 !important;
-    border-color: black !important;
+.noti-style {
+    background-color: #ffaf2b;
+    font-size: 12px;
+    padding: 3px;
+    border-radius: 20px;
+    font-weight: bold;
 }

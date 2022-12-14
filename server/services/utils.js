@@ -53,10 +53,36 @@ function diasEntreFechas(inicio, final) {
     return (final - inicio) / (1000 * 60 * 60 * 24);
 }
 
+function queryOrdenar(ordenarTipo) {
+
+    var str_final = '';
+    var ordenadoPor = ['fecha', 'desc'];
+    
+    if (ordenarTipo !== null) {
+        ordenadoPor = ordenarTipo.split('-');
+    }
+
+    if (ordenadoPor[0] === 'fecha') {
+        str_final += 'ORDER BY alo.creadoEn ';
+
+    } else if (ordenadoPor[0] === 'relevancia') {
+        str_final += 'ORDER BY alo.visitas ';
+
+    } else if (ordenadoPor[0] === 'precio') {
+        str_final += 'ORDER BY alo.precio ';
+    }
+
+    str_final += ordenadoPor[1] + ' ';
+
+    return str_final;
+}
+
 module.exports = {
     nombreFotoPerfil,
     nombreFotoAlojamiento,
     boolToInt,
     estadoReserva,
-    diasEntreFechas
+    diasEntreFechas,
+
+    queryOrdenar,
 }

@@ -1,14 +1,15 @@
 import React from 'react';
 import './Maps.css';
 
-import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
+import usePlacesAutocomplete from 'use-places-autocomplete';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot, faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 
-function BuscarLugar({ ubicacion }) {
+function BuscarLugar({ buscar, enviaDireccion }) {
 
     const {
         ready,
@@ -18,25 +19,26 @@ function BuscarLugar({ ubicacion }) {
         clearSuggestions,
     } = usePlacesAutocomplete({
         requestOptions: {
-            fields: ['geometry']
+            fields: ["address_components", 'geometry']
         },
         debounce: 300,
     });
 
     const handleSelect =
-        ({ description }) =>
-            () => {
-                setValue(description, false);
-                clearSuggestions();
+        ({ description }) => () => {
 
-                // Get latitude and longitude via utility functions
-                getGeocode({ address: description }).then((results) => {
-                    const { lat, lng } = getLatLng(results[0]);
-                    console.log("📍 Coordinates: ", { lat, lng });
+            const direccion = description;
 
-                    console.log(results[0]);
-                });
-            };
+            setValue(description, false);
+            clearSuggestions();
+
+            if (buscar !== undefined) {
+                window.location.href = '/alojamiento/buscar?place=' + direccion + '&ordenar=fecha-desc';
+
+            } else {
+                enviaDireccion(direccion);
+            }
+        };
 
     const renderSuggestions = () =>
         data.map((suggestion) => {
@@ -46,9 +48,26 @@ function BuscarLugar({ ubicacion }) {
                 structured_formatting: { main_text, secondary_text },
             } = suggestion;
 
+            if(secondary_text === undefined) {
+                return( 
+                <li key={place_id} onClick={handleSelect(suggestion)} className="suggest-opciones">
+                    <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green' }}/>&nbsp;
+                    <strong>
+                        {main_text}
+                    </strong>
+                </li>)
+            }
+
             return (
-                <li key={place_id} onClick={handleSelect(suggestion)} className="lista-opciones">
-                    <FontAwesomeIcon icon={faLocationDot} /> - <strong>{main_text}</strong>, <small>{secondary_text}</small>
+                <li key={place_id} onClick={handleSelect(suggestion)} className="suggest-opciones">
+                    <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green' }}/>&nbsp;
+                    <strong>
+                        {main_text}
+                    </strong>
+                    ,&nbsp;
+                    <small>
+                        {secondary_text}
+                    </small>
                 </li>
             );
         });
@@ -57,15 +76,31 @@ function BuscarLugar({ ubicacion }) {
 
         <Form.Group className="mb-3">
 
-            <Form.Control
-                type="text"
-                size="sm"
-                placeholder="Escribe un lugar"
-                disabled={!ready}
-                value={value}
-                onChange={(e) => { setValue(e.target.value) }}/>
+            <div className="input-group">
 
-            {status === "OK" && <ul className="lista-sin-numeros">{renderSuggestions()}</ul>}
+                <Form.Control
+                    className='imput-style shadow-none'
+                    type="text"
+                    size="sm"
+                    placeholder="Escribe un lugar"
+                    disabled={!ready}
+                    value={value}
+                    onChange={(e) => { setValue(e.target.value) }} />
+
+                <Button className="btn-no-style input-group-addon" size="sm">
+                    <FontAwesomeIcon icon={faSearch} />
+                </Button>
+
+            </div>
+
+            <div className="suggest-container">
+                {status === "OK" &&
+
+                    <ul className="suggest-lista">
+                        {renderSuggestions()}
+                    </ul>
+                }
+            </div>
         </Form.Group>
     );
 }

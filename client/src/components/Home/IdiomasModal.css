@@ -1,0 +1,14 @@
+
+.btn-idioma {
+
+    padding: 10px 120px 10px 10px !important;
+    background-color: white !important;
+    border-radius: 15px !important;
+    color: black !important;
+    text-align: left !important;
+}
+
+.btn-idioma:hover {
+    background-color: rgb(240, 240, 240) !important;
+    color: black !important;
+}

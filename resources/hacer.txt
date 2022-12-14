@@ -1,10 +1,8 @@
 INSERTAR MAPA HTML
     https://www.w3schools.com/graphics/google_maps_intro.asp
 
-OBTENER LATITUD Y LONGITUD A PARTIR DE DIRECCIÓN
-
 RESERVAR ALOJAMIENTO
-ENVIAR MENSAJE A HOSPEDADOR
+SELECT CONCAT(provincia, ', ', comunidad, ', ', pais) as ubicacion  FROM `alojamientos`
 
 fast for holidays
 ff-hs
@@ -12,6 +10,7 @@ ff-hs
 Filtros (favoritos / reomendados / filtros generales / filtros avanzados / ver en MAPA) - comparar
 
 GOOGLE MAPS API
+https://react-google-maps-api-docs.netlify.app/#googlemap
 https://developers.google.com/maps/documentation/javascript/overview
 https://developers.google.com/maps/documentation/javascript/geocoding
 https://developers.google.com/maps/documentation/javascript/place-autocomplete

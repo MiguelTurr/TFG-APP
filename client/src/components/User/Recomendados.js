@@ -46,8 +46,8 @@ function Recomendaciones() {
             const exp = items.experiencias.length;
             var expImg = [];
 
-            for(var i = 0; i < exp; i++) {
-                expImg.push(await cargarImagen(items.experiencias[i].ID));
+            for(var w = 0; w < exp; w++) {
+                expImg.push(await cargarImagen(items.experiencias[w].ID));
             }
             setImgNuevas(expImg);
         }
@@ -99,6 +99,7 @@ function Recomendaciones() {
                                  <img
                                     className="card-img-top"
                                     height="250px"
+                                    key={imgAlojamientos[index]}
                                     src={imgAlojamientos[index]}
                                     alt="Imagen del alojamiento"/>
 
@@ -144,6 +145,7 @@ function Recomendaciones() {
                                  <img
                                     className="card-img-top"
                                     height="250px"
+                                    key={imgNuevas[index]}
                                     src={imgNuevas[index]}
                                     alt="Imagen del alojamiento"/>
 

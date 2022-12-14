@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import '../css/NavFiltros.css';
+import FiltrosModal from './Navegacion/FiltrosModal';
 
 import Button from 'react-bootstrap/Button';
 
@@ -13,12 +14,18 @@ function NavFiltros({ fav, rec }) {
     const [ordenar, setOrdenar] = useState({ orden: 'fecha', tipo: 'desc' });
     const [flecha, setFlecha] = useState(faArrowDown);
 
+    const [filtros, setShowFiltros] = useState(false);
+    const cerrarFiltros = () => setShowFiltros(false);
+
     const history = useNavigate();
 
     const location = window.location.href;
     const finalLocation = location.substring('http://localhost:3000/'.length);
 
-    if(finalLocation !== '' && finalLocation.includes('home') === false) {
+    if(finalLocation !== ''
+        && finalLocation.includes('home') === false
+        && finalLocation.includes('buscar') === false) {
+
         return (<></>);
     }
 
@@ -40,8 +47,26 @@ function NavFiltros({ fav, rec }) {
             setFlecha(faArrowDown);
         }
 
-        history('/home?ordenar=' +cambiarOrden+ '-' +cambiarTipo);
+        //
+
+        if(finalLocation === '' || finalLocation.includes('home') === true) {
+            history('/home?ordenar=' +cambiarOrden+ '-' +cambiarTipo);
+
+        } else if(finalLocation.includes('buscar') === true) {
+            
+            var nuevaURL = finalLocation;
+            nuevaURL = nuevaURL.substring(0, finalLocation.search('&ordenar'))+ '&ordenar=' +cambiarOrden+ '-' +cambiarTipo;
+            history(nuevaURL);
+        }
     };
+
+    // MODAL FILTROS
+
+    const abrirFiltros = () => {
+        setShowFiltros(true);
+    };
+
+    //
 
     return (
         <>
@@ -83,7 +108,7 @@ function NavFiltros({ fav, rec }) {
 
                 <div className={window.innerWidth < 600 ? "mb-4" : "col text-center"}>
 
-                    <Button className="filtros-botones" size="sm">
+                    <Button className="filtros-botones" size="sm" onClick={abrirFiltros}>
                         <FontAwesomeIcon icon={faSliders} /> Otros filtros
                     </Button>
                 </div>
@@ -104,6 +129,8 @@ function NavFiltros({ fav, rec }) {
 
                 </div>
             </div>
+            
+            <FiltrosModal mostrar={filtros} funcionCerrar={cerrarFiltros} />
         </div>
         </>
     );

@@ -1,35 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { crearAlerta } from '../Toast/Toast.js';
-//import { esNumero } from '../../resources/regex.js';
 
 import BuscarLugar from "../Maps/buscarLugar.js";
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap } from '@react-google-maps/api';
+import { getGeocode, getLatLng } from 'use-places-autocomplete';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouse, faArrowLeft, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
+import { faHouse, faArrowLeft, faPlus, faMinus, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
-const center = {
-    lat: -3.745,
-    lng: -38.523
-};
+const opciones = {
+    streetViewControl: false,
+    mapTypeControl: false,
+    fullscreenControl: false,
+}
   
 function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
-
-    const [map, setMap] = React.useState(null)
-
-    const onLoad = React.useCallback(function callback(map) {
-        // This is just an example of getting and using the map instance!!! don't just blindly copy!
-        const bounds = new window.google.maps.LatLngBounds(center);
-        map.fitBounds(bounds);
-
-        setMap(map)
-    }, [])
 
     //
 
@@ -62,7 +53,7 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
         imgTotal: 0,
     });
 
-    const [ubicacion, setUbicacion] = useState({ direccion: '', lat: 0.0, lng: 0.0 });
+    const [direccion, setDireccion] = useState('');
 
     const [formErrors, setformErrors] = useState({});
     const [imagenPreview, setImagenPreview] = useState([]);
@@ -134,6 +125,91 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
         setImagenPreview(imagenPreview);
     };
 
+    // MAPA
+
+    const [map, setMap] = React.useState(null);
+    const [posicion, setPosicion] = useState({ lat: 40.46, lng: -3.74922 });
+    const [ubicacion, setUbicacion] = useState();
+
+    const onLoad = React.useCallback(function callback(map) {
+        
+        map.setOptions({styles: [
+            {
+                featureType: "poi",
+                stylers: [{ visibility: "off" } ]   
+            }
+        ]});
+        setMap(map);
+
+    }, []);
+
+    const onUnmount = React.useCallback(function callback() {
+        setMap(null)
+    }, []);
+
+    const clickMapa = async (...args) => {
+        const lat = args[0].latLng.lat();
+        const lng = args[0].latLng.lng();
+
+        const latLng_resultados = await getGeocode({ 'latLng': args[0].latLng });
+        const len = latLng_resultados.length;
+
+        var localidad, provincia, comunidad, pais;
+
+        for(var i = 0; i < len; i++) {
+
+            const tipo = latLng_resultados[i].types[0];
+
+            if(tipo === 'country') {
+                pais = latLng_resultados[i].address_components[0].long_name;
+
+            } else if(tipo === 'administrative_area_level_1') {
+                comunidad = latLng_resultados[i].address_components[0].long_name;
+
+            } else if(tipo === 'administrative_area_level_2') {
+                provincia = latLng_resultados[i].address_components[0].long_name;
+
+            } else if(tipo === 'locality') {
+                localidad = latLng_resultados[i].address_components[0].long_name;
+
+            } else if(localidad === undefined && tipo === 'administrative_area_level_3') {
+                localidad = latLng_resultados[i].address_components[0].long_name;
+            }
+        }
+
+        console.log(localidad+ ', ' +provincia+ ', ' +comunidad+ ', ' +pais);
+    }
+
+    useEffect(() => {
+        cambiarPosicion();
+
+    }, [direccion]);
+
+    const cambiarPosicion = async () => {
+
+        if(direccion === '') {
+            return;
+        }
+
+        const direccion_resultados = await getGeocode({ address: direccion });
+        const { lat, lng } = getLatLng(direccion_resultados[0]);
+
+        console.log(direccion_resultados[0].address_components);
+
+        setPosicion({ lat: lat, lng: lng});
+
+        const len = direccion_resultados[0].address_components.length;
+
+        if(len <= 4) {
+            map.setZoom(8);
+
+        } else {
+            map.setZoom(18);
+        }
+    };
+
+    //
+
     const erroresForm = () => {
         const erroresEncontrados = {};
 
@@ -142,8 +218,6 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
 
         if (!form.descripcion || form.descripcion === '') erroresEncontrados.descripcion = '¡Debe tener una descripción!';
         else if (form.descripcion > 800) erroresEncontrados.descripcion = '¡La descripción es demasiada larga!';
-
-        //if (!form.ubicacion || form.ubicacion === '') erroresEncontrados.ubicacion = '¡Debes poner una ubicación!';
 
         const inputImagenes = document.getElementById('imagenes');
         const len = inputImagenes.files.length;
@@ -187,6 +261,32 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
             return;
         }
 
+        // DIRECCIÓN
+
+        if (!direccion || direccion === '') {
+            window.scrollTo(0, 0);
+            return crearAlerta('error', '¡Falta la ubicación!');
+        }
+
+        const direccion_resultados = await getGeocode({ address: direccion });
+
+        const { lat, lng } = getLatLng(direccion_resultados[0]);
+        const lenAddress = direccion_resultados[0].address_components.length;
+
+        if(lenAddress <= 3) {
+            window.scrollTo(0, 0);
+            return crearAlerta('error', '¡Debes expecificar mejor la ubicación!');
+        }
+    
+        var localidad = undefined, provincia = undefined, comunidad = undefined, pais = undefined;
+        
+        localidad = direccion_resultados[0].address_components[0].long_name;
+        provincia = direccion_resultados[0].address_components[1].long_name;
+        comunidad = direccion_resultados[0].address_components[2].long_name;
+        pais = direccion_resultados[0].address_components[3].long_name;
+
+        //
+
         const btnDesactivar = document.getElementById('crear-alojamiento');
         btnDesactivar.disabled = true;
 
@@ -229,13 +329,23 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
 
             nuevoAlojamiento({
                 ID: items.alojamientoId,
-                ubicacion: form.ubicacion,
                 precio: form.precio,
                 creadoEn: new Date(),
                 valoracionMedia: 0,
                 vecesValorado: 0,
                 visitas: 0,
                 valoracionesNuevas: 0,
+
+                // UBICACIÓN
+
+                ubicacion: localidad+ ', ' +comunidad+ ', ' +pais,
+                
+                localidad: localidad,
+                provincia: provincia,
+                comunidad: comunidad,
+                pais: pais,
+                lat: lat,
+                lng: lng,
             });
         }
     };
@@ -246,7 +356,7 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
             <Form onSubmit={crearNuevoAlojamiento}>
                     <div className="row">
 
-                        <div className="col-sm">
+                        <div className="col-sm-4">
 
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="titulo">Título</Form.Label>
@@ -540,21 +650,25 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="mod-password-2">Ubicación</Form.Label>
 
-                            <BuscarLugar/>
+                            <BuscarLugar enviaDireccion={setDireccion} />
 
-                            <Form.Control.Feedback type="invalid">
-                                {formErrors.ubicacion}
-                            </Form.Control.Feedback>
+                            <div className="mb-3" style={ direccion !== '' ? {} : { display: 'none' } }>
 
-                            <div id="map">
+                                <Form.Label htmlFor="imagenes">Selecciona el lugar exacto: </Form.Label>
+
+                                <GoogleMap
+                                    mapContainerStyle={{ width: '100%', height: '500px' }}
+                                    center={posicion}
+                                    zoom={5}
+                                    options={opciones}
+                                    onLoad={onLoad}
+                                    onUnmount={onUnmount}
+                                    onClick={clickMapa}
+                                ></GoogleMap>
 
                             </div>
-
-                            <GoogleMap 
-                                center={center}
-                                zoom={10}
-                                onLoad={onLoad}>
-                            </GoogleMap>
+                            
+                            <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green' }} /> Sin definir...
 
                         </Form.Group>
 
