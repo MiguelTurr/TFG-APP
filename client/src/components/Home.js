@@ -5,29 +5,36 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar, faLocationDot, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { faStar, faLocationDot, faHeart, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 
 import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
+
+var contadorEstado = 0;
 
 function Home() {
-
     const location = useLocation();
     const params = new URLSearchParams(location.search);
 
     useEffect(() => {
-        fetchItems(params.get("ordenar"));
+        fetchItems(params.get("ordenar"), 0);
     }, [location.search]);
 
     const [alojamientos, setAlojamientos] = useState([]);
     const [imgAlojamientos, setImgAlojamientos] = useState([]);
 
-    const fetchItems = async (orden) => {
+    const fetchItems = async (orden, contador) => {
+
+        const disableBtn = document.getElementById('mostrar-mas');
+        disableBtn.disabled = true;
 
         const data = await fetch('/home', { 
             method: 'POST',
 
             body: JSON.stringify({
                 ordenar: orden,
+                contador: contador,
+
                 filtros: {
                     camas: 0,
                     habitaciones: 0,
@@ -41,35 +48,59 @@ function Home() {
         });
 
         const items = await data.json();
+        disableBtn.disabled = false;
 
         if(items.respuesta === 'err_db') {
 
         } else if(items.respuesta === 'correcto') {
-            setAlojamientos(items.alojamientos);
 
             var len = items.alojamientos.length;
-            var arrayImg = [];
 
-            for(var i = 0; i < len; i++) {
+            if(len > 0) {
+                
+                if(contador === 0) {
+                    setAlojamientos(items.alojamientos);
 
-                const imagen = await fetch('/alojamiento/imagen/' +items.alojamientos[i].ID+ '-0', { 
-                    method: 'GET',
-            
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                });
+                } else {
+                    setAlojamientos([...alojamientos, ...items.alojamientos]);
+                }
 
-                if(imagen.status === 200) {
-                    arrayImg.push(imagen.url);
+                contadorEstado = contador;
+                
+                var arrayImg = [];
+
+                for(var i = 0; i < len; i++) {
+
+                    const imagen = await fetch('/alojamiento/imagen/' +items.alojamientos[i].ID+ '-0', { 
+                        method: 'GET',
+                
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    });
+
+                    if(imagen.status === 200) {
+                        arrayImg.push(imagen.url);
+                    }
+                }
+                if(contador === 0) {
+                    setImgAlojamientos(arrayImg);
+
+                } else {
+                    setImgAlojamientos([...imgAlojamientos, ...arrayImg]);
                 }
             }
-            setImgAlojamientos(arrayImg);
         }
     }
 
     const verAlojamiento = (e, index) => {
         window.location.href = '/alojamiento/ver?casa=' +alojamientos[index].ID;
+    };
+
+    //
+
+    const mostrarMas = () => {
+        fetchItems(params.get("ordenar"), contadorEstado + 1);
     };
 
     return(
@@ -114,6 +145,14 @@ function Home() {
 
                     ))
                 }
+
+                <hr/>
+
+                <div className="text-center">
+                    <Button className="filtros-botones" id="mostrar-mas" onClick={mostrarMas}>
+                        <FontAwesomeIcon icon={faArrowDown} /> Mostrar más
+                    </Button>
+                </div>
             </div>
         </div>
     </>

@@ -14,8 +14,6 @@ const randomstring = require("randomstring");
 
 const utils = require('./services/utils.js');
 const { bcrypt_salt, cookie_secret, dev_state } = require('./services/config.js');
-const { resolve } = require('path');
-const { json, query } = require('express');
 
 //
 
@@ -1788,7 +1786,11 @@ server.post('/home', comprobarToken, (req, res) => {
 
     //
 
-    queryStr += 'LIMIT 30';
+    var contador = req.body.contador;
+
+    console.log('CONTADOR: ' +contador);
+
+    queryStr += 'LIMIT ' +(contador * 20)+ ',' +((contador+1) * 20);
 
     //
 
