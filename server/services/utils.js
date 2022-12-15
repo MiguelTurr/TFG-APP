@@ -1,3 +1,7 @@
+const columnasPorPagina = 20;
+
+//
+
 function nombreFotoPerfil(userId, extension) {
     return 'user' +userId+ '-profile.' +extension;
 }
@@ -77,6 +81,10 @@ function queryOrdenar(ordenarTipo) {
     return str_final;
 }
 
+function queryLimit(contador) {
+    return 'LIMIT ' +(contador * columnasPorPagina)+ ',' +((contador+1) * 20);
+}
+
 module.exports = {
     nombreFotoPerfil,
     nombreFotoAlojamiento,
@@ -85,4 +93,5 @@ module.exports = {
     diasEntreFechas,
 
     queryOrdenar,
+    queryLimit,
 }

@@ -344,7 +344,8 @@ function PerfilPublico() {
                                     <img
                                         className="card-img-top"
                                         height="250px"
-                                        src={alojamientosPerfilImg[index]}/>
+                                        src={alojamientosPerfilImg[index]}
+                                        alt="Imagen del alojamiento"/>
 
                                     <Card.Body className="card-body">
 
@@ -405,6 +406,7 @@ function PerfilPublico() {
                                                 className="card-img-top"
                                                 height='100px'
                                                 src={valImgAlojamiento[index]}
+                                                alt="Imagen del alojamiento valorado"
                                                 onClick={e => { verValoracionAlojamiento(e, index) }}/>
                                         </div>
                                     </div>

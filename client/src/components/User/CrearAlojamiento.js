@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { crearAlerta } from '../Toast/Toast.js';
 
 import BuscarLugar from "../Maps/buscarLugar.js";
-import { GoogleMap } from '@react-google-maps/api';
+import { GoogleMap, Marker } from '@react-google-maps/api';
 import { getGeocode, getLatLng } from 'use-places-autocomplete';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -19,39 +19,41 @@ const opciones = {
     mapTypeControl: false,
     fullscreenControl: false,
 }
+
+const formDefault = {
+    titulo: '',
+    descripcion: '',
+    precio: 10,
+
+    viajeros: 1,
+    habitaciones: 1,
+    camas: 1,
+    aseos: 1,
+
+    horaEntrada: undefined,
+    horaSalida: undefined,
+
+    puedeFiestas: false,
+    puedeFumar: false,
+
+    cocina: false,
+    wifi: false,
+    mascotas: false,
+    aparcamiento: false,
+    piscina: false,
+    lavadora: false,
+    aire: false,
+    calefaccion: false,
+    television: false,
+
+    imgTotal: 0,
+}
   
 function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
 
     //
 
-    const [form, setForm] = useState({
-        titulo: '',
-        descripcion: '',
-        precio: 10,
-
-        viajeros: 1,
-        habitaciones: 1,
-        camas: 1,
-        aseos: 1,
-
-        horaEntrada: undefined,
-        horaSalida: undefined,
-
-        puedeFiestas: false,
-        puedeFumar: false,
-
-        cocina: false,
-        wifi: false,
-        mascotas: false,
-        aparcamiento: false,
-        piscina: false,
-        lavadora: false,
-        aire: false,
-        calefaccion: false,
-        television: false,
-
-        imgTotal: 0,
-    });
+    const [form, setForm] = useState(formDefault);
 
     const [direccion, setDireccion] = useState('');
 
@@ -129,7 +131,8 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
 
     const [map, setMap] = React.useState(null);
     const [posicion, setPosicion] = useState({ lat: 40.46, lng: -3.74922 });
-    const [ubicacion, setUbicacion] = useState();
+    const [ubicacion, setUbicacion] = useState({ ubicacion: 'Sin definir...' });
+    const [markPosicion, setMarkPosicion] = useState(null);
 
     const onLoad = React.useCallback(function callback(map) {
         
@@ -150,6 +153,8 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
     const clickMapa = async (...args) => {
         const lat = args[0].latLng.lat();
         const lng = args[0].latLng.lng();
+
+        setMarkPosicion({lat: lat, lng: lng})
 
         const latLng_resultados = await getGeocode({ 'latLng': args[0].latLng });
         const len = latLng_resultados.length;
@@ -177,7 +182,7 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
             }
         }
 
-        console.log(localidad+ ', ' +provincia+ ', ' +comunidad+ ', ' +pais);
+        setUbicacion({ localidad: localidad, provincia: provincia, comunidad: comunidad, pais: pais, ubicacion: localidad+ ', ' +comunidad+ ', ' +pais});
     }
 
     useEffect(() => {
@@ -193,8 +198,6 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
 
         const direccion_resultados = await getGeocode({ address: direccion });
         const { lat, lng } = getLatLng(direccion_resultados[0]);
-
-        console.log(direccion_resultados[0].address_components);
 
         setPosicion({ lat: lat, lng: lng});
 
@@ -263,27 +266,15 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
 
         // DIRECCIÓN
 
-        if (!direccion || direccion === '') {
+        if (direccion === '') {
             window.scrollTo(0, 0);
             return crearAlerta('error', '¡Falta la ubicación!');
         }
 
-        const direccion_resultados = await getGeocode({ address: direccion });
-
-        const { lat, lng } = getLatLng(direccion_resultados[0]);
-        const lenAddress = direccion_resultados[0].address_components.length;
-
-        if(lenAddress <= 3) {
+        if(ubicacion.localidad === undefined || ubicacion.comunidad === undefined || ubicacion.pais === undefined) {
             window.scrollTo(0, 0);
-            return crearAlerta('error', '¡Debes expecificar mejor la ubicación!');
+            return crearAlerta('error', '¡Se debe expecificar mejor la ubicación!');
         }
-    
-        var localidad = undefined, provincia = undefined, comunidad = undefined, pais = undefined;
-        
-        localidad = direccion_resultados[0].address_components[0].long_name;
-        provincia = direccion_resultados[0].address_components[1].long_name;
-        comunidad = direccion_resultados[0].address_components[2].long_name;
-        pais = direccion_resultados[0].address_components[3].long_name;
 
         //
 
@@ -302,6 +293,16 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
         for (var i = 0; i < len; i++) {
             formData.append('imagen', inputImagenes.files[i]);
         }
+
+        //
+
+        formData.append('ubicacion', ubicacion.ubicacion);
+        formData.append('localidad', ubicacion.localidad);
+        formData.append('provincia', ubicacion.provincia);
+        formData.append('comunidad', ubicacion.comunidad);
+        formData.append('pais', ubicacion.pais);
+        formData.append('lat', posicion.lat);
+        formData.append('lng', posicion.lng);
 
         //
 
@@ -325,6 +326,16 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
             crearAlerta('exito', '¡Has creado un nuevo alojamiento!');
             vistaAlojamientos('principal');
 
+            // ESTADO POR DEFECTO
+            
+            document.getElementById('imagenes').value = '';
+
+            setForm(formDefault);
+            setImagenPreview([]);
+            setDireccion('');
+            setPosicion({ lat: 40.46, lng: -3.74922 });
+            setUbicacion({ ubicacion: 'Sin definir...' });
+
             // AÑADIR A LA LISTA
 
             nuevoAlojamiento({
@@ -338,14 +349,7 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
 
                 // UBICACIÓN
 
-                ubicacion: localidad+ ', ' +comunidad+ ', ' +pais,
-                
-                localidad: localidad,
-                provincia: provincia,
-                comunidad: comunidad,
-                pais: pais,
-                lat: lat,
-                lng: lng,
+                ubicacion: ubicacion.ubicacion,
             });
         }
     };
@@ -664,11 +668,13 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
                                     onLoad={onLoad}
                                     onUnmount={onUnmount}
                                     onClick={clickMapa}
-                                ></GoogleMap>
+                                >
+                                    <Marker position={markPosicion}/>
+                                </GoogleMap>
 
                             </div>
                             
-                            <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green' }} /> Sin definir...
+                            <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green' }} /> {ubicacion.ubicacion}
 
                         </Form.Group>
 

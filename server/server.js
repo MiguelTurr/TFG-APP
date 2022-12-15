@@ -570,7 +570,7 @@ server.post('/perfil/misalojamientos/crear', comprobarToken, (req, res) => {
 
                 req.body.ubicacion,
                 req.body.localidad,
-                req.body.provincia,
+                req.body.provincia === undefined ? '' : req.body.provincia,
                 req.body.comunidad,
                 req.body.pais,
                 parseFloat(req.body.lat),
@@ -631,7 +631,8 @@ server.post('/perfil/misalojamientos/crear', comprobarToken, (req, res) => {
 
             res.status(200).json({ respuesta: 'correcto', alojamientoId: alojamientoId });
 
-        });
+        }
+    );
 });
 
 server.post('/perfil/misalojamientos/editar/:id', comprobarToken, (req, res) => {
@@ -1784,13 +1785,9 @@ server.post('/home', comprobarToken, (req, res) => {
 
     queryStr += utils.queryOrdenar(req.body.ordenar);
 
-    //
+    // LIMIT
 
-    var contador = req.body.contador;
-
-    console.log('CONTADOR: ' +contador);
-
-    queryStr += 'LIMIT ' +(contador * 20)+ ',' +((contador+1) * 20);
+    queryStr += utils.queryLimit(req.body.contador);
 
     //
 

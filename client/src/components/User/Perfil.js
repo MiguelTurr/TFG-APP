@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import '../../css/Perfil.css';
 import NoProfileImg from '../../img/no-profile-img.png';
 
+import BuscarLugar from "../Maps/buscarLugar.js";
 import { crearAlerta } from '../Toast/Toast.js';
 import userLogin from '../../js/autorizado';
 
@@ -11,6 +12,8 @@ import { faArrowRight, faRepeat, faArrowLeft, faTrash, faUserMinus, faUserClock,
 
 import Button from "react-bootstrap/esm/Button";
 import Form from 'react-bootstrap/Form';
+
+var cambioResidencia = '';
 
 function Perfil() {
 
@@ -213,7 +216,7 @@ function Perfil() {
         if(cambiarDatos === true && modDatos.modificado === false) {
             var element = document.getElementById('mod-' +modDatos.modId);
 
-            if(modDatos.modId === 'imagen') {
+            if(modDatos.modId === 'imagen' || modDatos.modId === 'residencia') {
 
             } else if(modDatos.modId === 'idiomas') {
                 document.getElementById('idioma_esp').addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
@@ -228,6 +231,11 @@ function Perfil() {
         }
     }, []);
 
+    const colocarDireccion = (direccion) => {
+        setModDatos({ ...modDatos, modificado: true });
+        cambioResidencia = direccion;
+    };
+
     const addImagen = (e) => {
         setModDatos({ ...modDatos, modificado: true }); 
         setFotoCargada(URL.createObjectURL(e.target.files[0]));
@@ -236,8 +244,16 @@ function Perfil() {
     const enviarDatoModificado = async (event) => {
         event.preventDefault();
 
-        const element = document.getElementById('mod-' +modDatos.modId);
-        const editado = element.value;
+        var editado = '';
+
+        if(modDatos.modId === 'residencia') {
+            editado = cambioResidencia;
+
+        } else {
+            const element = document.getElementById('mod-' +modDatos.modId);
+            editado = element.value;
+        }
+
         if(editado === '') {
             return crearAlerta('error', '¡Escribe algo primero!');
         }
@@ -252,6 +268,7 @@ function Perfil() {
 
         } else if(modDatos.modId === 'imagen') {
 
+            const element = document.getElementById('mod-' +modDatos.modId);
             imagenAvatar = element.files[0];
             
             if (!['image/jpeg', 'image/png'].includes(imagenAvatar.type)) {
@@ -701,7 +718,8 @@ function Perfil() {
                                 </Form.Group>
 
                                 <Form.Group className="mb-3" style={modDatos.modId === 'residencia' ? {} : { display: 'none' }} >
-                                    <Form.Control type="text" placeholder="Nueva residencia" id="mod-residencia" />
+                                    <BuscarLugar enviaDireccion={colocarDireccion} />
+
                                 </Form.Group>
 
                                 <Form.Group className="mb-3" style={modDatos.modId === 'presentacion' ? {} : { display: 'none' }} >

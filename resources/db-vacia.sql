@@ -49,9 +49,9 @@ CREATE TABLE IF NOT EXISTS `alojamientos` (
 	`precio` smallint NOT NULL,
 	`descuento` float NOT NULL default 0.0,
 
-	--`ubicacion` varchar(200) NOT NULL,
+	`ubicacion` varchar(200) NOT NULL,
 	`localidad` varchar(70) NOT NULL,
-	`provincia` varchar(70) NOT NULL,
+	`provincia` varchar(70) default '',
 	`comunidad` varchar(70) NOT NULL,
 	`pais` varchar(70) NOT NULL,
 
