@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import '../css/Nav.css';
+import '../../css/Nav.css';
 
-import { crearAlerta } from './Toast/Toast.js';
-import BuscarLugar from "./Maps/buscarLugar.js";
+import { crearAlerta } from '../Toast/Toast.js';
+import BuscarLugar from "../Maps/buscarLugar.js";
 
-import LoginModal from './Sesion/LoginModal';
-import RegistroModal from './Sesion/RegistroModal';
+import LoginModal from '../Sesion/LoginModal';
+import RegistroModal from '../Sesion/RegistroModal';
 import NavFiltros from './NavFiltros';
-import userLogin from '../js/autorizado';
+import userLogin from '../../js/autorizado';
 
-import Logo from '../img/logo.png';
-import NoProfileImg from '../img/no-profile-img.png';
+import Logo from '../../img/logo.png';
+import NoProfileImg from '../../img/no-profile-img.png';
 
 import Dropdown from 'react-bootstrap/Dropdown';
 
@@ -177,8 +177,6 @@ function Nav() {
 
             setMensajes(items.nuevosMensajes);
             setValoraciones(items.valoraciones);
-
-            console.log(items);
         }
     };
 

@@ -129,7 +129,7 @@ const ValorarModal = ({ infoAlojamiento, funcionCerrar, valoracionCorrecto }) =>
 
                             <br />
 
-                            <FontAwesomeIcon icon={faLocationDot} /> {infoAlojamiento.ubicacion}
+                            <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green' }} /> {infoAlojamiento.ubicacion}
                             <br />
                             <FontAwesomeIcon icon={faStar} /> {infoAlojamiento.valoracionMedia} <span className="text-muted">({infoAlojamiento.vecesValorado})</span>
 

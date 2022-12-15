@@ -142,6 +142,7 @@ CREATE TABLE IF NOT EXISTS `usuarios_valoraciones` (
 	`userValoradoID` int NOT NULL,
 	`sinLeer` tinyint NOT NULL default 0,
 	`creadoEn` datetime NOT NULL default NOW(),
+	`tipo` int NOT NULL,
 	`mensaje` varchar(300) NOT NULL,
 
 

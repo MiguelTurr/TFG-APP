@@ -6,7 +6,7 @@ import { crearAlerta } from '../Toast/Toast.js';
 //import userLogin from '../../js/autorizado';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowDown, faLocationDot, faPen, faStar, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown, faLocationDot, faPen, faStar, faMagnifyingGlass, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
 import Button from 'react-bootstrap/Button';
 
@@ -17,10 +17,13 @@ function UserReservas() {
     const [reservasActivas, setReservasActivas] = useState([]);
     const [reservasInactivas, setReservasinActivas] = useState(null);
 
+    const [alojamientosActivos, setAlojamientosActivos] = useState([]);
+
     //
 
     useEffect(() => {
         obtenerReservasUsuario();
+        otenerReservasAlojamientos();
     }, []);
 
     const obtenerReservasUsuario = async () => {
@@ -34,6 +37,20 @@ function UserReservas() {
 
         } else if(items.respuesta === 'correcto') {
             setReservasActivas(items.reservas);
+        }
+    };
+
+    const otenerReservasAlojamientos = async () => {
+        const data = await fetch('/perfil/mis-reservas/alojamientos/activas', { method: 'GET' });
+        const items = await data.json();
+
+        if(items.respuesta === 'err_user') {
+
+        } else if(items.respuesta === 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if(items.respuesta === 'correcto') {
+            //setAlojamientosActivos(items.reservas);
         }
     };
 
@@ -111,6 +128,24 @@ function UserReservas() {
         });
     };
 
+    const cancelarReservaUser = async (index) => {
+
+        if(window.confirm('¿Estás seguro?') === false) {
+            return;
+        }
+
+        const data = await fetch('/perfil/mis-reservas/cancelar/' +reservasActivas[index].reservaID, {  method: 'GET' });
+        const items = await data.json();
+
+        if (items.respuesta === 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if (items.respuesta === 'correcto') {
+            crearAlerta('exito', '¡Reserva cancelada!');
+            setTimeout(() => { window.location.reload(); }, 1000);
+        }
+    };
+
     //
 
     const verAlojamiento = (index) => {
@@ -120,6 +155,8 @@ function UserReservas() {
     const verAlojamientoAntiguo = (index) => {
         window.open('/alojamiento/ver?casa=' +reservasInactivas[index].alojamientoID, '_blank');
     };
+
+    //
 
     return (
         <div className="container-fluid mb-5">
@@ -183,8 +220,12 @@ function UserReservas() {
                                         <td>
                                             <div className="d-grid gap-2">
 
-                                                <Button size="sm" className="crear-botones" disabled={x.estado.puedeValorar ? {} : { display: 'none'}} onClick={() => { valorarReserva(index) }}>
+                                                <Button size="sm" className="crear-botones" disabled={!x.estado.puedeValorar} onClick={() => { valorarReserva(index) }}>
                                                     <FontAwesomeIcon icon={faPen} />&nbsp; Valorar
+                                                </Button>
+
+                                                <Button size="sm" className="borrar-botones" style={x.estado.puedeCancelar ? {} : { display: 'none'}} onClick={() => { cancelarReservaUser(index) }}>
+                                                    <FontAwesomeIcon icon={faTrashCan} />&nbsp; Cancelar
                                                 </Button>
                                             </div>
                                         </td>
@@ -264,7 +305,7 @@ function UserReservas() {
                 
                 <div className="row">
                     <h5 style={{ fontWeight: 'bold' }}>
-                        Activas ({reservasActivas.length})
+                        Activas ({alojamientosActivos.length})
                     </h5>
 
                     <div className="col">

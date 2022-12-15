@@ -4,7 +4,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { crearAlerta } from '../Toast/Toast.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faLocationDot, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faLocationDot, faStar, faSquareCheck } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
 
@@ -58,7 +58,6 @@ function ReservarAlojamiento() {
     const obtenerAlojamiento = async (alojamientoID) => {
 
         const data = await fetch('/alojamiento/reservar/' +alojamientoID, { method: 'GET' });
-
         const items = await data.json();
 
         if (items.respuesta === 'err_db') {
@@ -84,7 +83,38 @@ function ReservarAlojamiento() {
     //
 
     const volverAtras = () => {
-        window.location.href = '/alojamiento/ver?casa=' +id;
+        window.location.href = '/alojamiento/ver?casa=' +alojamiento.ID;
+    };
+
+    const confirmarReserva = async () => {
+
+        const data = await fetch('/alojamiento/reservar', { 
+            method: 'POST',
+            body: JSON.stringify({
+                alojamientoID: alojamiento.ID,
+                fechaEntrada: params.get('entrada'),
+                fechaSalida: params.get('salida'),
+                costeTotal: reserva.noches * alojamiento.precio,
+            }),
+            
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        const items = await data.json();
+
+        if (items.respuesta === 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if (items.respuesta === 'correcto') {
+            crearAlerta('exito', '¡Reserva hecha!');
+
+            setTimeout(() => {
+                window.location.href = '/';
+
+            }, 1000);
+        }
     };
 
     //
@@ -176,6 +206,10 @@ function ReservarAlojamiento() {
                             </tr>
                         </tbody>
                     </table>
+                    
+                    <Button className="filtros-botones" size="sm" onClick={confirmarReserva}>
+                        <FontAwesomeIcon icon={faSquareCheck} /> Confirmar reserva
+                    </Button>
 
                 </div>
                 <div className="col">
@@ -186,8 +220,12 @@ function ReservarAlojamiento() {
 
                     <hr/>
                     <div className="row">
-                        <div className="col">
-                            <img src={aloImg} key={aloImg} className="img-fluid" alt="Imagen de perfil del usuario"></img>
+                        <div className="col-sm-4">
+                            <img 
+                                src={aloImg}
+                                key={aloImg}
+                                className="img-fluid"
+                                alt="Imagen de perfil del usuario"></img>
                         </div>
                         <div className="col">
                             
@@ -196,6 +234,26 @@ function ReservarAlojamiento() {
                             <FontAwesomeIcon icon={faStar} /> {alojamiento.valoracionMedia} <span className="text-muted">({alojamiento.vecesValorado})</span>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <hr/>
+
+            <div className="row">
+                <div className="col">
+                    <h4 style={{ fontWeight: 'bold'}}>
+                        MÉTODO DE PAGO
+                    </h4>
+
+                    <hr/>
+
+                    Paypal no se que nose crearNuevoAlojamiento
+
+                    <hr/>
+
+                    <Button className="filtros-botones" size="sm" onClick={confirmarReserva}>
+                        <FontAwesomeIcon icon={faSquareCheck} /> Confirmar reserva
+                    </Button>
                 </div>
             </div>
         </div>

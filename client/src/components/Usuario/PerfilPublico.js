@@ -191,7 +191,6 @@ function PerfilPublico() {
         } else if (items.respuesta === 'correcto') {
             setUserValoraciones(items.valoraciones);
 
-            
             //
 
             var len = items.valoraciones.length;

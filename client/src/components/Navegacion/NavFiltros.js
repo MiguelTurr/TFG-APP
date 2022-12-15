@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import '../css/NavFiltros.css';
-import FiltrosModal from './Navegacion/FiltrosModal';
+import '../../css/NavFiltros.css';
+import FiltrosModal from './FiltrosModal';
 
 import Button from 'react-bootstrap/Button';
 

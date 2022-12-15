@@ -26,6 +26,7 @@ function estadoReserva(estado, fechaFinal) {
         resultado.texto = 'En revisión';
         resultado.color = '#ff962c'; // NARANJA
         resultado.puedeValorar = false;
+        resultado.puedeCancelar = true;
 
     } else if(estado === 1) {
 
@@ -34,7 +35,7 @@ function estadoReserva(estado, fechaFinal) {
         if(fechaHoy < fechaFinal.getTime()) {
 
             resultado.texto = 'Aceptada';
-            resultado.color = '#00fa35'; // VERDE
+            resultado.color = '#50d932'; // VERDE
             resultado.puedeValorar = false;
 
         } else {

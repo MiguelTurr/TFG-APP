@@ -645,6 +645,26 @@ server.post('/perfil/misalojamientos/editar/:id', comprobarToken, (req, res) => 
     //console.log(req.body);
 });
 
+server.get('/perfil/mis-reservas/cancelar/:id', comprobarToken, (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    const reservaID = req.params.id;
+
+    mysql.query('UPDATE usuarios_reservas SET estado=-1 WHERE ID=? LIMIT 1', reservaID, function (err, result) {
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        res.status(200).json({ respuesta: 'correcto' });
+    });
+});
+
 server.get('/perfil/mis-reservas/activas', comprobarToken, (req, res) => {
 
     if (req.userId == undefined) {
@@ -716,7 +736,6 @@ server.get('/perfil/mis-reservas/antiguas', comprobarToken, (req, res) => {
 
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
-
             console.log(err.message);
             return;
         }
@@ -761,6 +780,30 @@ server.get('/perfil/mis-reservas/antiguas', comprobarToken, (req, res) => {
         res.status(200).json({ respuesta: 'correcto', reservas: itemFinal });
     }
     );
+});
+
+server.get('/perfil/mis-reservas/alojamientos/activas', comprobarToken, (req, res) => {
+    
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    console.log('ACTIVAS');
+
+    res.status(200).json({ respuesta: 'correcto' });
+});
+
+server.get('/perfil/mis-reservas/alojamientos/antiguas', comprobarToken, (req, res) => {
+    
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    console.log('ANTIGUAS');
+
+    res.status(200).json({ respuesta: 'correcto' });
 });
 
 server.post('/perfil/valorar/alojamiento', comprobarToken, (req, res) => {
@@ -861,8 +904,20 @@ server.post('/perfil/valorar/inquilino', comprobarToken, (req, res) => {
         return;
     }
 
-    // HACER
+    mysql.query('INSERT INTO usuarios_valoraciones (usuarioID, userValoradoID, mensaje) VALUES (?)', 
+    [
+        [
+            req.userId,
+            req.body.userValoradoID,
+            req.body.mensaje,
+        ]
+    ], function(err, result) {
 
+
+        // HACER
+
+        //res.status(200).json({ respuesta: 'correcto', userValoracion: valoracionId });
+    });
 });
 
 server.get('/perfil/valoracion-hospedador/ver/:id', (req, res) => {
@@ -913,9 +968,169 @@ server.get('/perfil/valoracion-cliente/ver/:id', (req, res) => {
 
 });
 
-server.get('/perfil/valoracion-hospedador/ver/:id', (req, res) => {
+//
 
+server.get('/perfil/mis-valoraciones/hechas-alo/:id', comprobarToken, async (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    const columns = req.params.id;
+
+    mysql.query(`SELECT val.*,alo.ubicacion,alo.valoracionMedia,alo.vecesValorado FROM alojamientos_valoraciones as val
+        INNER JOIN alojamientos as alo ON alo.ID=val.alojamientoID
+        WHERE val.usuarioID=? ORDER BY creadaEn DESC LIMIT ?, 3`, [req.userId, 3 * columns], function(err, result) {
+
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+        
+        res.status(200).json({ respuesta: 'correcto', valoracion: result });
+    });
 });
+
+server.get('/perfil/mis-valoraciones/hechas-user/:id', comprobarToken, async (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    const columns = req.params.id;
+
+    mysql.query(`SELECT val.*,usu.nombre,usu.residencia,usu.fechaReg FROM usuarios_valoraciones as val
+        INNER JOIN usuarios as usu ON usu.ID=val.userValoradoID
+        WHERE val.usuarioID=? ORDER BY creadoEn DESC LIMIT ?, 3`, [req.userId, 3 * columns], function(err, result) {
+
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+        
+        res.status(200).json({ respuesta: 'correcto', valoracion: result });
+    });
+});
+
+server.get('/perfil/mis-valoraciones/recibidas-alo/:id', comprobarToken, async (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    const columns = req.params.id;
+
+    var queryStr = `SELECT alo.ubicacion,alo.valoracionMedia,alo.vecesValorado,val.ID,val.alojamientoID,val.usuarioID,val.creadaEn,val.sinLeer,val.mensaje,usu.nombre,usu.residencia,usu.fechaReg FROM alojamientos as alo
+        INNER JOIN alojamientos_valoraciones as val ON alo.ID=val.alojamientoID AND val.sinLeer=0
+        INNER JOIN usuarios as usu ON val.usuarioID=usu.ID
+        WHERE alo.usuarioID=? ORDER BY creadaEn DESC`;
+
+    if(columns > 0) {
+        queryStr = `SELECT alo.ubicacion,alo.valoracionMedia,alo.vecesValorado,val.ID,val.alojamientoID,val.usuarioID,val.creadaEn,val.sinLeer,val.mensaje,usu.nombre,usu.residencia,usu.fechaReg FROM alojamientos as alo
+        INNER JOIN alojamientos_valoraciones as val ON alo.ID=val.alojamientoID AND val.sinLeer!=0
+        INNER JOIN usuarios as usu ON val.usuarioID=usu.ID
+        WHERE alo.usuarioID=? ORDER BY creadaEn DESC LIMIT ${columns}, 3`;
+    }
+
+    mysql.query(queryStr, [req.userId], function(err, result) {
+
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        var len = result.length;
+
+        if(len > 0) {
+            res.status(200).json({ respuesta: 'correcto', valoracion: result });
+
+            for(var i = 0; i < len; i++) {
+                mysql.query('UPDATE alojamientos_valoraciones SET sinLeer=1 WHERE ID=?', result[i].ID);
+            }
+
+        } else if(columns == 0) {
+
+            mysql.query(`SELECT alo.ubicacion,alo.valoracionMedia,alo.vecesValorado,val.ID,val.alojamientoID,val.usuarioID,val.creadaEn,val.sinLeer,val.mensaje,usu.nombre,usu.residencia,usu.fechaReg FROM alojamientos as alo
+                INNER JOIN alojamientos_valoraciones as val ON alo.ID=val.alojamientoID AND val.sinLeer!=0
+                INNER JOIN usuarios as usu ON val.usuarioID=usu.ID
+                WHERE alo.usuarioID=? ORDER BY creadaEn DESC LIMIT 0, 3`, [req.userId], function(err, result) {
+
+                if (err) {
+                    res.status(500).json({ respuesta: 'err_db' });
+                    console.log(err.message);
+                    return;
+                }
+
+                res.status(200).json({ respuesta: 'correcto', valoracion: result });
+            });
+
+        } else {
+            res.status(200).json({ respuesta: 'correcto', valoracion: [] });
+        }
+    });
+});
+
+server.get('/perfil/mis-valoraciones/recibidas-user/:id', comprobarToken, async (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    const columns = req.params.id;
+
+    var queryStr = `SELECT val.ID,val.usuarioID,val.sinLeer,val.creadoEn,val.tipo,val.mensaje,usu.nombre,usu.residencia,usu.fechaReg FROM usuarios_valoraciones as val
+        INNER JOIN usuarios as usu ON usu.ID=val.usuarioID
+        WHERE val.userValoradoID=? AND val.sinLeer=0 ORDER BY val.creadoEn DESC`;
+
+    if(columns > 0) {
+        queryStr = `SELECT val.ID,val.usuarioID,val.sinLeer,val.creadoEn,val.tipo,val.mensaje,usu.nombre,usu.residencia,usu.fechaReg FROM usuarios_valoraciones as val
+        INNER JOIN usuarios as usu ON usu.ID=val.usuarioID
+        WHERE val.userValoradoID=? AND val.sinLeer!=0 ORDER BY val.creadoEn DESC LIMIT ${columns}, 3`;
+    }
+
+    mysql.query(queryStr, [req.userId], function(err, result) {
+
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        var len = result.length;
+
+        if(len > 0) {
+            res.status(200).json({ respuesta: 'correcto', valoracion: result });
+            mysql.query('UPDATE usuarios_valoraciones SET sinLeer=1 WHERE userValoradoID=?', req.userId);
+
+        } else if(columns == 0) {
+
+            mysql.query(`SELECT val.ID,val.usuarioID,val.sinLeer,val.creadoEn,val.tipo,val.mensaje,usu.nombre,usu.residencia,usu.fechaReg FROM usuarios_valoraciones as val
+                INNER JOIN usuarios as usu ON usu.ID=val.usuarioID
+                WHERE val.userValoradoID=? AND val.sinLeer!=0 ORDER BY val.creadoEn DESC LIMIT 0, 3`, [req.userId], function(err, result) {
+
+                if (err) {
+                    res.status(500).json({ respuesta: 'err_db' });
+                    console.log(err.message);
+                    return;
+                }
+
+                res.status(200).json({ respuesta: 'correcto', valoracion: result });
+            });
+
+        } else {
+            res.status(200).json({ respuesta: 'correcto', valoracion: [] });
+        }
+    });
+});
+
+//
 
 server.get('/perfil/nuevos-mensajes', comprobarToken, async (req, res) => {
 
@@ -1595,10 +1810,6 @@ server.get('/alojamiento/reservas/dias/:id', (req, res) => {
         });
 });
 
-/*
-server.get('', (req, res) => {
-});*/
-
 server.get('/alojamiento/reservar/:id', comprobarToken, (req, res) => {
 
     if (req.userId == undefined) {
@@ -1630,7 +1841,25 @@ server.post('/alojamiento/reservar', comprobarToken, (req, res) => {
         return;
     }
 
-    // HACER
+    mysql.query('INSERT INTO usuarios_reservas (usuarioID, alojamientoID, fechaEntrada, fechaSalida, costeTotal) VALUES (?)', 
+    [
+        [
+            req.userId,
+            req.body.alojamientoID,
+            req.body.fechaEntrada,
+            req.body.fechaSalida,
+            req.body.costeTotal
+        ]
+    ], function(err) {
+
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        res.status(200).json({ respuesta: 'correcto' });
+    });
 });
 
 //

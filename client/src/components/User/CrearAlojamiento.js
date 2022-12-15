@@ -226,7 +226,7 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
         const len = inputImagenes.files.length;
 
         if (len === 0) erroresEncontrados.imagenes = '¡Debes añadir al menos una imagen!';
-        else if (len > 5) erroresEncontrados.imagenes = '¡Sólo puedes subir 5 imágenes!';
+        else if (len > 10) erroresEncontrados.imagenes = '¡Sólo puedes subir 10 imágenes!';
         else {
 
             const maxSize = 2 * 1024 * 1024;
@@ -709,7 +709,7 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
                         <hr />
 
                         {form.imgTotal > 0 && <small className="text-muted">
-                            Imágenes: {form.imgTotal} de 5
+                            Imágenes: {form.imgTotal} de 10
                             <br />
                             <br />
                         </small>}

@@ -213,6 +213,7 @@ function Perfil() {
     }
 
     useEffect(() => {
+
         if(cambiarDatos === true && modDatos.modificado === false) {
             var element = document.getElementById('mod-' +modDatos.modId);
 
@@ -229,7 +230,7 @@ function Perfil() {
                 element.addEventListener("keyup", function() { setModDatos({ ...modDatos, modificado: true }); });
             }
         }
-    }, []);
+    }, [cambiarDatos]);
 
     const colocarDireccion = (direccion) => {
         setModDatos({ ...modDatos, modificado: true });
