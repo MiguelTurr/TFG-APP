@@ -1,4 +1,4 @@
-const columnasPorPagina = 20;
+const columnasPorPagina = 12;
 
 //
 
@@ -82,7 +82,7 @@ function queryOrdenar(ordenarTipo) {
 }
 
 function queryLimit(contador) {
-    return 'LIMIT ' +(contador * columnasPorPagina)+ ',' +((contador+1) * 20);
+    return 'LIMIT ' +(contador * columnasPorPagina)+ ',' +columnasPorPagina;
 }
 
 module.exports = {

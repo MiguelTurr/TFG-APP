@@ -15,7 +15,7 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
     }, [alojamientoId]);
 
     const obtenerInfoAlojamiento = async () => {
-        if(alojamientoId === null) {
+        if (alojamientoId === null) {
             return;
         }
 
@@ -27,38 +27,51 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
         }*/
     };
 
-    if(alojamientoId === null) {
+    if (alojamientoId === null) {
         return <></>;
     }
 
     const eliminarAlojamiento = () => {
 
+        if(window.confirm('¿Estás seguro?') === false) {
+            return;
+        }
+
+        console.log('Eliminar');
     };
 
     //
 
     const verAlojamiento = () => {
-        window.open('/alojamiento/ver?casa=' +alojamientoId, '_blank');
+        window.open('/alojamiento/ver?casa=' + alojamientoId, '_blank');
     };
-    
+
     return (
-        
+
         <div className="container-fluid mb-5" style={show === 'editar' ? {} : { display: 'none' }}>
-            
+
             <Button className="filtros-botones" size="sm" onClick={() => { vistaAlojamientos('principal') }}>
                 <FontAwesomeIcon icon={faArrowLeft} /> Volver
             </Button>
             &nbsp;&nbsp;
-            
+
             <Button className="borrar-botones" size="sm" onClick={() => { eliminarAlojamiento() }}>
                 <FontAwesomeIcon icon={faTrashCan} /> Eliminar
             </Button>
-            
-            <Button className="filtros-botones" size="sm"  style={{ float: 'right' }}  onClick={verAlojamiento}>
+
+            <Button className="filtros-botones" size="sm" style={{ float: 'right' }} onClick={verAlojamiento}>
                 <FontAwesomeIcon icon={faHouse} /> Ir al alojamiento
             </Button>
 
-            <hr/>
+            <hr />
+
+            <div className="row">
+
+                <div className="col">
+                    Descuento
+                </div>
+
+            </div>
         </div>
     );
 }

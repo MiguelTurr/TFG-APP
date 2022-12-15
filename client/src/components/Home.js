@@ -115,10 +115,16 @@ function Home() {
 
                             <Card className="container-casa h-100" onClick={e => { verAlojamiento(e, index) }}>
 
-                                 <img
+                                <div>
+                                    <img
                                     className="card-img-top"
                                     height="250px"
                                     src={imgAlojamientos[index]}/>
+
+                                    <div className="nueva-casa" style={ (new Date().getTime() - new Date(x.creadoEn).getTime()) / (1000 * 60 * 60 * 24) < 1 ? { } : { display: 'none' } }>
+                                        NUEVA
+                                    </div>
+                                </div> 
 
                                 <Card.Body className="card-body info-casa">
 
@@ -133,7 +139,7 @@ function Home() {
                                             </p>
                                         </div>
 
-                                        <div className="col derecha-casa">
+                                        <div className={window.innerWidth < 600 ? "col" : "col-sm-4 derecha-casa"}>
                                             <FontAwesomeIcon icon={faStar} />&nbsp;{parseFloat(x.valoracionMedia).toFixed(2)}
                                             <br/>
                                             <FontAwesomeIcon icon={faHeart} style={x.favorito === null || x.favorito === undefined ? { display: 'none' } : { color: '#c80000' } } />
@@ -142,7 +148,6 @@ function Home() {
                                 </Card.Body>
                             </Card>
                         </div>
-
                     ))
                 }
 

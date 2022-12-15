@@ -1197,7 +1197,7 @@ server.get('/perfil/recomendados',  comprobarToken, async (req, res) => {
 
         encontrado = false;
 
-        for(var w = 0; w < lenReservados; w++) {
+        for(var w = 0; w < lenFav; w++) {
             if(arrayReservados[i].ID === arrayFav[w].ID) {
                 encontrado = true;
                 break;
@@ -1569,7 +1569,8 @@ server.get('/alojamiento/reservas/dias/:id', (req, res) => {
             }
 
             var len = result.length;
-            var arrayReservados = [];
+            const fechaHoy = new Date();
+            var arrayReservados = [{ day: fechaHoy.getDate(), month: fechaHoy.getMonth() + 1, year: fechaHoy.getFullYear() } ];
 
             for (var i = 0; i < len; i++) {
                 var inicio = new Date(result[i].fechaEntrada);
@@ -1592,6 +1593,34 @@ server.get('/alojamiento/reservas/dias/:id', (req, res) => {
 
             res.status(200).json({ respuesta: 'correcto', reservados: arrayReservados });
         });
+});
+
+/*
+server.get('', (req, res) => {
+});*/
+
+server.get('/alojamiento/reservar/:id', comprobarToken, (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    const alojamientoId = req.params.id;
+
+    mysql.query('SELECT ID,ubicacion,precio,descuento,descuentoHasta,valoracionMedia,vecesValorado FROM alojamientos WHERE ID=? LIMIT 1', alojamientoId, function (err, result) {
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        if(req.userId === result[0].usuarioID) {
+            return res.status(500).json({ respuesta: 'err_reserva' });
+        }
+
+        res.status(200).json({ respuesta: 'correcto', alojamiento: result[0] });
+    });
 });
 
 server.post('/alojamiento/reservar', comprobarToken, (req, res) => {

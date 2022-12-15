@@ -357,6 +357,12 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
     return (
         <div className="container-fluid mb-5" style={show === 'crear' ? {} : { display: 'none' }}>
 
+            <Button className="filtros-botones" size="sm" onClick={() => { vistaAlojamientos('principal') }}>
+                <FontAwesomeIcon icon={faArrowLeft} /> Volver
+            </Button>
+
+            <hr />
+
             <Form onSubmit={crearNuevoAlojamiento}>
                     <div className="row">
 

@@ -58,8 +58,6 @@ function Buscar() {
             }
         }
 
-        console.log(localidad+ ', ' +provincia+ ', ' +comunidad+ ', ' +pais);
-
         //
 
         const data = await fetch('/buscar', {

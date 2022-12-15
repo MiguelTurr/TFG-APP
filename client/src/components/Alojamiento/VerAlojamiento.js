@@ -17,6 +17,7 @@ import { faUser, faCodeCompare, faHouse, faMinus, faPlus, faAward, faMessage, fa
 
 import Button from "react-bootstrap/esm/Button";
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import Carousel from 'react-bootstrap/Carousel';
 
 function VerAlojamiento() {
 
@@ -238,8 +239,7 @@ function VerAlojamiento() {
 
     const [reservaInfo, setReservaInfo] = useState({
         huespedes: 1,
-        mascotas: 0,
-        noches: 1,
+        mascotas: 0
     });
 
     const reservarAlojamiento = () => {
@@ -248,16 +248,24 @@ function VerAlojamiento() {
             return setShowLogin(true);
         }
 
+        if(selectedDayRange.from === null || selectedDayRange.to === null) {
+            return crearAlerta('error', '¡Selecciona las fechas!');
+        }
+
+        const fechaEntrada = new Date(selectedDayRange.from.year+ '/' +selectedDayRange.from.month+ '/'+ selectedDayRange.from.day);
+        const fechaSalida = new Date(selectedDayRange.to.year+ '/' +selectedDayRange.to.month+ '/'+ selectedDayRange.to.day);
+
+        if((fechaSalida.getTime() - fechaEntrada.getTime()) / (1000 * 60 * 60 * 24) < 3) {
+            return crearAlerta('error', '¡Debes seleccionar al menos 3 días!');
+        }
+
         var url = '/alojamiento/reservar/';
         url += alojamiento.ID+ '?personas=' +reservaInfo.huespedes;
         url += '&mascotas=' +reservaInfo.mascotas;
-        url += '&entrada=' +reservaInfo.fechaEntrada;
-        url += '&entrada=' +reservaInfo.fechaSalida;
+        url += '&entrada=' +selectedDayRange.from.year+ '-' +selectedDayRange.from.month+ '-'+ selectedDayRange.from.day;
+        url += '&salida=' +selectedDayRange.to.year+ '-' +selectedDayRange.to.month+ '-'+ selectedDayRange.to.day;
 
-        console.log(selectedDayRange.from);
-        console.log(selectedDayRange.to);
-
-        //window.location.href = url;
+        window.location.href = url;
     };
 
     const botonesSumaResta = (e) => {
@@ -308,30 +316,37 @@ function VerAlojamiento() {
             </div>
 
             <div className="row mb-3">
-                <div className="col">
-                    <FontAwesomeIcon icon={faLocationDot} /> <strong>{alojamiento.ubicacion}</strong>
+                <div className={window.innerWidth < 600 ? "col mt-3" : "col" }>
+                    <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green' }} /> <strong>{alojamiento.ubicacion}</strong>
                 </div>
-            </div>
-
-            <div className="row">
-
-                {
-                    alojamientoImagenes.map((x, index) => (
-
-                        <div className="col mb-3" key={index}>
-                            <img 
-                                height="250px"
-                                src={x}>
-                            </img>
-                        </div>
-                    ))
-                }
             </div>
 
             <hr/>
 
             <div className="row">
                 <div className="col">
+                    <Carousel>
+                        {
+                            alojamientoImagenes.map((x, index) => (
+
+                                <Carousel.Item interval={null} key={index}>
+                                    <img
+                                    height="400px"
+                                        width="100%"
+                                        alt="Imagen del alojamiento"
+                                        src={x}>
+                                    </img>
+                                </Carousel.Item>
+                            ))
+                        }
+                    </Carousel>
+                </div>
+                <div className="col-sm-1">
+                </div>
+                <div className="col">
+
+                    <hr style={window.innerWidth < 600 ? {} : {display: 'none'}}/>
+
                     <h3>
                         Descripción
                     </h3>
@@ -414,6 +429,8 @@ function VerAlojamiento() {
                     </div>
                 </div>
 
+                <hr style={window.innerWidth < 600 ? {} : {display: 'none'}}/>
+
                 <div className="col text-center">
                     <h3>
                         Normas
@@ -450,7 +467,7 @@ function VerAlojamiento() {
             <hr/>
 
             <div className="row">
-                <div className={window.innerWidth < 600 ? "mb-2" : "col"}>
+                <div className={window.innerWidth < 600 ? "mb-2 text-center" : "col"}>
                     <h3>
                         ¿Quién es tu hospedador?
                     </h3>
@@ -461,7 +478,7 @@ function VerAlojamiento() {
                             <img src={usuarioImg} key={usuarioImg} className="img-fluid rounded-pill" alt="Imagen de perfil del usuario"></img>
                         </div>
 
-                        <div className={window.innerWidth < 600 ? "col text-center" : "col"}>
+                        <div className="col">
                             <span style={{ fontSize: '20px' }}>
                                 Hospedador: {alojamientoUsuario.nombre}
                             </span>
@@ -475,8 +492,6 @@ function VerAlojamiento() {
                         </div>
                     </div>
 
-                    <hr style={window.innerWidth < 600 ? {} : {display: 'none'}}/>
-
                     <div className="mt-3">
                         <Button className="filtros-botones" size="sm" onClick={irPerfilHospedador}>
                             <FontAwesomeIcon icon={faUser} /> Ir al perfil
@@ -488,6 +503,8 @@ function VerAlojamiento() {
                             <FontAwesomeIcon icon={faMessage} /> Enviar mensaje
                         </Button>
                     </div>
+
+                    <hr style={window.innerWidth < 600 ? {} : {display: 'none'}}/>
 
                 </div>
                 
@@ -629,7 +646,7 @@ function VerAlojamiento() {
 
                     <h3>
                         <Button className="reservar-botones mt-2" onClick={reservarAlojamiento}>
-                            <FontAwesomeIcon icon={faHouse} /> Reserva desde {reservaInfo.huespedes * alojamiento.precio * reservaInfo.noches}€
+                            <FontAwesomeIcon icon={faHouse} /> Reserva desde {alojamiento.precio}€
                         </Button>
                     </h3>
                 </div>
