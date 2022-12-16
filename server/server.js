@@ -168,6 +168,9 @@ server.post('/login', (req, res) => {
         if (result[0].activo == 0) {
             res.status(401).json({ respuesta: 'err_validado' });
             return;
+
+        } else if (result[0].activo == 2) { // QUITAR COMO CUENTA DESACTIVADA
+            mysql.query('UPDATE usuarios SET activo=1 WHERE ID=?', result[0].ID);
         }
 
         const id = result[0].ID;
@@ -389,6 +392,21 @@ server.post('/perfil/editar', comprobarToken, (req, res) => {
             }
 
             if (req.files != undefined) {
+
+                // ELIMINAR ANTERIOR
+
+                const extensionEditado = datoEditado.split('.')[1];
+                const extensionAnterior = req.body.imagenAnterior.split('.')[1];
+
+                if(req.body.imagenAnterior !== 'default.png' && extensionEditado !== extensionAnterior) {
+                    fs.unlink('./imagenes/perfil/' +req.body.imagenAnterior, (err) => {
+                        if(err) throw err;
+                        console.log('Archivo borrado');
+                    });
+                }
+
+                //
+
                 const avatar = req.files.imagen;
                 avatar.mv('./imagenes/perfil/' + datoEditado);
             }
@@ -453,6 +471,14 @@ server.post('/perfil/borrar', comprobarToken, (req, res) => {
                 return;
             }
         });
+
+    } else if (req.body.tipo == 'desactivar') {
+        query += "activo=2 ";
+        console.log('DESACTIVAR CUENTA: ' +req.userId);
+
+    } else if (req.body.tipo == 'eliminar') {
+        query += "activo=-1 ";
+        console.log('ELIMINAR CUENTA: ' +req.userId);
     }
 
     query += 'WHERE ID=' + req.userId + ' LIMIT 1';
@@ -526,7 +552,7 @@ server.get('/perfil/misalojamientos', comprobarToken, (req, res) => {
         return;
     }
 
-    mysql.query('SELECT ID,ubicacion,precio,descuento,creadoEn,visitas,valoracionMedia,vecesValorado,valoracionesNuevas FROM alojamientos WHERE usuarioID=? ORDER BY creadoEn DESC', req.userId, function (err, result) {
+    mysql.query('SELECT ID,ubicacion,precio,descuento,creadoEn,visitas,valoracionMedia,vecesValorado FROM alojamientos WHERE usuarioID=? ORDER BY creadoEn DESC', req.userId, function (err, result) {
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
 
@@ -635,7 +661,31 @@ server.post('/perfil/misalojamientos/crear', comprobarToken, (req, res) => {
     );
 });
 
-server.post('/perfil/misalojamientos/editar/:id', comprobarToken, (req, res) => {
+server.get('/perfil/mis-alojamientos/:id', comprobarToken, (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    const alojamientoID = req.params.id;
+
+    mysql.query('SELECT * FROM alojamientos WHERE ID=? AND usuarioID=? LIMIT 1', [alojamientoID, req.userId], function (err, result) {
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        if(result.length === 0) {
+            return res.status(500).json({ respuesta: 'err_db' });
+        }
+
+        res.status(200).json({ respuesta: 'correcto', alojamiento: result[0] });
+    });
+});
+
+server.post('/perfil/misalojamientos/editar/', comprobarToken, (req, res) => {
 
     if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
@@ -855,7 +905,7 @@ server.post('/perfil/valorar/alojamiento', comprobarToken, (req, res) => {
             const vecesValorado = parseInt(req.body.vecesValorado) + 1;
             var valoracionMedia = (req.body.valoracionMedia + media) / 2;
 
-            mysql.query('UPDATE alojamientos SET vecesValorado=?,valoracionMedia=?,valoracionesNuevas=1 WHERE ID=? LIMIT 1', [vecesValorado, valoracionMedia.toFixed(2), req.body.alojamientoID]);
+            mysql.query('UPDATE alojamientos SET vecesValorado=?,valoracionMedia=? WHERE ID=? LIMIT 1', [vecesValorado, valoracionMedia.toFixed(2), req.body.alojamientoID]);
 
             // ENVIAR CORREO AL DUEÑO ALOJAMIENTO
 
@@ -1426,7 +1476,7 @@ server.get('/perfil/recomendados',  comprobarToken, async (req, res) => {
     //
 
     if (arrayTotal.length === 0) {
-        res.status(500).json({ respuesta: 'correcto', recomendados: [] });
+        res.status(200).json({ respuesta: 'correcto', recomendados: [], experiencias: [] });
         return;
     }
 
@@ -1449,7 +1499,7 @@ server.get('/perfil/recomendados',  comprobarToken, async (req, res) => {
     // RECOMENDACIONES
 
     const recomendaciones = await new Promise((resolve) => {
-        mysql.query(`SELECT t1.ID,t1.ubicacion,t1.precio,t1.descuento,t1.creadoEn,t1.visitas,t1.valoracionMedia,t1.vecesValorado,t1.valoracionesNuevas FROM alojamientos t1
+        mysql.query(`SELECT t1.ID,t1.ubicacion,t1.precio,t1.descuento,t1.creadoEn,t1.visitas,t1.valoracionMedia,t1.vecesValorado FROM alojamientos t1
             LEFT JOIN usuarios_favoritos t2 ON t1.ID = t2.alojamientoID 
             WHERE t2.alojamientoID IS NULL AND t1.usuarioID!=? AND t1.precio BETWEEN ? AND ? LIMIT 4`, 
             [
@@ -1473,7 +1523,7 @@ server.get('/perfil/recomendados',  comprobarToken, async (req, res) => {
     // NUEVAS EXPERIENCIAS
 
     const experiencias = await new Promise((resolve) => {
-        mysql.query(`SELECT t1.ID,t1.ubicacion,t1.precio,t1.descuento,t1.creadoEn,t1.visitas,t1.valoracionMedia,t1.vecesValorado,t1.valoracionesNuevas FROM alojamientos t1
+        mysql.query(`SELECT t1.ID,t1.ubicacion,t1.precio,t1.descuento,t1.creadoEn,t1.visitas,t1.valoracionMedia,t1.vecesValorado FROM alojamientos t1
             LEFT JOIN usuarios_favoritos t2 ON t1.ID = t2.alojamientoID 
             WHERE t2.alojamientoID IS NULL AND t1.usuarioID!=? AND t1.lat NOT BETWEEN ? AND ? AND t1.lng NOT BETWEEN ? AND ? ORDER BY t1.creadoEn DESC LIMIT 4`, 
             [

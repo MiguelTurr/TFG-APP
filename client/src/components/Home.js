@@ -89,6 +89,9 @@ function Home() {
                 } else {
                     setImgAlojamientos([...imgAlojamientos, ...arrayImg]);
                 }
+
+            } else {
+                disableBtn.disabled = true;
             }
         }
     }
@@ -121,7 +124,7 @@ function Home() {
                                     height="250px"
                                     src={imgAlojamientos[index]}/>
 
-                                    <div className="nueva-casa" style={ (new Date().getTime() - new Date(x.creadoEn).getTime()) / (1000 * 60 * 60 * 24) < 1 ? { } : { display: 'none' } }>
+                                    <div className="nueva-casa" style={ (new Date().getTime() - new Date(x.creadoEn).getTime()) / (1000 * 60 * 60 * 24) < 3 ? { } : { display: 'none' } }>
                                         NUEVA
                                     </div>
                                 </div> 

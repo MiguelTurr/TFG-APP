@@ -48,6 +48,8 @@ CREATE TABLE IF NOT EXISTS `alojamientos` (
 	`descripcion` varchar(2500) NOT NULL,
 	`precio` smallint NOT NULL,
 
+	--`oculto` tinyint NOT NULL default 0,
+
 	`descuento` float NOT NULL default 0.0,
 	`descuentoHasta` datetime default NULL,
 
@@ -64,7 +66,6 @@ CREATE TABLE IF NOT EXISTS `alojamientos` (
 	`visitas` int NOT NULL default 0,
 	`valoracionMedia` float NOT NULL default 0,
 	`vecesValorado` int NOT NULL default 0,
-	`valoracionesNuevas` tinyint NOT NULL default 0,
 
 	`viajeros` tinyint NOT NULL default 1,
 	`habitaciones` tinyint NOT NULL default 1,

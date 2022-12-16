@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
 
+import { crearAlerta } from '../Toast/Toast.js';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faTrashCan, faHouse } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faTrashCan, faHouse, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
 
 function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
 
+    var crearOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+
+    //
+
     const [alojamientoImg, setAlojamientoImg] = useState([]);
-    const [alojamientoInfo, setAlojamientoInfo] = useState();
+    const [alojamiento, setAlojamiento] = useState({});
 
     useEffect(() => {
         obtenerInfoAlojamiento();
@@ -19,12 +25,18 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
             return;
         }
 
-        /*const data = await fetch();
+        const data = await fetch('/perfil/mis-alojamientos/' +alojamientoId, { method: 'GET' });
         const items = await data.json();
 
-        if(items.respuesta === 'correcto') {
+        if(items.respuesta === 'err_user') {
+            crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
 
-        }*/
+        } else if(items.respuesta === 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if(items.respuesta === 'correcto') {
+            setAlojamiento(items.alojamiento);
+        }
     };
 
     if (alojamientoId === null) {
@@ -68,7 +80,29 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
             <div className="row">
 
                 <div className="col">
-                    Descuento
+                    <table className="table">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    Ubicación:
+                                    <br/>
+                                    <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green' }} /> {alojamiento?.ubicacion}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    Fecha creación:
+                                    <br/>
+                                    { new Date(alojamiento.creadoEn).toLocaleDateString('es-ES', crearOptions) }
+                                </td>
+                            </tr>
+
+                            <tr>
+
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
             </div>

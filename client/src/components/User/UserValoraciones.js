@@ -99,7 +99,13 @@ function UserValoraciones() {
 
         } else if(items.respuesta === 'correcto') {
             setRecibidasAlo([...recibidasAlo, ...items.valoracion]);
-            paginaRecibidasAlojamientos += items.valoracion.length;
+
+            var len = items.valoracion.length;
+            paginaRecibidasAlojamientos += len;
+
+            if(len === 0) {
+                btn.disabled = true;
+            }
         }
     };
 
@@ -118,7 +124,13 @@ function UserValoraciones() {
 
         } else if(items.respuesta === 'correcto') {
             setRecibidasUser([...recibidasUser, ...items.valoracion]);
-            paginaRecibidasUsuarios += items.valoracion.length;
+
+            var len = items.valoracion.length;
+            paginaRecibidasUsuarios += len;
+
+            if(len === 0) {
+                btn.disabled = true;
+            }
         }
     };
 

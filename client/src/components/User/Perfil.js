@@ -328,6 +328,7 @@ function Perfil() {
 
         if(imagenAvatar !== undefined) {
             formData.append('imagen', imagenAvatar);
+            formData.append('imagenAnterior', userInfo.imagenPerfil);
         }
 
         var desactivarBtn = document.getElementById('mod-btn');
@@ -372,15 +373,7 @@ function Perfil() {
                 setUserInfo({ ...userInfo, idiomas: editado });
 
             } else if(modDatos.modId === 'imagen') {
-
-                // NO ACTUALIZA
-                
-                /*const imagen = await fetch('/perfil/foto', { method: 'GET' });
-
-                if(imagen.status === 200) {
-                    setUserImg(imagen.url);
-                    console.log(imagen.url);
-                }*/
+                window.location.reload();
             }
 
             setCambiarDatos(false);
@@ -429,16 +422,16 @@ function Perfil() {
 
     const desactivarCuenta = async (tipo) => {
 
-        if(tipo === 'desactivar') {
-            return crearAlerta('error', '¡No es posible usar esto!');
-        }
-
-        if(window.confirm("¿Estás seguro de eliminar tu cuenta?") == false) {
+        if(window.confirm('¿Estás seguro de ' +tipo+ ' tu cuenta?') == false) {
             return;
         } 
 
-        const data = await fetch('/perfil/' +tipo, {
-            method: 'GET',
+        const data = await fetch('/perfil/borrar', {
+            method: 'POST',
+
+            body: JSON.stringify({
+                tipo: tipo,
+            }),
             
             headers: {
                 'Content-Type': 'application/json'
@@ -455,7 +448,7 @@ function Perfil() {
 
         } else if(items.respuesta === 'correcto') {
             
-            crearAlerta('exito', 'Tu cuenta ha sido eliminada');
+            crearAlerta('exito', '¡Tu cuenta ha sido ' +tipo+ '!');
 
             setTimeout(() => {
                 setAutorizado(false);

@@ -2,6 +2,7 @@ import React from 'react';
 
 import { useEffect, useState } from 'react';
 
+import { crearAlerta } from '../Toast/Toast.js';
 import ToolTipRec from './ToolTipRec';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -26,10 +27,14 @@ function Recomendaciones() {
         const items = await data.json();
 
         if(items.respuesta === 'err_user') {
+            crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
 
         } else if(items.respuesta === 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
         } else if(items.respuesta === 'correcto') {
+
+
             setAlojamientos(items.recomendados);
             setNuevasExperiencias(items.experiencias);
 
@@ -89,6 +94,10 @@ function Recomendaciones() {
 
                 <hr />
 
+                <h4 style={alojamientos.length === 0 ? {} : { display: 'none' } }>
+                    Debes explorar más lugares para que podamos hacer alguna recomendación.
+                </h4>
+
                 {
                     alojamientos.map((x, index) => (
 
@@ -134,6 +143,10 @@ function Recomendaciones() {
                 </h4>
 
                 <hr />
+
+                <h4 style={nuevasExperiencias.length === 0 ? {} : { display: 'none' } }>
+                    Debes explorar más lugares para que podamos hacer alguna recomendación.
+                </h4>
 
                 {
                     nuevasExperiencias.map((x, index) => (

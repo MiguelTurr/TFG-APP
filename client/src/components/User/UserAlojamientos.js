@@ -16,7 +16,7 @@ function UserAlojamientos() {
 
     const { setAutorizado } = userLogin();
 
-    var crearOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    var crearOptions = { year: 'numeric', month: 'short', day: 'numeric' };
 
     //
 
@@ -100,7 +100,7 @@ function UserAlojamientos() {
                                 <tr className="tabla-seleccion" onClick={e => { editarAlojamiento(e, index) }} key={index} style={{ verticalAlign:'middle'}}>
                                     <td>
                                         <p>
-                                            <FontAwesomeIcon icon={faLocationDot} /> {x.ubicacion}
+                                            <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green' }} /> {x.ubicacion}
                                             <br/>
                                             <small>{x.precio}€ por noche</small>
                                         </p>
