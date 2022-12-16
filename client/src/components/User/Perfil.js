@@ -6,6 +6,7 @@ import NoProfileImg from '../../img/no-profile-img.png';
 import BuscarLugar from "../Maps/buscarLugar.js";
 import { crearAlerta } from '../Toast/Toast.js';
 import userLogin from '../../js/autorizado';
+import phonePrefix from '../../resources/phone-prefix.json';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faRepeat, faTrash, faUserMinus, faUserClock, faUser, faPenToSquare, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -14,6 +15,10 @@ import Button from "react-bootstrap/esm/Button";
 import Form from 'react-bootstrap/Form';
 
 var cambioResidencia = '';
+const presentacionCaracteres = 300;
+const trabajoCaracteres = 70;
+const passwordCaracteres = 70;
+const correoCaracteres = 200;
 
 function Perfil() {
 
@@ -26,7 +31,6 @@ function Perfil() {
 
     const [userInfo, setUserInfo] = useState([]);
     const [userImg, setUserImg] = useState(NoProfileImg);
-    const [userIdiomas, setUserIdiomas] = useState([]);
     const [fotoCargada, setFotoCargada] = useState(null);
 
     const perfilInfo = async () => {
@@ -91,42 +95,36 @@ function Perfil() {
 
         if(opcionId === 'telefono') {
 
-            document.getElementById('mod-' +opcionId).value = userInfo.telefono.split(' ')[1];
-            opciones.prefix = userInfo.telefono.split(' ')[0];
+            const telefono = userInfo.telefono.split(' ');
 
-        } else if(opcionId === 'residencia') {
+            opciones.prefix = telefono[0];
+            opciones.telefono = telefono[1];
 
         } else if(opcionId === 'presentacion') {
-
-            document.getElementById('mod-' +opcionId).value = userInfo.presentacion;
+            opciones[opcionId] = userInfo.presentacion;
 
         } else if(opcionId === 'trabajo') {
-
-            document.getElementById('mod-' +opcionId).value = userInfo.trabajo;
+            opciones[opcionId] = userInfo.trabajo;
 
         } else if(opcionId === 'idiomas') {
 
             const idiomas = userInfo.idiomas.split(', ');
-            var objeto = {
-                idioma_esp: false,
-                idioma_ing: false,
-                idioma_fra: false,
-                idioma_por: false,
-                idioma_chi: false,
-            };
+
+            opciones.idioma_esp = false;
+            opciones.idioma_ing = false;
+            opciones.idioma_fra = false;
+            opciones.idioma_por = false;
+            opciones.idioma_chi = false;
 
             for(var i = 0; i < idiomas.length; i++) {
-                objeto['idioma_' +idiomas[i].slice(0, 3).toLowerCase()] = true;
+                opciones['idioma_' +idiomas[i].slice(0, 3).toLowerCase()] = true;
             }
-            setUserIdiomas(objeto);
 
         } else if(opcionId === 'email') {
-
-            document.getElementById('mod-' +opcionId).value = userInfo.email;
+            opciones[opcionId] = userInfo.email;
 
         } else if(opcionId === 'password') {
-
-            document.getElementById('mod-' +opcionId).value = '';
+            opciones[opcionId] = '';
 
         } else if(opcionId === 'imagen') {
             opciones.modificado = true;
@@ -172,25 +170,12 @@ function Perfil() {
         }
     }
 
-    useEffect(() => {
+    const controlDato = (e, tipo=undefined) => {
+        const elementId = e.target.id.split('-')[1];
+        const elementValue = (tipo === undefined) ? e.target.value : e.target.checked;
 
-        if(cambiarDatos === true && modDatos.modificado === false) {
-            var element = document.getElementById('mod-' +modDatos.modId);
-
-            if(modDatos.modId === 'imagen' || modDatos.modId === 'residencia' || modDatos.modId === 'desactivar' || modDatos.modId === 'eliminar') {
-
-            } else if(modDatos.modId === 'idiomas') {
-                document.getElementById('idioma_esp').addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
-                document.getElementById('idioma_ing').addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
-                document.getElementById('idioma_fra').addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
-                document.getElementById('idioma_por').addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
-                document.getElementById('idioma_chi').addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
-                
-            } else {
-                element.addEventListener("keyup", function() { setModDatos({ ...modDatos, modificado: true }); });
-            }
-        }
-    }, [cambiarDatos]);
+        setModDatos({ ...modDatos, [elementId]: elementValue, modificado: true });
+    };
 
     const colocarDireccion = (direccion) => {
         setModDatos({ ...modDatos, modificado: true });
@@ -254,23 +239,23 @@ function Perfil() {
         } else if(modDatos.modId === 'idiomas') {
             var idiomas = [];
 
-            if(document.getElementById('idioma_esp').checked === true) {
+            if(modDatos.idioma_esp === true) {
                 idiomas.push('Español');
             }
 
-            if(document.getElementById('idioma_ing').checked === true) {
+            if(modDatos.idioma_ing === true) {
                 idiomas.push('Inglés');
             }
 
-            if(document.getElementById('idioma_fra').checked === true) {
+            if(modDatos.idioma_fra === true) {
                 idiomas.push('Francés');
             }
 
-            if(document.getElementById('idioma_por').checked === true) {
+            if(modDatos.idioma_por === true) {
                 idiomas.push('Portugués');
             }
 
-            if(document.getElementById('idioma_chi').checked === true) {
+            if(modDatos.idioma_chi === true) {
                 idiomas.push('Chino');
             }
 
@@ -337,6 +322,9 @@ function Perfil() {
             }
 
             setCambiarDatos(false);
+            setModDatos({});
+
+            document.getElementById('mod-password-2').value = '';
         }
     };
 
@@ -661,7 +649,7 @@ function Perfil() {
                     <div style={cambiarDatos === true ? {} : { display: 'none' }}>
 
                         <h4 className="text-center" style={{ fontWeight: 'bold' }}>
-                            <FontAwesomeIcon icon={faXmark} style={{ float: 'left', marginTop: '5px', cursor: 'pointer' }} onClick={() => { volverPerfil() }}/> 
+                            <FontAwesomeIcon icon={faXmark} style={{ float: 'left', marginTop: '5px', cursor: 'pointer' }} onClick={volverPerfil}/> 
                             
                             MODIFICAR: {modDatos.modId?.toUpperCase()}
                         </h4>
@@ -672,9 +660,19 @@ function Perfil() {
                     <Form onSubmit={enviarDatoModificado}>
 
                         <Form.Group className="mb-3" style={modDatos.modId === 'telefono' ? {} : { display: 'none' }} >
+                            
                             <div className="input-group mb-3">
-                                <span className="input-group-text">{modDatos.prefix}</span>
-                                <Form.Control type="number" placeholder="Nuevo teléfono" id="mod-telefono" />
+
+                                <Form.Select aria-label="Seleccion prefijo telefono" id="mod-prefix" value={modDatos?.prefix} onChange={controlDato}>
+                                    {
+                                        phonePrefix.map((x, index) => {
+                                            return <option key={index} value={x.dial_code}>
+                                                {x.name} {x.dial_code}
+                                            </option>
+                                        })
+                                    }
+                                </Form.Select>
+                                <Form.Control type="number" placeholder="Escribe número" id="mod-telefono" value={modDatos?.telefono} onChange={controlDato}/>
                             </div>
                         </Form.Group>
 
@@ -683,77 +681,93 @@ function Perfil() {
                         </Form.Group>
 
                         <Form.Group className="mb-3" style={modDatos.modId === 'presentacion' ? {} : { display: 'none' }} >
-                            <Form.Control as="textarea" placeholder="Escribe aquí algo sobre ti" id="mod-presentacion" />
+                            <Form.Label>
+                                <small className="text-muted">Quedan {presentacionCaracteres - modDatos?.presentacion?.length} caracteres</small>
+                            </Form.Label>
+                            <Form.Control as="textarea" placeholder="Escribe aquí algo sobre ti" id="mod-presentacion" value={modDatos?.presentacion} onChange={controlDato}/>
                         </Form.Group>
 
                         <Form.Group className="mb-3" style={modDatos.modId === 'trabajo' ? {} : { display: 'none' }} >
-                            <Form.Control type="text" placeholder="¿A qué te dedicas?" id="mod-trabajo" />
+                            <Form.Label>
+                                <small className="text-muted">Quedan {trabajoCaracteres - modDatos?.trabajo?.length} caracteres</small>
+                            </Form.Label>
+                            <Form.Control type="text" placeholder="¿A qué te dedicas?" id="mod-trabajo" value={modDatos?.trabajo} onChange={controlDato}/>
                         </Form.Group>
 
                         <Form.Group className="mb-3" style={modDatos.modId === 'idiomas' ? {} : { display: 'none' }} >
 
-                            <small id="mod-idiomas">
-                                * Selecciona los idiomas que hablas:
-                            </small>
-
-                            <br />
-                            <br />
+                            <Form.Label>
+                                <small id="mod-idiomas" className="text-muted">
+                                    Selecciona los idiomas que hablas:
+                                </small>
+                            </Form.Label>
 
                             <div key='checkbox' className="mb-3">
                                 <Form.Check
                                     inline
-                                    id="idioma_esp"
+                                    id="mod-idioma_esp"
                                     label="Español"
                                     name="group1"
-                                    defaultChecked={userIdiomas.idioma_esp}
+                                    defaultChecked={modDatos?.idioma_esp}
+                                    onChange={(e) => { controlDato(e, 'checked') }}
                                     type='checkbox'
-                                    value={userIdiomas.idioma_esp}
+                                    value={modDatos?.idioma_esp}
                                 />
                                 <Form.Check
                                     inline
-                                    id="idioma_ing"
+                                    id="mod-idioma_ing"
                                     label="Inglés"
                                     name="group1"
-                                    defaultChecked={userIdiomas.idioma_ing}
+                                    defaultChecked={modDatos?.idioma_ing}
+                                    onChange={(e) => { controlDato(e, 'checked') }}
                                     type='checkbox'
-                                    value={userIdiomas.idioma_ing}
+                                    value={modDatos?.idioma_ing}
                                 />
                                 <Form.Check
                                     inline
-                                    id="idioma_fra"
+                                    id="mod-idioma_fra"
                                     label="Francés"
                                     name="group1"
-                                    defaultChecked={userIdiomas.idioma_fra}
+                                    defaultChecked={modDatos?.idioma_fra}
+                                    onChange={(e) => { controlDato(e, 'checked') }}
                                     type='checkbox'
-                                    value={userIdiomas.idioma_fra}
+                                    value={modDatos?.idioma_fra}
                                 />
                                 <Form.Check
                                     inline
-                                    id="idioma_por"
+                                    id="mod-idioma_por"
                                     label="Portugués"
                                     name="group1"
-                                    defaultChecked={userIdiomas.idioma_por}
+                                    defaultChecked={modDatos?.idioma_por}
+                                    onChange={(e) => { controlDato(e, 'checked') }}
                                     type='checkbox'
-                                    value={userIdiomas.idioma_por}
+                                    value={modDatos?.idioma_por}
                                 />
                                 <Form.Check
                                     inline
-                                    id="idioma_chi"
+                                    id="mod-idioma_chi"
                                     label="Chino"
                                     name="group1"
-                                    defaultChecked={userIdiomas.idioma_chi}
+                                    defaultChecked={modDatos?.idioma_chi}
+                                    onChange={(e) => { controlDato(e, 'checked') }}
                                     type='checkbox'
-                                    value={userIdiomas.idioma_chi}
+                                    value={modDatos?.idioma_chi}
                                 />
                             </div>
                         </Form.Group>
 
                         <Form.Group className="mb-3" style={modDatos.modId === 'email' ? {} : { display: 'none' }} >
-                            <Form.Control type="email" placeholder="Nuevo correo" id="mod-email" />
+                            <Form.Label>
+                                <small className="text-muted">Quedan {correoCaracteres - modDatos?.email?.length} caracteres</small>
+                            </Form.Label>
+                            <Form.Control type="email" placeholder="Nuevo correo" id="mod-email" value={modDatos?.email} onChange={controlDato}/>
                         </Form.Group>
 
                         <Form.Group className="mb-3" style={modDatos.modId === 'password' ? {} : { display: 'none' }} >
-                            <Form.Control type="password" placeholder="Nueva contraseña" id="mod-password" />
+                            <Form.Label>
+                                <small className="text-muted">Quedan {passwordCaracteres - modDatos?.password?.length} caracteres</small>
+                            </Form.Label>
+                            <Form.Control type="password" placeholder="Nueva contraseña" id="mod-password" value={modDatos?.password} onChange={controlDato}/>
                         </Form.Group>
 
                         <Form.Group className="mb-3" style={modDatos.modId === 'imagen' ? {} : { display: 'none' }} >
@@ -782,7 +796,7 @@ function Perfil() {
 
                             <br />
 
-                            <Button className="filtros-botones" size="sm" onClick={desactivarCuenta}>
+                            <Button className="borrar-botones" size="sm" onClick={desactivarCuenta}>
                                 <FontAwesomeIcon icon={faUserClock} /> Desactivar
                             </Button>
                         </Form.Group>
@@ -793,7 +807,7 @@ function Perfil() {
 
                             <br />
                             
-                            <Button className="filtros-botones" size="sm" onClick={desactivarCuenta}>
+                            <Button className="borrar-botones" size="sm" onClick={desactivarCuenta}>
                                 <FontAwesomeIcon icon={faUserMinus} /> Eliminar
                             </Button>
                         </Form.Group>

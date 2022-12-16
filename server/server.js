@@ -732,7 +732,8 @@ server.post('/perfil/mis-alojamientos/borrar', comprobarToken, (req, res) => {
         return;
     }
 
-    //console.log(req.body);
+    console.log(req.body);
+    res.status(200).json({ respuesta: 'correcto' });
 });
 
 //

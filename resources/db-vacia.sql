@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 	`residencia` text NOT NULL default '',
 	`trabajo` varchar(70) NOT NULL default '',
 	`idiomas` varchar(70) NOT NULL default 'Español',
-	`imgPerfil` varchar(100) NOT NULL default 'default.png',
+	`imgPerfil` varchar(50) NOT NULL default 'default.png',
 	`recibirCorreos` tinyint NOT NULL default 1,
 
 	
