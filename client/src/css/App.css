@@ -6,6 +6,19 @@
     COLORES BOTONES
 */
 
+.filtros-botones {
+    background-color: #ffe841 !important;
+    border-color: black !important;
+
+    color: black !important;
+    font-weight: bold !important;
+}
+
+.filtros-botones:hover {
+    background-color: #d6c437 !important;
+    border-color: black !important;
+}
+/*
 .color-boton {
     background-color: #ffe841 !important;
     border-color: black !important;
@@ -16,10 +29,10 @@
 .color-boton:hover {
     background-color: #d6c437 !important;
     border-color: black !important;
-}
+}*/
 
 .borrar-botones {
-    background-color: #ff4141 !important;
+    background-color: #fb4141 !important;
     border-color: black !important;
 
     color: black !important;
@@ -32,7 +45,7 @@
 }
 
 .crear-botones {
-    background-color: #00be39 !important;
+    background-color: #28ff2b !important;
     border-color: black !important;
 
     color: black !important;
@@ -45,7 +58,7 @@
 }
 
 .reservar-botones {
-    background-color: #ff57bc !important;
+    background-color: #ff81ec !important;
     border-color: black !important;
 
     color: black !important;
@@ -53,7 +66,7 @@
 }
 
 .reservar-botones:hover {
-    background-color: #a3006a !important;
+    background-color: #a7598c !important;
     border-color: black !important;
 }
 

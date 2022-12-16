@@ -379,7 +379,7 @@ function VerAlojamiento() {
                                     </li>
                                 }
                                 {
-                                    alojamiento.animales !== 0 && 
+                                    alojamiento.mascotas !== 0 && 
                                     <li style={{ padding: '7px', fontSize: '20px' }}>
                                         <FontAwesomeIcon icon={faPaw} /> Pueden mascotas
                                     </li>
@@ -637,11 +637,10 @@ function VerAlojamiento() {
                     </h5>
 
                     <span style={{ fontWeight: 'bold' }}>
-
+                        <span style={alojamiento.precioAnterior !== null && alojamiento.precioAnterior > alojamiento.precio ? {} : { display: 'none' }}>
+                            <del className="text-muted">{alojamiento.precioAnterior}€</del>&nbsp;
+                        </span>
                         {alojamiento.precio}€ por noche
-                        <br />
-                        <FontAwesomeIcon icon={faAward} /> Descuento de {alojamiento.descuento}%
-
                     </span>
 
                     <h3>

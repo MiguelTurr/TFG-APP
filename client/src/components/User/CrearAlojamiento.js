@@ -36,15 +36,15 @@ const formDefault = {
     puedeFiestas: false,
     puedeFumar: false,
 
-    cocina: false,
-    wifi: false,
-    mascotas: false,
-    aparcamiento: false,
-    piscina: false,
-    lavadora: false,
-    aire: false,
-    calefaccion: false,
-    television: false,
+    cocina: 0,
+    wifi: 0,
+    mascotas: 0,
+    aparcamiento: 0,
+    piscina: 0,
+    lavadora: 0,
+    aire: 0,
+    calefaccion: 0,
+    television: 0,
 
     imgTotal: 0,
 }
@@ -404,14 +404,21 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
 
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="precio">Precio por noche</Form.Label>
-                            <Row>
-                                <Col>
-                                    <Form.Range id="precio" min="10" max="2000" value={form.precio} onChange={cambiosForm} />
-                                </Col>
-                                <Col>
-                                    <h4 className="text-center">{form.precio} €</h4>
-                                </Col>
-                            </Row>
+                            
+
+                            <table className="table">
+                                <tbody>
+                                    <tr style={{ verticalAlign: 'middle', borderBottom: 'transparent' }}>
+
+                                        <td style={{ width: '70%' }}>
+                                            <Form.Range id="precio" min="10" max="2000" value={form.precio} onChange={cambiosForm} />
+                                        </td>
+                                        <td>
+                                            <h4 className="text-center">{form.precio} €</h4>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </Form.Group>
 
                         <hr />

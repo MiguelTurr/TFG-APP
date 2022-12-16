@@ -709,7 +709,7 @@ function Perfil() {
                                     label="Español"
                                     name="group1"
                                     defaultChecked={modDatos?.idioma_esp}
-                                    onChange={(e) => { controlDato(e, 'checked') }}
+                                    onClick={(e) => { controlDato(e, 'checked') }}
                                     type='checkbox'
                                     value={modDatos?.idioma_esp}
                                 />
@@ -719,7 +719,7 @@ function Perfil() {
                                     label="Inglés"
                                     name="group1"
                                     defaultChecked={modDatos?.idioma_ing}
-                                    onChange={(e) => { controlDato(e, 'checked') }}
+                                    onClick={(e) => { controlDato(e, 'checked') }}
                                     type='checkbox'
                                     value={modDatos?.idioma_ing}
                                 />
@@ -729,7 +729,7 @@ function Perfil() {
                                     label="Francés"
                                     name="group1"
                                     defaultChecked={modDatos?.idioma_fra}
-                                    onChange={(e) => { controlDato(e, 'checked') }}
+                                    onClick={(e) => { controlDato(e, 'checked') }}
                                     type='checkbox'
                                     value={modDatos?.idioma_fra}
                                 />
@@ -739,7 +739,7 @@ function Perfil() {
                                     label="Portugués"
                                     name="group1"
                                     defaultChecked={modDatos?.idioma_por}
-                                    onChange={(e) => { controlDato(e, 'checked') }}
+                                    onClick={(e) => { controlDato(e, 'checked') }}
                                     type='checkbox'
                                     value={modDatos?.idioma_por}
                                 />
@@ -749,7 +749,7 @@ function Perfil() {
                                     label="Chino"
                                     name="group1"
                                     defaultChecked={modDatos?.idioma_chi}
-                                    onChange={(e) => { controlDato(e, 'checked') }}
+                                    onClick={(e) => { controlDato(e, 'checked') }}
                                     type='checkbox'
                                     value={modDatos?.idioma_chi}
                                 />

@@ -70,6 +70,10 @@ function Favoritos() {
 
                 <hr/>
 
+                <h4 style={alojamientos.length === 0 ? {} : { display: 'none' } }>
+                    No has añadido ningún alojamiento a favoritos.
+                </h4>
+
                 {
                     alojamientos.map((x, index) => (
 

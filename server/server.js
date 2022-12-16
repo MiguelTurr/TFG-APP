@@ -570,7 +570,7 @@ server.get('/perfil/mis-alojamientos', comprobarToken, (req, res) => {
         return;
     }
 
-    mysql.query('SELECT ID,ubicacion,precio,descuento,creadoEn,visitas,valoracionMedia,vecesValorado FROM alojamientos WHERE usuarioID=? ORDER BY creadoEn DESC', req.userId, function (err, result) {
+    mysql.query('SELECT ID,ubicacion,precio,precioAnterior,creadoEn,visitas,valoracionMedia,vecesValorado FROM alojamientos WHERE usuarioID=? ORDER BY creadoEn DESC', req.userId, function (err, result) {
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
 
@@ -699,17 +699,25 @@ server.get('/perfil/mis-alojamientos/:id', comprobarToken, (req, res) => {
             return res.status(500).json({ respuesta: 'err_db' });
         }
 
-        var servicios = result[0].servicios;
+        // SERVICIOS
 
-        result[0].cocina = servicios >> 8;
-        result[0].wifi = servicios >> 7 & 0x1;
-        result[0].animales = servicios >> 6 & 0x01;
-        result[0].aparcamiento = servicios >> 5 & 0x001;
-        result[0].piscina = servicios >> 4 & 0x0001;
-        result[0].lavadora = servicios >> 3 & 0x00001;
-        result[0].aire = servicios >> 2 & 0x000001;
-        result[0].calefaccion = servicios >> 1 & 0x0000001;
-        result[0].television = servicios & 0x0000001;
+        const servicios = result[0].servicios;
+        const lenServicios = utils.serviciosCasas.length;
+
+        var arrayServicios = [];
+
+        for(var i = 0; i < lenServicios; i++) {
+
+            var value = servicios >> (utils.totalServicios-i) & 0x1;
+            const servicioNombre = utils.serviciosCasas[i];
+
+            result[0][servicioNombre.toLowerCase()] = value;
+            if(value > 0) arrayServicios.push(servicioNombre);
+        }
+
+        result[0].strServicios = arrayServicios.toString().replaceAll(',', ', ');
+
+        // ENVIA
 
         res.status(200).json({ respuesta: 'correcto', alojamiento: result[0] });
     });
@@ -721,8 +729,98 @@ server.post('/perfil/mis-alojamientos/editar/', comprobarToken, (req, res) => {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
+    
+    var queryStr = 'UPDATE alojamientos SET ';
 
-    //console.log(req.body);
+    if(req.body.tipo === 'alojamiento') {
+
+        var servicios_final = 0;
+
+        servicios_final |= utils.boolToInt(req.body.cocina) << 8;
+        servicios_final |= utils.boolToInt(req.body.wifi) << 7;
+        servicios_final |= utils.boolToInt(req.body.mascotas) << 6;
+        servicios_final |= utils.boolToInt(req.body.aparcamiento) << 5;
+        servicios_final |= utils.boolToInt(req.body.piscina) << 4;
+        servicios_final |= utils.boolToInt(req.body.lavadora) << 3;
+        servicios_final |= utils.boolToInt(req.body.aire) << 2;
+        servicios_final |= utils.boolToInt(req.body.calefaccion) << 1;
+        servicios_final |= utils.boolToInt(req.body.television);
+
+        queryStr += 'viajeros=' +req.body.viajeros+ ',habitaciones=' +req.body.habitaciones+ ',camas=' +req.body.camas+ ',aseos=' +req.body.aseos;
+        queryStr += ',puedeFumar=' +req.body.puedeFumar+ ',puedeFiestas=' +req.body.puedeFiestas;
+        queryStr += ',servicios=' +servicios_final+ ' ';
+
+    } else if(req.body.tipo === 'imagenes') {
+
+    } else if(req.body.tipo === 'coste') {
+        queryStr += 'precio=' +req.body.precio+ ',precioAnterior=' +req.body.precioAnterior+ ' ';
+
+    } else {
+        queryStr += req.body.tipo+ '="' +req.body.editado+ '" ';
+        console.log(req.body.tipo+ ' ' +req.body.editado);
+    }
+
+    queryStr += 'WHERE ID=' +req.body.alojamientoID+ ' AND usuarioID=' +req.userId;
+
+    /*console.log(queryStr);
+    res.status(200).json({ respuesta: 'correcto' });*/
+
+    mysql.query(queryStr, function(err) {
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        res.status(200).json({ respuesta: 'correcto' });
+
+        // ENVIAR CORREO SI EL COSTE DISMINUYE
+
+        if(req.body.tipo === 'coste') {
+
+            var precioFinal = parseInt(req.body.precio) + 10;
+
+            if(precioFinal < req.body.precioAnterior) {
+
+                mysql.query(`SELECT usu.email FROM usuarios_favoritos as fav
+                    INNER JOIN usuarios as usu ON usu.ID=fav.usuarioID AND usu.recibirCorreos=1
+                    WHERE fav.alojamientoID=?`, req.body.alojamientoID, function(err, result) {
+
+                    if(err) {
+                        return;
+                    }
+
+                    const len = result.length;
+
+                    if(len === 0) {
+                        return;
+                    }
+
+                    var textoEmail = 'Hola, parece que uno de tus alojamientos en favoritos ha disminuido su precio de ' +req.body.precioAnterior+ '€ a ' +req.body.precio+ '€.\n\n';
+                    textoEmail += req.body.titulo+ '\n';
+                    textoEmail += 'En: ' +req.body.ubicacion+ '\n';
+                    textoEmail += 'Pulsa el siguiente link para verlo: http://localhost:3000/alojamiento/ver?casa=' +req.body.alojamientoID;
+                    textoEmail += '\n\nUn saludo desde 2FH.'
+
+                    for(var i = 0; i < len; i++) {
+
+                        try {
+
+                            email.sendMail({
+                                from: 'FastForHolidays',
+                                to: (dev_state === true) ? 'pepecortezri@gmail.com' : result[i].email,
+                                subject: '¡Uno de tus alojamientos en favoritos está en oferta!',
+                                text: textoEmail
+                            });
+
+                        } catch (err) {
+                            console.log(err);
+                        }
+                    }
+                });
+            }
+        }
+    });
 });
 
 server.post('/perfil/mis-alojamientos/borrar', comprobarToken, (req, res) => {
@@ -1542,7 +1640,7 @@ server.get('/perfil/recomendados',  comprobarToken, async (req, res) => {
     // RECOMENDACIONES
 
     const recomendaciones = await new Promise((resolve) => {
-        mysql.query(`SELECT t1.ID,t1.ubicacion,t1.precio,t1.descuento,t1.creadoEn,t1.visitas,t1.valoracionMedia,t1.vecesValorado FROM alojamientos t1
+        mysql.query(`SELECT t1.ID,t1.ubicacion,t1.precio,t1.creadoEn,t1.visitas,t1.valoracionMedia,t1.vecesValorado FROM alojamientos t1
             LEFT JOIN usuarios_favoritos t2 ON t1.ID = t2.alojamientoID 
             WHERE t2.alojamientoID IS NULL AND t1.usuarioID!=? AND t1.precio BETWEEN ? AND ? LIMIT 4`, 
             [
@@ -1566,7 +1664,7 @@ server.get('/perfil/recomendados',  comprobarToken, async (req, res) => {
     // NUEVAS EXPERIENCIAS
 
     const experiencias = await new Promise((resolve) => {
-        mysql.query(`SELECT t1.ID,t1.ubicacion,t1.precio,t1.descuento,t1.creadoEn,t1.visitas,t1.valoracionMedia,t1.vecesValorado FROM alojamientos t1
+        mysql.query(`SELECT t1.ID,t1.ubicacion,t1.precio,t1.creadoEn,t1.visitas,t1.valoracionMedia,t1.vecesValorado FROM alojamientos t1
             LEFT JOIN usuarios_favoritos t2 ON t1.ID = t2.alojamientoID 
             WHERE t2.alojamientoID IS NULL AND t1.usuarioID!=? AND t1.lat NOT BETWEEN ? AND ? AND t1.lng NOT BETWEEN ? AND ? ORDER BY t1.creadoEn DESC LIMIT 4`, 
             [
@@ -1798,17 +1896,16 @@ server.get('/alojamiento/ver/:id', comprobarToken, (req, res) => {
             return;
         }
 
-        var servicios = result[0].servicios;
+        // SERVICIOS
 
-        result[0].cocina = servicios >> 8;
-        result[0].wifi = servicios >> 7 & 0x1;
-        result[0].animales = servicios >> 6 & 0x01;
-        result[0].aparcamiento = servicios >> 5 & 0x001;
-        result[0].piscina = servicios >> 4 & 0x0001;
-        result[0].lavadora = servicios >> 3 & 0x00001;
-        result[0].aire = servicios >> 2 & 0x000001;
-        result[0].calefaccion = servicios >> 1 & 0x0000001;
-        result[0].television = servicios & 0x0000001;
+        const servicios = result[0].servicios;
+        const lenServicios = utils.serviciosCasas.length;
+
+        for(var i = 0; i < lenServicios; i++) {
+            result[0][utils.serviciosCasas[i].toLowerCase()] = servicios >> (utils.totalServicios-i) & 0x1;
+        }
+
+        //
 
         if (result[0].favorito === undefined) {
             result[0].favorito = null;
@@ -1912,7 +2009,7 @@ server.get('/alojamiento/reservar/:id', comprobarToken, (req, res) => {
 
     const alojamientoId = req.params.id;
 
-    mysql.query('SELECT ID,ubicacion,precio,descuento,descuentoHasta,valoracionMedia,vecesValorado FROM alojamientos WHERE ID=? LIMIT 1', alojamientoId, function (err, result) {
+    mysql.query('SELECT ID,ubicacion,precio,valoracionMedia,vecesValorado FROM alojamientos WHERE ID=? LIMIT 1', alojamientoId, function (err, result) {
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
             console.log(err.message);

@@ -174,15 +174,6 @@ function ReservarAlojamiento() {
                                 </td>
                             </tr>
 
-                            <tr style={ alojamiento.descuento > 0 ? {} : { display: 'none' }}>
-                                <td>
-                                    Descuento:
-                                </td>
-                                <td style={{ textAlign: 'right' }}>
-                                    {alojamiento.descuento} %
-                                </td>
-                            </tr>
-
                             <tr>
                                 <td>
                                     Comisión:

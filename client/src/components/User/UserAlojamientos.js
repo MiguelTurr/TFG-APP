@@ -102,6 +102,10 @@ function UserAlojamientos() {
                                         <p>
                                             <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green' }} /> {x.ubicacion}
                                             <br/>
+                                            
+                                            <span style={x.precioAnterior !== null ? {} : { display: 'none' }}>
+                                                <del className="text-muted">{x.precioAnterior}€</del>&nbsp;
+                                            </span>
                                             <small>{x.precio}€ por noche</small>
                                         </p>
                                     </td>

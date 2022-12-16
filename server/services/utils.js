@@ -1,5 +1,8 @@
 const columnasPorPagina = 12;
 
+const serviciosCasas = ['Cocina', 'Wifi', 'Mascotas', 'Aparcamiento', 'Piscina', 'Lavadora', 'Aire', 'Calefaccion', 'Television'];
+const totalServicios = serviciosCasas.length - 1;
+
 //
 
 function nombreFotoPerfil(userId, extension) {
@@ -92,6 +95,9 @@ module.exports = {
     boolToInt,
     estadoReserva,
     diasEntreFechas,
+
+    serviciosCasas,
+    totalServicios,
 
     queryOrdenar,
     queryLimit,
