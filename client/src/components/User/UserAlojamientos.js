@@ -24,7 +24,7 @@ function UserAlojamientos() {
     const [vista, setVista] = useState('principal');
 
     const obtenerAlojamientos = async () => {
-        const data = await fetch('/perfil/misalojamientos', {
+        const data = await fetch('/perfil/mis-alojamientos', {
             method: 'GET',
             
             headers: {

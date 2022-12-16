@@ -450,49 +450,86 @@ server.post('/perfil/editar/estado', comprobarToken, (req, res) => {
     });
 });
 
-server.post('/perfil/borrar', comprobarToken, (req, res) => {
+server.post('/perfil/borrar/foto', comprobarToken, (req, res) => {
 
     if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
-    var query = 'UPDATE usuarios SET ';
-
-    if (req.body.tipo == 'imagen') {
-
-        query += "imgPerfil='default.png' ";
-
-        fs.unlink('./imagenes/perfil/' + req.body.borrar, (err) => {
-            if (err) {
-                res.status(500).json({ respuesta: 'err_server' });
-
-                console.log(err);
-                return;
-            }
-        });
-
-    } else if (req.body.tipo == 'desactivar') {
-        query += "activo=2 ";
-        console.log('DESACTIVAR CUENTA: ' +req.userId);
-
-    } else if (req.body.tipo == 'eliminar') {
-        query += "activo=-1 ";
-        console.log('ELIMINAR CUENTA: ' +req.userId);
-    }
-
-    query += 'WHERE ID=' + req.userId + ' LIMIT 1';
-
-    mysql.query(query, function (err) {
+    mysql.query("SELECT password FROM usuarios WHERE ID=? LIMIT 1", req.userId, async (err, result) => {
 
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
-
             console.log(err.message);
             return;
         }
 
-        res.status(200).json({ respuesta: 'correcto' });
+        if (result.length == 0) {
+            res.status(500).json({ respuesta: 'err_user' });
+            return;
+        }
+
+        const match = await bcrypt.compare(req.body.password, result[0].password);
+        if (!match) {
+            res.status(401).json({ respuesta: 'err_datos' });
+            return;
+        }
+
+        mysql.query('UPDATE usuarios SET imgPerfil="default.png" WHERE ID=?', req.userId, function (err) {
+            if (err) {
+                res.status(500).json({ respuesta: 'err_db' });
+                console.log(err.message);
+                return;
+            }
+
+            fs.unlink('./imagenes/perfil/' + req.body.borrar, (err) => {
+                if (err) {
+                    res.status(500).json({ respuesta: 'err_server' });
+                    console.log(err);
+                    return;
+                }
+                res.status(200).json({ respuesta: 'correcto' });
+            });
+        });
+    });
+});
+
+server.post('/perfil/borrar/cuenta', comprobarToken, (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    mysql.query("SELECT password FROM usuarios WHERE ID=? LIMIT 1", req.userId, async (err, result) => {
+
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        if (result.length == 0) {
+            res.status(500).json({ respuesta: 'err_user' });
+            return;
+        }
+
+        const match = await bcrypt.compare(req.body.password, result[0].password);
+        if (!match) {
+            res.status(401).json({ respuesta: 'err_datos' });
+            return;
+        }
+
+        mysql.query('UPDATE usuarios SET activo=? WHERE ID=?', [req.body.tipo === 'desactivar' ? 1 : -1, req.userId], function (err) {
+            if (err) {
+                res.status(500).json({ respuesta: 'err_db' });
+                console.log(err.message);
+                return;
+            }
+
+            res.status(200).clearCookie("token").json({ respuesta: 'correcto' });
+        });
     });
 });
 
@@ -526,26 +563,7 @@ server.get('/perfil/foto', comprobarToken, (req, res) => {
     });
 });
 
-server.get('/perfil/eliminar', comprobarToken, (req, res) => {
-
-    if (req.userId == undefined) {
-        res.status(500).json({ respuesta: 'err_user' });
-        return;
-    }
-
-    mysql.query('DELETE FROM usuarios WHERE ID=? LIMIT 1', req.userId, function (err) {
-
-        if (err) {
-            res.status(500).json({ respuesta: 'err_db' });
-            console.log(err.message);
-            return;
-        }
-
-        res.status(200).clearCookie("token").json({ respuesta: 'correcto' });
-    })
-});
-
-server.get('/perfil/misalojamientos', comprobarToken, (req, res) => {
+server.get('/perfil/mis-alojamientos', comprobarToken, (req, res) => {
 
     if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
@@ -564,7 +582,7 @@ server.get('/perfil/misalojamientos', comprobarToken, (req, res) => {
     });
 });
 
-server.post('/perfil/misalojamientos/crear', comprobarToken, (req, res) => {
+server.post('/perfil/mis-alojamientos/crear', comprobarToken, (req, res) => {
 
     if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
@@ -681,11 +699,23 @@ server.get('/perfil/mis-alojamientos/:id', comprobarToken, (req, res) => {
             return res.status(500).json({ respuesta: 'err_db' });
         }
 
+        var servicios = result[0].servicios;
+
+        result[0].cocina = servicios >> 8;
+        result[0].wifi = servicios >> 7 & 0x1;
+        result[0].animales = servicios >> 6 & 0x01;
+        result[0].aparcamiento = servicios >> 5 & 0x001;
+        result[0].piscina = servicios >> 4 & 0x0001;
+        result[0].lavadora = servicios >> 3 & 0x00001;
+        result[0].aire = servicios >> 2 & 0x000001;
+        result[0].calefaccion = servicios >> 1 & 0x0000001;
+        result[0].television = servicios & 0x0000001;
+
         res.status(200).json({ respuesta: 'correcto', alojamiento: result[0] });
     });
 });
 
-server.post('/perfil/misalojamientos/editar/', comprobarToken, (req, res) => {
+server.post('/perfil/mis-alojamientos/editar/', comprobarToken, (req, res) => {
 
     if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
@@ -694,6 +724,18 @@ server.post('/perfil/misalojamientos/editar/', comprobarToken, (req, res) => {
 
     //console.log(req.body);
 });
+
+server.post('/perfil/mis-alojamientos/borrar', comprobarToken, (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    //console.log(req.body);
+});
+
+//
 
 server.get('/perfil/mis-reservas/cancelar/:id', comprobarToken, (req, res) => {
 

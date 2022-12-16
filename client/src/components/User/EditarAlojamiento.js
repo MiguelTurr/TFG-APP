@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { crearAlerta } from '../Toast/Toast.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faTrashCan, faHouse, faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faTrashCan, faHouse, faLocationDot, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
 
@@ -15,6 +15,8 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
 
     const [alojamientoImg, setAlojamientoImg] = useState([]);
     const [alojamiento, setAlojamiento] = useState({});
+
+    const [cambiarDatos, setCambiarDatos] = useState(null);
 
     useEffect(() => {
         obtenerInfoAlojamiento();
@@ -37,6 +39,8 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
         } else if(items.respuesta === 'correcto') {
             setAlojamiento(items.alojamiento);
         }
+
+        console.log(cambiarDatos === null);
     };
 
     if (alojamientoId === null) {
@@ -50,6 +54,28 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
         }
 
         console.log('Eliminar');
+    };
+
+    const modificarDato = (tipoId) => {
+        var objeto = {};
+
+        if(tipoId === 'titulo') {
+            objeto.dato = 'título';
+
+        } else if(tipoId === 'descripcion') {
+            objeto.dato = 'descripción';
+
+        } else if(tipoId === 'coste') {
+            objeto.dato = 'coste';
+
+        } else if(tipoId === 'servicios') {
+            objeto.dato = 'servicios';
+
+        } else if(tipoId === 'imagenes') {
+            objeto.dato = 'imágenes';
+        }
+
+        setCambiarDatos(objeto);
     };
 
     //
@@ -67,7 +93,7 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
             </Button>
             &nbsp;&nbsp;
 
-            <Button className="borrar-botones" size="sm" onClick={() => { eliminarAlojamiento() }}>
+            <Button className="borrar-botones" size="sm" onClick={eliminarAlojamiento}>
                 <FontAwesomeIcon icon={faTrashCan} /> Eliminar
             </Button>
 
@@ -79,30 +105,98 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
 
             <div className="row">
 
-                <div className="col">
+                <div className="col" style={window.innerWidth < 600 && cambiarDatos !== null ? { display: 'none' }  : {  } }>
+
                     <table className="table">
                         <tbody>
                             <tr>
                                 <td>
                                     Ubicación:
                                     <br/>
-                                    <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green' }} /> {alojamiento?.ubicacion}
+                                    <small><FontAwesomeIcon icon={faLocationDot} style={{ color: 'green' }} /> {alojamiento?.ubicacion}</small>
                                 </td>
+                                <td> </td>
                             </tr>
 
                             <tr>
                                 <td>
                                     Fecha creación:
                                     <br/>
-                                    { new Date(alojamiento.creadoEn).toLocaleDateString('es-ES', crearOptions) }
+                                    <small>{ new Date(alojamiento.creadoEn).toLocaleDateString('es-ES', crearOptions) }</small>
+                                </td>
+                                <td> </td>
+                            </tr>
+
+                            <tr className="tabla-seleccion" onClick={() => { modificarDato('titulo' ); }}>
+                                <td>
+                                    Título:
+                                    <br/>
+                                    <small>
+                                        { alojamiento.titulo?.substring(0, 40) }<span style={ alojamiento.titulo?.length > 40 ? {} : { display: 'none' }}>...</span>
+                                    </small>
+                                </td>
+                                <td className="arrow-style">
+                                    <FontAwesomeIcon icon={faArrowRight} />
                                 </td>
                             </tr>
 
-                            <tr>
+                            <tr className="tabla-seleccion" onClick={() => { modificarDato('descripcion' ); }}>
+                                <td>
+                                    Descripción:
+                                    <br/>
+                                    <small>
+                                        { alojamiento.descripcion?.substring(0, 40) }<span style={ alojamiento.descripcion?.length > 40 ? {} : { display: 'none' }}>...</span>
+                                    </small>
+                                </td>
+                                <td className="arrow-style">
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                </td>
+                            </tr>
 
+                            <tr className="tabla-seleccion" onClick={() => { modificarDato('coste' ); }}>
+                                <td>
+                                    Coste:
+                                    <br/>
+                                    <small>
+                                        { alojamiento.precio }€ por noche <span className="text-muted">(sin descuento)</span>
+                                    </small>
+                                </td>
+                                <td className="arrow-style">
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                </td>
+                            </tr>
+
+                            <tr className="tabla-seleccion" onClick={() => { modificarDato('servicios' ); }}>
+                                <td>
+                                    Servicios:
+                                    <br/>
+                                    <small>{alojamiento.servicios}</small>
+                                </td>
+                                <td className="arrow-style">
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                </td>
+                            </tr>
+
+                            <tr className="tabla-seleccion" onClick={() => { modificarDato('imagenes' ); }}>
+                                <td>
+                                    Imágenes:
+                                    <br/>
+                                    <small>{alojamiento.imgCantidad}</small>
+                                </td>
+                                <td className="arrow-style">
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                </td>
                             </tr>
                         </tbody>
                     </table>
+                </div>
+
+                <div className="col" style={window.innerWidth < 600 && cambiarDatos === null ? { display: 'none' }  :  {  } }>
+
+                    <h4>
+                        {cambiarDatos?.dato.toUpperCase()}
+                    </h4>
+
                 </div>
 
             </div>

@@ -8,7 +8,7 @@ import { crearAlerta } from '../Toast/Toast.js';
 import userLogin from '../../js/autorizado';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faRepeat, faArrowLeft, faTrash, faUserMinus, faUserClock, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faRepeat, faTrash, faUserMinus, faUserClock, faUser, faPenToSquare, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
 import Form from 'react-bootstrap/Form';
@@ -66,6 +66,9 @@ function Perfil() {
         }
 
         setPerfilVista(vistaId);
+
+        setCambiarDatos(false);
+        setModDatos({});
     };
 
     // MODIFICAR DATOS
@@ -75,49 +78,31 @@ function Perfil() {
 
     const volverPerfil = () => {
         setCambiarDatos(false);
+        setModDatos({});
     };
 
     const modificarOpcion = (opcionId) => {
         setCambiarDatos(true);
 
-        var opciones;
+        var opciones = {};
+
+        opciones.modificado = false;
+        opciones.modId = opcionId;
 
         if(opcionId === 'telefono') {
 
-            opciones = {
-                modId: opcionId,
-                titulo: 'Teléfono',
-                anterior: userInfo.telefono,
-                prefix: userInfo.telefono.split(' ')[0],
-                modificado: false
-            }
+            document.getElementById('mod-' +opcionId).value = userInfo.telefono.split(' ')[1];
+            opciones.prefix = userInfo.telefono.split(' ')[0];
 
         } else if(opcionId === 'residencia') {
 
-            opciones = {
-                modId: opcionId,
-                titulo: 'Residencia',
-                anterior: userInfo.residencia,
-                modificado: false
-            }
-
         } else if(opcionId === 'presentacion') {
 
-            opciones = {
-                modId: opcionId,
-                titulo: 'Sobre ti',
-                anterior: userInfo.presentacion.substring(0, 15)+ '...',
-                modificado: false
-            }
+            document.getElementById('mod-' +opcionId).value = userInfo.presentacion;
 
         } else if(opcionId === 'trabajo') {
 
-            opciones = {
-                modId: opcionId,
-                titulo: 'Trabajo',
-                anterior: userInfo.trabajo,
-                modificado: false
-            }
+            document.getElementById('mod-' +opcionId).value = userInfo.trabajo;
 
         } else if(opcionId === 'idiomas') {
 
@@ -135,42 +120,17 @@ function Perfil() {
             }
             setUserIdiomas(objeto);
 
-            //
-
-            opciones = {
-                modId: opcionId,
-                titulo: 'Idiomas',
-                anterior: userInfo.idiomas,
-                modificado: false
-            }
-
         } else if(opcionId === 'email') {
 
-            opciones = {
-                modId: opcionId,
-                titulo: 'Email',
-                anterior: userInfo.email,
-                modificado: false
-            }
+            document.getElementById('mod-' +opcionId).value = userInfo.email;
 
         } else if(opcionId === 'password') {
 
-            opciones = {
-                modId: opcionId,
-                titulo: 'Contraseña',
-                anterior: '*********',
-                modificado: false
-            }
+            document.getElementById('mod-' +opcionId).value = '';
 
         } else if(opcionId === 'imagen') {
-
-            opciones = {
-                modId: opcionId,
-                titulo: 'Imagen',
-                anterior: 'Foto de perfil',
-                modificado: false,
-                puedeBorrar: (userImg === NoProfileImg ? false : true)
-            }
+            opciones.modificado = true;
+            opciones.puedeBorrar = userImg === NoProfileImg ? false : true;
 
         }
 
@@ -217,7 +177,7 @@ function Perfil() {
         if(cambiarDatos === true && modDatos.modificado === false) {
             var element = document.getElementById('mod-' +modDatos.modId);
 
-            if(modDatos.modId === 'imagen' || modDatos.modId === 'residencia') {
+            if(modDatos.modId === 'imagen' || modDatos.modId === 'residencia' || modDatos.modId === 'desactivar' || modDatos.modId === 'eliminar') {
 
             } else if(modDatos.modId === 'idiomas') {
                 document.getElementById('idioma_esp').addEventListener('change', function() { setModDatos({ ...modDatos, modificado: true }); });
@@ -370,7 +330,7 @@ function Perfil() {
                 setUserInfo({ ...userInfo, trabajo: editado });
 
             } else if(modDatos.modId === 'idiomas') {
-                setUserInfo({ ...userInfo, idiomas: editado });
+                setUserInfo({ ...userInfo, idiomas: datoEditado });
 
             } else if(modDatos.modId === 'imagen') {
                 window.location.reload();
@@ -380,20 +340,23 @@ function Perfil() {
         }
     };
 
-    const opcionBorrar = async () => {
+    const eliminarFoto = async () => {
 
         if(userImg === NoProfileImg) {
             return crearAlerta('error', '¡No tienes foto de perfil!');
         }
 
-        var datoBorrar = userInfo.imagenPerfil;
+        const password = document.getElementById('mod-password-2').value;
+        if(password === '') {
+            return crearAlerta('error', '¡Escribe tu contraseña para confirmar!');
+        }
 
-        const data = await fetch('/perfil/borrar', {
+        const data = await fetch('/perfil/borrar/foto', {
             method: 'POST',
 
             body: JSON.stringify({
-                tipo: modDatos.modId,
-                borrar: datoBorrar,
+                borrar: userInfo.imagenPerfil,
+                password: password
             }),
             
             headers: {
@@ -412,6 +375,9 @@ function Perfil() {
         } else if(items.respuesta === 'err_server') {
             crearAlerta('error', '¡Ha ocurrido un error en el servidor!');
 
+        } else if(items.respuesta === 'err_datos') {
+            crearAlerta('error', '¡La contraseña no es la correcta!');
+
         } else if(items.respuesta === 'correcto') {
             crearAlerta('exito', '¡Ahora ya no tienes imagen de perfil!');
 
@@ -420,17 +386,23 @@ function Perfil() {
         }
     };
 
-    const desactivarCuenta = async (tipo) => {
+    const desactivarCuenta = async () => {
 
-        if(window.confirm('¿Estás seguro de ' +tipo+ ' tu cuenta?') == false) {
+        if(window.confirm('¿Estás seguro de ' +modDatos.modId+ ' tu cuenta?') == false) {
             return;
-        } 
+        }
 
-        const data = await fetch('/perfil/borrar', {
+        const password = document.getElementById('mod-' +modDatos.modId).value;
+        if(password === '') {
+            return crearAlerta('error', '¡Escribe tu contraseña para confirmar!');
+        }
+
+        const data = await fetch('/perfil/borrar/cuenta', {
             method: 'POST',
 
             body: JSON.stringify({
-                tipo: tipo,
+                tipo: modDatos.modId,
+                password: password
             }),
             
             headers: {
@@ -446,9 +418,12 @@ function Perfil() {
         } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
+        } else if(items.respuesta === 'err_datos') {
+            crearAlerta('error', '¡La contraseña no es la correcta!');
+
         } else if(items.respuesta === 'correcto') {
             
-            crearAlerta('exito', '¡Tu cuenta ha sido ' +tipo+ '!');
+            crearAlerta('exito', '¡Tu cuenta ha sido ' +modDatos.modId+ '!');
 
             setTimeout(() => {
                 setAutorizado(false);
@@ -472,7 +447,7 @@ function Perfil() {
 
             <div className="row">
 
-                {cambiarDatos === false && <div className="col">
+                <div className="col">
                     <button className={vistaPerfil === 0 ? "btn-no-style btn-activo" : "btn-no-style"} onClick={() => { cambiarVistaPerfil(0) }} id="vista-0">
                         Información personal
                     </button>
@@ -493,18 +468,7 @@ function Perfil() {
                         <FontAwesomeIcon icon={faUser} /> Ir a tu perfil público
                     </Button>
 
-                </div>}
-
-                {cambiarDatos === true && <div className="col">
-                    
-                    <Button className="filtros-botones" size="sm" onClick={() => { volverPerfil() }}>
-                        <FontAwesomeIcon icon={faArrowLeft} /> Volver
-                    </Button>
-                    &nbsp;&nbsp;
-                    <Button className="borrar-botones" size="sm" onClick={() => { opcionBorrar() }}  style={modDatos.puedeBorrar === true ? {} : { display: 'none' }}>
-                        <FontAwesomeIcon icon={faTrash} /> Eliminar {modDatos.modId}
-                    </Button>
-                </div>}
+                </div>
 
             </div>
 
@@ -512,9 +476,9 @@ function Perfil() {
 
             <div className="row">
                 
-                <div className="col">
+                <div className="col" style={window.innerWidth < 600 && cambiarDatos === true ? { display: 'none' } : {}}>
 
-                    {cambiarDatos === false && vistaPerfil === 0 && <> <table className="table">
+                    <table className="table" style={ vistaPerfil === 0 ? {} : { display: 'none' }}>
                         <tbody>
                             <tr>
                                 <td>
@@ -543,7 +507,7 @@ function Perfil() {
                                 <td>
                                 </td>
                             </tr>
-                            <tr className="tabla-seleccion" onClick={() => { modificarOpcion('telefono') }}>
+                            <tr className={modDatos.modId === 'telefono' ? "tabla-activa" : "tabla-seleccion"} onClick={() => { modificarOpcion('telefono') }}>
                                 <td>
                                     Teléfono:
                                     <br/>
@@ -553,7 +517,7 @@ function Perfil() {
                                     <FontAwesomeIcon icon={faArrowRight} />
                                 </td>
                             </tr>
-                            <tr className="tabla-seleccion" onClick={() => { modificarOpcion('residencia') }}>
+                            <tr className={modDatos.modId === 'residencia' ? "tabla-activa" : "tabla-seleccion"} onClick={() => { modificarOpcion('residencia') }}>
                                 <td>
                                     Residencia:
                                     <br/>
@@ -565,7 +529,7 @@ function Perfil() {
                                 </td>
                             </tr>
                             
-                            <tr className="tabla-seleccion" onClick={() => { modificarOpcion('trabajo') }}>
+                            <tr className={modDatos.modId === 'trabajo' ? "tabla-activa" : "tabla-seleccion"} onClick={() => { modificarOpcion('trabajo') }}>
                                 <td>
                                     Trabajo:
                                     <br/>
@@ -577,7 +541,7 @@ function Perfil() {
                                 </td>
                             </tr>
 
-                            <tr className="tabla-seleccion" onClick={() => { modificarOpcion('idiomas') }}>
+                            <tr className={modDatos.modId === 'idiomas' ? "tabla-activa" : "tabla-seleccion"} onClick={() => { modificarOpcion('idiomas') }}>
                                 <td>
                                     Idiomas:
                                     <br/>
@@ -588,7 +552,7 @@ function Perfil() {
                                     <FontAwesomeIcon icon={faArrowRight} />
                                 </td>
                             </tr>
-                            <tr className="tabla-seleccion" onClick={() => { modificarOpcion('presentacion') }}>
+                            <tr className={modDatos.modId === 'presentacion' ? "tabla-activa" : "tabla-seleccion"} onClick={() => { modificarOpcion('presentacion') }}>
                                 <td>
                                     Sobre ti:
                                     <br/>
@@ -602,9 +566,8 @@ function Perfil() {
 
                         </tbody>
                     </table>
-                    </>}
 
-                    {cambiarDatos === false && vistaPerfil === 1 && <> <table className="table">
+                    <table className="table" style={ vistaPerfil === 1 ? {} : { display: 'none' }}>
                         <tbody>
                             <tr>
                                 <td>
@@ -615,7 +578,7 @@ function Perfil() {
                                 <td>
                                 </td>
                             </tr>
-                            <tr className="tabla-seleccion" onClick={() => { modificarOpcion('email') }}>
+                            <tr className={modDatos.modId === 'email' ? "tabla-activa" : "tabla-seleccion"} onClick={() => { modificarOpcion('email') }}>
                                 <td>
                                     Correo electrónico:
                                     <br/>
@@ -625,7 +588,7 @@ function Perfil() {
                                     <FontAwesomeIcon icon={faArrowRight} />
                                 </td>
                             </tr>
-                            <tr className="tabla-seleccion" onClick={() => { modificarOpcion('password') }}>
+                            <tr className={modDatos.modId === 'password' ? "tabla-activa" : "tabla-seleccion"} onClick={() => { modificarOpcion('password') }}>
                                 <td>
                                     Contraseña:
                                     <br/>
@@ -645,7 +608,7 @@ function Perfil() {
                                     <FontAwesomeIcon icon={faRepeat} />
                                 </td>
                             </tr>
-                            <tr className="tabla-seleccion" onClick={() => { modificarOpcion('imagen') }}>
+                            <tr className={modDatos.modId === 'imagen' ? "tabla-activa" : "tabla-seleccion"} onClick={() => { modificarOpcion('imagen') }}>
                                 <td>
                                     Foto de perfil:
                                     <br/>
@@ -658,171 +621,201 @@ function Perfil() {
 
                         </tbody>
                     </table>
-                    </>}
 
-                    {cambiarDatos === false && vistaPerfil === 2 && <div className="col-sm-6 text-center mx-auto">
+                    <table className="table" style={ vistaPerfil === 2 ? {} : { display: 'none' }}>
 
-                        <div className="d-grid gap-2">
+                        <tbody>
 
-                            <h5>
-                                Desactiva tu cuenta
-                            </h5>
+                            <tr className={modDatos.modId === 'desactivar' ? "tabla-activa" : "tabla-seleccion"} onClick={() => { modificarOpcion('desactivar') }}>
+                                <td>
+                                    Desactiva tu cuenta
+                                    <br/>
+                                    <small>
+                                        * Su cuenta dejará de ser visible al resto de usuarios, hasta que vuelva a iniciar sesión.
+                                    </small>
+                                </td>
+                                <td className="arrow-style">
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                </td>
+                            </tr>
 
-                            <Button className="filtros-botones" size="sm" onClick={() => { desactivarCuenta('desactivar'); }}>
+                            <tr className={modDatos.modId === 'eliminar' ? "tabla-activa" : "tabla-seleccion"} onClick={() => { modificarOpcion('eliminar') }}>
+                                <td>
+                                    Elimina tu cuenta totalmente
+                                    <br/>
+                                    <small>
+                                        * Se eliminará toda la información almacenada sobre tu cuenta.
+                                    </small>
+                                </td>
+                                <td className="arrow-style">
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+                
+                <div className="col" style={window.innerWidth < 600 && cambiarDatos === false ? { display: 'none' } : {}}>
+
+                    <div style={cambiarDatos === true ? {} : { display: 'none' }}>
+
+                        <h4 className="text-center" style={{ fontWeight: 'bold' }}>
+                            <FontAwesomeIcon icon={faXmark} style={{ float: 'left', marginTop: '5px', cursor: 'pointer' }} onClick={() => { volverPerfil() }}/> 
+                            
+                            MODIFICAR: {modDatos.modId?.toUpperCase()}
+                        </h4>
+
+                        <hr />
+                    </div>
+
+                    <Form onSubmit={enviarDatoModificado}>
+
+                        <Form.Group className="mb-3" style={modDatos.modId === 'telefono' ? {} : { display: 'none' }} >
+                            <div className="input-group mb-3">
+                                <span className="input-group-text">{modDatos.prefix}</span>
+                                <Form.Control type="number" placeholder="Nuevo teléfono" id="mod-telefono" />
+                            </div>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" style={modDatos.modId === 'residencia' ? {} : { display: 'none' }} >
+                            <BuscarLugar enviaDireccion={colocarDireccion} />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" style={modDatos.modId === 'presentacion' ? {} : { display: 'none' }} >
+                            <Form.Control as="textarea" placeholder="Escribe aquí algo sobre ti" id="mod-presentacion" />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" style={modDatos.modId === 'trabajo' ? {} : { display: 'none' }} >
+                            <Form.Control type="text" placeholder="¿A qué te dedicas?" id="mod-trabajo" />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" style={modDatos.modId === 'idiomas' ? {} : { display: 'none' }} >
+
+                            <small id="mod-idiomas">
+                                * Selecciona los idiomas que hablas:
+                            </small>
+
+                            <br />
+                            <br />
+
+                            <div key='checkbox' className="mb-3">
+                                <Form.Check
+                                    inline
+                                    id="idioma_esp"
+                                    label="Español"
+                                    name="group1"
+                                    defaultChecked={userIdiomas.idioma_esp}
+                                    type='checkbox'
+                                    value={userIdiomas.idioma_esp}
+                                />
+                                <Form.Check
+                                    inline
+                                    id="idioma_ing"
+                                    label="Inglés"
+                                    name="group1"
+                                    defaultChecked={userIdiomas.idioma_ing}
+                                    type='checkbox'
+                                    value={userIdiomas.idioma_ing}
+                                />
+                                <Form.Check
+                                    inline
+                                    id="idioma_fra"
+                                    label="Francés"
+                                    name="group1"
+                                    defaultChecked={userIdiomas.idioma_fra}
+                                    type='checkbox'
+                                    value={userIdiomas.idioma_fra}
+                                />
+                                <Form.Check
+                                    inline
+                                    id="idioma_por"
+                                    label="Portugués"
+                                    name="group1"
+                                    defaultChecked={userIdiomas.idioma_por}
+                                    type='checkbox'
+                                    value={userIdiomas.idioma_por}
+                                />
+                                <Form.Check
+                                    inline
+                                    id="idioma_chi"
+                                    label="Chino"
+                                    name="group1"
+                                    defaultChecked={userIdiomas.idioma_chi}
+                                    type='checkbox'
+                                    value={userIdiomas.idioma_chi}
+                                />
+                            </div>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" style={modDatos.modId === 'email' ? {} : { display: 'none' }} >
+                            <Form.Control type="email" placeholder="Nuevo correo" id="mod-email" />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" style={modDatos.modId === 'password' ? {} : { display: 'none' }} >
+                            <Form.Control type="password" placeholder="Nueva contraseña" id="mod-password" />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" style={modDatos.modId === 'imagen' ? {} : { display: 'none' }} >
+
+                            <div style={fotoCargada !== null ? {} : { display: 'none' }}>
+
+                                <img
+                                    alt="Nueva imagen de perfil"
+                                    src={fotoCargada}
+                                    width="40%"
+                                    className="img-fluid" />
+
+                                <br />
+                            </div>
+
+                            <Form.Label htmlFor="mod-imagen">
+                                <small>512x512 dimensiones recomendadas (.png / .jpg)</small>
+                            </Form.Label>
+
+                            <Form.Control type="file" accept="image/*" id="mod-imagen" onChange={addImagen} />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" style={modDatos.modId === 'desactivar' ? {} : { display: 'none' }} >
+
+                            <Form.Control type="password" placeholder="Contraseña" id="mod-desactivar" />
+
+                            <br />
+
+                            <Button className="filtros-botones" size="sm" onClick={desactivarCuenta}>
                                 <FontAwesomeIcon icon={faUserClock} /> Desactivar
                             </Button>
+                        </Form.Group>
 
-                            <small>
-                                * Su cuenta dejará de ser visible al resto de usuarios, hasta que vuelva a iniciar sesión.
-                            </small>
+                        <Form.Group className="mb-3" style={modDatos.modId === 'eliminar' ? {} : { display: 'none' }} >
 
-                            <hr/>
+                            <Form.Control type="password" placeholder="Contraseña" id="mod-eliminar" />
 
-                            <h5>
-                                Elimina tu cuenta totalmente
-                            </h5>
-
-                            <Button className="borrar-botones" size="sm" onClick={() => { desactivarCuenta('eliminar'); }}>
+                            <br />
+                            
+                            <Button className="filtros-botones" size="sm" onClick={desactivarCuenta}>
                                 <FontAwesomeIcon icon={faUserMinus} /> Eliminar
                             </Button>
+                        </Form.Group>
 
-                            <small>
-                                * Se eliminará toda la información almacenada sobre tu cuenta.
-                            </small>
-                        </div>
+                        <Form.Group className="mb-3" style={modDatos.modificado === true ? {} : { display: 'none' }}>
+                            <Form.Label htmlFor="mod-password-2">Contraseña:</Form.Label>
+                            <Form.Control type="password" placeholder="Escribe contraseña" id="mod-password-2" />
 
-                    </div>}
+                            <br />
 
+                            <Button type="submit" className="filtros-botones" size="sm" id="mod-btn">
+                                &nbsp;&nbsp;&nbsp;<FontAwesomeIcon icon={faPenToSquare} /> Modificar&nbsp;&nbsp;&nbsp;
+                            </Button>
 
-                    {cambiarDatos === true && 
-                        <div className="col-sm-6 text-center mx-auto">
-                            <h5>
-                                {modDatos.titulo}: <span className="resaltar-titulo">{modDatos.anterior}</span>
-                            </h5>
-
-                            <hr/>
-
-                            <Form onSubmit={enviarDatoModificado}>
-
-                                <Form.Group className="mb-3" style={modDatos.modId === 'telefono' ? {} : { display: 'none' }} >
-                                    <div className="input-group mb-3">
-                                        <span className="input-group-text">{modDatos.prefix}</span>
-                                        <Form.Control type="number" placeholder="Nuevo teléfono" id="mod-telefono"/>
-                                    </div>
-                                </Form.Group>
-
-                                <Form.Group className="mb-3" style={modDatos.modId === 'residencia' ? {} : { display: 'none' }} >
-                                    <BuscarLugar enviaDireccion={colocarDireccion} />
-
-                                </Form.Group>
-
-                                <Form.Group className="mb-3" style={modDatos.modId === 'presentacion' ? {} : { display: 'none' }} >
-                                    <Form.Control as="textarea" placeholder="Escribe aquí algo sobre ti" id="mod-presentacion"/>
-                                </Form.Group>
-
-                                <Form.Group className="mb-3" style={modDatos.modId === 'trabajo' ? {} : { display: 'none' }} >
-                                    <Form.Control type="text" placeholder="¿A qué te dedicas?" id="mod-trabajo"/>
-                                </Form.Group>
-
-                                <Form.Group className="mb-3" style={modDatos.modId === 'idiomas' ? {} : { display: 'none' }} >
-
-                                    <small id="mod-idiomas">
-                                        * Selecciona los idiomas que hablas:
-                                    </small>
-                                    
-                                    <br/>
-                                    <br/>
-
-                                    <div key='checkbox' className="mb-3">
-                                        <Form.Check
-                                            inline
-                                            id="idioma_esp"
-                                            label="Español"
-                                            name="group1"
-                                            defaultChecked={userIdiomas.idioma_esp}
-                                            type='checkbox'
-                                            value={userIdiomas.idioma_esp}
-                                        />
-                                        <Form.Check
-                                            inline
-                                            id="idioma_ing"
-                                            label="Inglés"
-                                            name="group1"
-                                            defaultChecked={userIdiomas.idioma_ing}
-                                            type='checkbox'
-                                            value={userIdiomas.idioma_ing}
-                                        />
-                                        <Form.Check
-                                            inline
-                                            id="idioma_fra"
-                                            label="Francés"
-                                            name="group1"
-                                            defaultChecked={userIdiomas.idioma_fra}
-                                            type='checkbox'
-                                            value={userIdiomas.idioma_fra}
-                                        />
-                                        <Form.Check
-                                            inline
-                                            id="idioma_por"
-                                            label="Portugués"
-                                            name="group1"
-                                            defaultChecked={userIdiomas.idioma_por}
-                                            type='checkbox'
-                                            value={userIdiomas.idioma_por}
-                                        />
-                                        <Form.Check
-                                            inline
-                                            id="idioma_chi"
-                                            label="Chino"
-                                            name="group1"
-                                            defaultChecked={userIdiomas.idioma_chi}
-                                            type='checkbox'
-                                            value={userIdiomas.idioma_chi}
-                                        />
-                                    </div>
-                                </Form.Group>
-
-                                <Form.Group className="mb-3" style={modDatos.modId === 'email' ? {} : { display: 'none' }} >
-                                    <Form.Control type="email" placeholder="Nuevo correo" id="mod-email" />
-                                </Form.Group>
-
-                                <Form.Group className="mb-3" style={modDatos.modId === 'password' ? {} : { display: 'none' }} >
-                                    <Form.Control type="password" placeholder="Nueva contraseña" id="mod-password" />
-                                </Form.Group>
-
-                                <Form.Group className="mb-3" style={modDatos.modId === 'imagen' ? {} : { display: 'none' }} >
-                                    <div style={ fotoCargada !== null ? { } : { display: 'none'}}>
-
-                                        <img
-                                            alt="Nueva imagen de perfil"
-                                            src={fotoCargada}
-                                            width="40%"
-                                            className="img-fluid"/>
-
-                                        <br/>
-                                    </div>
-
-                                    <Form.Label htmlFor="mod-password-2">
-                                        <small>512x512 dimensiones recomendadas (.png / .jpg)</small>
-                                    </Form.Label>
-
-                                    <Form.Control type="file" accept="image/*" id="mod-imagen" onChange={addImagen}/>
-                                </Form.Group>
-
-                                <Form.Group className="mb-3" style={modDatos.modificado === true ? {} : { display: 'none' }}>
-                                    <Form.Label htmlFor="mod-password-2">Valida tu contraseña</Form.Label>
-                                    <Form.Control type="password" placeholder="Escribe contraseña" id="mod-password-2" />
-                                </Form.Group>
+                            &nbsp;&nbsp;
                             
-                                <div className="d-grid gap-2">
-                                    <Button type="submit" className="filtros-botones" size="sm" id="mod-btn">
-                                        Modificar
-                                    </Button>
-                                </div>
+                            <Button className="borrar-botones" size="sm" onClick={eliminarFoto} style={modDatos.puedeBorrar === true ? {} : { display: 'none' }}>
+                                <FontAwesomeIcon icon={faTrash} /> Eliminar foto perfil
+                            </Button>
+                        </Form.Group>
 
-                            </Form>
-                        </div>
-                    }
+                    </Form>
                 </div>
 
             </div>

@@ -280,7 +280,9 @@ function Nav() {
                             </span>
                         </Dropdown.Menu>
 
-                        <span style={mensajes > 0 || valoraciones > 0 ? {} : { display: 'none' }} className="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+                        <span 
+                            style={mensajes > 0 || valoraciones > 0 ? {} : { display: 'none' }}
+                            className={isMobile ? "position-absolute translate-middle p-2 bg-danger border border-light rounded-circle" : "position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle"}>
                         </span>
                     </Dropdown>
                     

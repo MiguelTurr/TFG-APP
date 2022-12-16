@@ -306,7 +306,7 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
 
         //
 
-        const data = await fetch('/perfil/misalojamientos/crear', {
+        const data = await fetch('/perfil/mis-alojamientos/crear', {
             method: 'POST',
             body: formData,
         });

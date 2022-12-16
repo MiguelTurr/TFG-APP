@@ -83,6 +83,10 @@
     TABLAS
 */
 
+.tabla-activa {
+    background-color: rgb(240, 240, 240);
+}
+
 .tabla-seleccion:hover {
     cursor: pointer;
     background-color: rgb(240, 240, 240);
