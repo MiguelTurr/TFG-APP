@@ -325,13 +325,13 @@ function VerAlojamiento() {
 
             <div className="row">
                 <div className="col">
-                    <Carousel>
+                    <Carousel interval={null}>
                         {
                             alojamientoImagenes.map((x, index) => (
 
-                                <Carousel.Item interval={null} key={index}>
+                                <Carousel.Item key={index}>
                                     <img
-                                    height="400px"
+                                        height="400px"
                                         width="100%"
                                         alt="Imagen del alojamiento"
                                         src={x}>

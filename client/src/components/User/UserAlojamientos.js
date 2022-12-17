@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import '../../css/UserAlojamientos.css';
 import userLogin from '../../js/autorizado.js';
 
 import CrearAlojamiento from './CrearAlojamiento.js';

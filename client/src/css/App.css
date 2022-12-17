@@ -119,3 +119,29 @@
     cursor: pointer;
     padding-left: 10px;
 }
+
+/*
+    IMÁGENES
+*/
+
+.preview-img  {
+    cursor: pointer;
+}
+
+.preview-img:hover {
+    filter: opacity(50%);
+}
+
+.preview-marcada {
+    cursor: pointer;
+    filter: opacity(50%);
+}
+
+/*
+    BOTONES DE MAS Y MENOS
+*/
+
+.btn-plus-minus {
+    background-color: white !important;
+    border-color: black !important;
+}

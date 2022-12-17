@@ -131,6 +131,7 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
         } else if(tipoId === 'imagenes') {
 
             var arrayImg = [];
+            objeto.imagenesEliminadas = [];
 
             for(var i = 0; i < alojamiento.imgCantidad; i++) {
 
@@ -144,12 +145,13 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
     
                 if(imagen.status === 200) {
                     arrayImg.push(imagen.url);
+                    objeto.imagenesEliminadas.push(false);
                 }
             }
             setAlojamientoImg(arrayImg);
 
             objeto.nuevasImagenes = 0;
-
+            objeto.contadorEliminadas = 0;
         }
 
         setCambiarDatos(objeto);
@@ -172,6 +174,17 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
         else valorActual++;
 
         setCambiarDatos({ ...cambiarDatos, [opcion]: valorActual, modificado: true });
+    };
+
+    const addImagenes = (e) => {
+
+       const len = e.target.files.length;
+
+        if (len+alojamiento.imgCantidad > 10) {
+            return crearAlerta('error', '¡El máximo son 10 imágenes!')
+        }
+
+        setCambiarDatos({ ...cambiarDatos, nuevasImagenes: len, modificado: true });
     };
 
     //
@@ -235,6 +248,37 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
 
         } else if(cambiarDatos.dato === 'imagenes') {
 
+            if(cambiarDatos.contadorEliminadas === alojamiento.imgCantidad) {
+                return crearAlerta('error', '¡No puedes eliminar todas las imágenes!');
+            }
+
+            const len = e.target.files.length;
+     
+            if (len+alojamiento.imgCantidad > 10) {
+                 return crearAlerta('error', '¡El máximo son 10 imágenes!')
+             }
+
+            const inputImagenes = document.getElementById('imagenes-edit');
+            const maxSize = 2 * 1024 * 1024;
+    
+            for (var i = 0; i < len; i++) {
+                if (!['image/jpeg', 'image/png'].includes(inputImagenes.files[i].type)) {
+                    return crearAlerta('error', '¡Una imagen no tiene el formato correct!');
+                }
+
+                if (inputImagenes.files[i].size > maxSize) {
+                    return crearAlerta('error', '¡El tamaño máximo por imagen es de 2 MB!');
+                }
+                formData.append('imagen', inputImagenes.files[i]);
+            }
+
+            //
+
+            formData.append('imagenesEliminadas', cambiarDatos.imagenesEliminadas);
+            formData.append('contadorEliminadas', cambiarDatos.contadorEliminadas);
+            formData.append('imgTotal', alojamiento.imgCantidad);
+            
+            formData.append('imgNuevas', cambiarDatos.nuevasImagenes);
         }
 
         const data = await fetch('/perfil/mis-alojamientos/editar/', {
@@ -251,12 +295,43 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
         } else if(items.respuesta === 'correcto') {
             crearAlerta('exito', '¡Dato modificado!');
 
-            //setCambiarDatos(null);
+            if(cambiarDatos.dato === 'alojamiento') {
+                // HACER
+
+            } else if(cambiarDatos.dato === 'titulo') {
+                setAlojamiento({ ...alojamiento, titulo: cambiarDatos.titulo });
+
+            } else if(cambiarDatos.dato === 'descripcion') {
+                setAlojamiento({ ...alojamiento, descripcion: cambiarDatos.descripcion });
+
+            } else if(cambiarDatos.dato === 'coste') {
+                setAlojamiento({ ...alojamiento, precio: cambiarDatos.coste, precioAnterior: alojamiento.precio });
+
+            } else if(cambiarDatos.dato === 'imagenes') {
+                const contador = alojamiento.imgCantidad - cambiarDatos.contadorEliminadas + cambiarDatos.nuevasImagenes;
+                setAlojamiento({ ...alojamiento, imgCantidad: contador });
+            }
+
+            setCambiarDatos(null);
         }
     };
 
-    const eliminarFoto = () => {
+    const eliminarFoto = (e) => {
 
+        const index = e.target.id.split('-')[1];
+        var array = cambiarDatos.imagenesEliminadas;
+        const estado = cambiarDatos.imagenesEliminadas[index] === false ? true : false;
+        var contador = cambiarDatos.contadorEliminadas;
+
+        array[index] = estado;
+        if(estado === true) {
+            contador++;
+
+        } else {
+            contador--;
+        }
+
+        setCambiarDatos({ ...cambiarDatos, imagenesEliminadas: array, contadorEliminadas: contador, modificado: true });
     };
 
     //
@@ -659,9 +734,12 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                                 <Row>
                                     {
                                         alojamientoImg.map((x, index) => (
-                                            <Col key={index}>
+                                            <Col key={index} className="mb-3">
                                                     <img
-                                                        className="img-fluid preview-img"
+                                                        id={'img-' +index}
+                                                        className={cambiarDatos?.imagenesEliminadas[index] === false ? 'preview-img' : 'preview-marcada' }
+                                                        height="150px"
+                                                        width="100px"
                                                         src={x}
                                                         alt="Imágenes del alojamiento"
                                                         onClick={eliminarFoto}/>
@@ -673,14 +751,15 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                                 <hr/>
 
                                 <Form.Label>
-                                    <small className="text-muted">Imágenes: {alojamientoImg.length} de 10</small>
+                                    <small className="text-muted">Imágenes: {alojamientoImg.length + cambiarDatos?.nuevasImagenes} de 10</small>
                                 </Form.Label>
 
                                 <Form.Control
                                     type="file"
-                                    id="imagenes"
+                                    id="imagenes-edit"
                                     size="sm"
                                     accept="image/*"
+                                    onChange={addImagenes}
                                     multiple />
 
                                 <Form.Text className="text-muted">

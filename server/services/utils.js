@@ -10,7 +10,7 @@ function nombreFotoPerfil(userId, extension) {
 }
 
 function nombreFotoAlojamiento(userId, index, extension) {
-    return 'casa-' +userId+ '-' +index+ '.' +extension;
+    return 'casa_' +userId+ '_' +index+ '.' +extension;
 }
 
 function boolToInt(value) {

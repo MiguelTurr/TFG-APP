@@ -751,19 +751,19 @@ server.post('/perfil/mis-alojamientos/editar/', comprobarToken, (req, res) => {
         queryStr += ',servicios=' +servicios_final+ ' ';
 
     } else if(req.body.tipo === 'imagenes') {
+        const imagenesTotal = parseInt(req.body.imgTotal) - parseInt(req.body.contadorEliminadas) + parseInt(req.body.imgNuevas);
+        queryStr += 'imgCantidad=' +imagenesTotal+ ' ';
 
     } else if(req.body.tipo === 'coste') {
         queryStr += 'precio=' +req.body.precio+ ',precioAnterior=' +req.body.precioAnterior+ ' ';
 
     } else {
         queryStr += req.body.tipo+ '="' +req.body.editado+ '" ';
-        console.log(req.body.tipo+ ' ' +req.body.editado);
     }
 
     queryStr += 'WHERE ID=' +req.body.alojamientoID+ ' AND usuarioID=' +req.userId;
 
-    /*console.log(queryStr);
-    res.status(200).json({ respuesta: 'correcto' });*/
+    //
 
     mysql.query(queryStr, function(err) {
         if (err) {
@@ -774,9 +774,9 @@ server.post('/perfil/mis-alojamientos/editar/', comprobarToken, (req, res) => {
 
         res.status(200).json({ respuesta: 'correcto' });
 
-        // ENVIAR CORREO SI EL COSTE DISMINUYE
-
         if(req.body.tipo === 'coste') {
+
+            // ENVIAR CORREO SI EL COSTE DISMINUYE
 
             var precioFinal = parseInt(req.body.precio) + 10;
 
@@ -818,6 +818,78 @@ server.post('/perfil/mis-alojamientos/editar/', comprobarToken, (req, res) => {
                         }
                     }
                 });
+            }
+
+        } else if(req.body.tipo === 'imagenes') {
+
+            const alojamientoId = req.body.alojamientoID;
+            var indexInicio = parseInt(req.body.imgTotal);
+
+            if(req.body.contadorEliminadas > 0) {
+                console.log('HAY ELIMINADAS');
+
+                mysql.query('SELECT ID,nombre FROM alojamientos_img WHERE alojamientoID=?', alojamientoId, function(err, result) {
+                    if(err) {
+                        return;
+                    }
+
+                    const arrayEliminadas = req.body.imagenesEliminadas.split(',');
+                    var utlimoEliminado = -1;
+    
+                    for(var i = 0; i < req.body.imgTotal; i++) {
+
+                        //
+
+                        if(arrayEliminadas[i] === 'true') {
+                            utlimoEliminado = i;
+    
+                            fs.unlink('./imagenes/casas/' +result[i].nombre, (err) => {
+                                if(err) throw err;
+                            });
+                            mysql.query('DELETE FROM alojamientos_img WHERE ID=?', result[i].ID);
+
+                        } else {
+
+                            if(utlimoEliminado !== -1) {
+    
+                            }
+                        }
+                    }
+                });
+            }
+
+            if(req.files !== null) {
+                
+                var arrayNombreImagenes = [];
+
+                const imagenLen = req.files.imagen.length;
+                if (imagenLen === undefined) {
+
+                    const file = req.files.imagen;
+
+                    const extension = file.name.split('.')[1];
+                    const nombreFile = utils.nombreFotoAlojamiento(alojamientoId, indexInicio, extension);
+
+                    file.mv('./imagenes/casas/' + nombreFile);
+
+                    arrayNombreImagenes.push([alojamientoId, nombreFile]);
+
+                } else {
+
+                    for (var i = 0; i < imagenLen; i++) {
+
+                        const file = req.files.imagen[i];
+
+                        const extension = file.name.split('.')[1];
+                        const nombreFile = utils.nombreFotoAlojamiento(alojamientoId, indexInicio+i, extension);
+
+                        file.mv('./imagenes/casas/' + nombreFile);
+
+                        arrayNombreImagenes.push([alojamientoId, nombreFile]);
+                    }
+                }
+
+                mysql.query('INSERT INTO alojamientos_img (alojamientoID, nombre) VALUES ?', [arrayNombreImagenes]);
             }
         }
     });
@@ -1932,7 +2004,7 @@ server.get('/alojamiento/imagen/:id', (req, res) => {
 
     const [id, index] = req.params.id.split('-');
 
-    mysql.query("SELECT nombre FROM alojamientos_img WHERE alojamientoID=?", id, (err, result) => {
+    mysql.query("SELECT nombre FROM alojamientos_img WHERE alojamientoID=? LIMIT ?, 1", [id, parseInt(index)], (err, result) => {
 
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
@@ -1945,9 +2017,7 @@ server.get('/alojamiento/imagen/:id', (req, res) => {
             return;
         }
 
-        const imagen = result[index].nombre;
-
-        fs.readFile('./imagenes/casas/' + imagen, function (err, file) {
+        fs.readFile('./imagenes/casas/' +result[0].nombre, function (err, file) {
 
             if (err) {
                 res.status(500).json({ respuesta: 'err_file' });

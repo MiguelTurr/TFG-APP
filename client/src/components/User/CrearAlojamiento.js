@@ -87,8 +87,8 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
 
         const len = e.target.files.length;
 
-        if (len > 5) {
-            return crearAlerta('error', '¡El máximo son 5 imágenes!')
+        if (len > 10) {
+            return crearAlerta('error', '¡El máximo son 10 imágenes!')
         }
 
         setForm({ ...form, imgTotal: len });
