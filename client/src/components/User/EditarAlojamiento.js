@@ -13,6 +13,8 @@ import Row from 'react-bootstrap/Row';
 const tituloCaracteres = 70;
 const descripcionCaracteres = 2500;
 
+const fontsDisponibles = ['Segoe UI', 'Arial', 'Times New Roman', 'Helvetica', 'Calibri', 'Georgia', 'Cambria', 'Veranda'];
+
 function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
 
     var crearOptions = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -140,6 +142,9 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
         } else if (tipoId === 'eliminar') {
             objeto[tipoId] = '';
 
+        } else if (tipoId === 'fuente') {
+            objeto.fontIndex = parseInt(alojamiento.fontIndex);
+
         } else if(tipoId === 'imagenes') {
 
             var arrayImg = [];
@@ -204,6 +209,11 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
         }
         setPreviewImg(array);
     };
+
+    const cambiarFuente = (e) => {
+        const elementId = e.target.id;
+        setCambiarDatos({ ...cambiarDatos, fontIndex: parseInt(elementId.split('-')[1]), modificado: true });
+    }
 
     //
 
@@ -298,6 +308,9 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
             formData.append('imgTotal', alojamiento.imgCantidad);
             
             formData.append('imgNuevas', cambiarDatos.nuevasImagenes);
+
+        } else if(cambiarDatos.dato === 'fuente') {
+            formData.append('fontIndex', cambiarDatos.fontIndex);
         }
 
         const data = await fetch('/perfil/mis-alojamientos/editar/', {
@@ -354,7 +367,11 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
             } else if(cambiarDatos.dato === 'imagenes') {
                 const contador = alojamiento.imgCantidad - cambiarDatos.contadorEliminadas + cambiarDatos.nuevasImagenes;
                 setAlojamiento({ ...alojamiento, imgCantidad: contador });
+
+            } else if(cambiarDatos.dato === 'fuente') {
+                setAlojamiento({ ...alojamiento, fontIndex: cambiarDatos.fontIndex, defaultFont: fontsDisponibles[cambiarDatos.fontIndex] });
             }
+
 
             setCambiarDatos(null);
         }
@@ -792,8 +809,10 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                                 <br/>
 
                                 <Button 
+                                    id="fuente-0"
                                     className="btn-fuente mb-3"
-                                    style={{ border: '1px solid black', fontFamily: 'Segoe UI' }}>
+                                    onClick={cambiarFuente}
+                                    style={{ border: cambiarDatos?.fontIndex === 0 ? '1px solid black' : 'none', fontFamily: 'Segoe UI' }}>
                                     Segoe UI
                                     <br />
                                     Texto de prueba
@@ -803,8 +822,10 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                                 &nbsp;
 
                                 <Button 
+                                    id="fuente-1"
                                     className="btn-fuente mb-3"
-                                    style={{ border: '1px solid black', fontFamily: 'Arial' }}>
+                                    onClick={cambiarFuente}
+                                    style={{ border: cambiarDatos?.fontIndex === 1 ? '1px solid black' : 'none', fontFamily: 'Arial' }}>
                                     Arial
                                     <br />
                                     Texto de prueba
@@ -814,8 +835,10 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                                 &nbsp;
 
                                 <Button 
+                                    id="fuente-2"
                                     className="btn-fuente mb-3"
-                                    style={{ border: '1px solid black', fontFamily: 'Times New Roman' }}>
+                                    onClick={cambiarFuente}
+                                    style={{ border: cambiarDatos?.fontIndex === 2 ? '1px solid black' : 'none', fontFamily: 'Times New Roman' }}>
                                         Times New Roman 
                                         <br/>
                                         Texto de prueba
@@ -825,8 +848,10 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                                 &nbsp;
 
                                 <Button 
+                                    id="fuente-3"
                                     className="btn-fuente mb-3"
-                                    style={{ border: '1px solid black', fontFamily: 'Helvetica' }}>
+                                    onClick={cambiarFuente}
+                                    style={{ border: cambiarDatos?.fontIndex === 3 ? '1px solid black' : 'none', fontFamily: 'Helvetica' }}>
                                         Helvetica
                                         <br/>
                                         Texto de prueba
@@ -836,8 +861,10 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                                 &nbsp;
 
                                 <Button 
+                                    id="fuente-4"
                                     className="btn-fuente mb-3"
-                                    style={{ border: '1px solid black', fontFamily: 'Calibri' }}>
+                                    onClick={cambiarFuente}
+                                    style={{ border: cambiarDatos?.fontIndex === 4 ? '1px solid black' : 'none', fontFamily: 'Calibri' }}>
                                         Calibri
                                         <br/>
                                         Texto de prueba
@@ -847,8 +874,10 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                                 &nbsp;
 
                                 <Button 
+                                    id="fuente-5"
                                     className="btn-fuente mb-3"
-                                    style={{ border: '1px solid black', fontFamily: 'Georgia' }}>
+                                    onClick={cambiarFuente}
+                                    style={{ border: cambiarDatos?.fontIndex === 5 ? '1px solid black' : 'none', fontFamily: 'Georgia' }}>
                                         Georgia
                                         <br/>
                                         Texto de prueba
@@ -858,8 +887,10 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                                 &nbsp;
 
                                 <Button 
+                                    id="fuente-6"
                                     className="btn-fuente mb-3"
-                                    style={{ border: '1px solid black', fontFamily: 'Cambria' }}>
+                                    onClick={cambiarFuente}
+                                    style={{ border: cambiarDatos?.fontIndex === 6 ? '1px solid black' : 'none', fontFamily: 'Cambria' }}>
                                         Cambria
                                         <br/>
                                         Texto de prueba
@@ -869,8 +900,10 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                                 &nbsp;
 
                                 <Button 
+                                    id="fuente-7"
                                     className="btn-fuente mb-3"
-                                    style={{ border: '1px solid black', fontFamily: 'Veranda' }}>
+                                    onClick={cambiarFuente}
+                                    style={{ border: cambiarDatos?.fontIndex === 7 ? '1px solid black' : 'none', fontFamily: 'Veranda' }}>
                                         Veranda
                                         <br/>
                                         Texto de prueba

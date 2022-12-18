@@ -222,7 +222,7 @@ function Nav() {
                     </a>
                 </div>
 
-                <div className="col-sm-4 mt-3">
+                <div className="col-sm-4 mt-4">
                     <BuscarLugar buscar={true} />
                 </div>
 

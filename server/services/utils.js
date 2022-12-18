@@ -3,6 +3,8 @@ const columnasPorPagina = 12;
 const serviciosCasas = ['Cocina', 'Wifi', 'Mascotas', 'Aparcamiento', 'Piscina', 'Lavadora', 'Aire', 'Calefaccion', 'Television'];
 const totalServicios = serviciosCasas.length - 1;
 
+const fontsDisponibles = ['Segoe UI', 'Arial', 'Times New Roman', 'Helvetica', 'Calibri', 'Georgia', 'Cambria', 'Veranda'];
+
 //
 
 function nombreFotoPerfil(userId, extension) {
@@ -133,6 +135,8 @@ module.exports = {
     boolToInt,
     estadoReserva,
     diasEntreFechas,
+
+    fontsDisponibles,
 
     serviciosCasas,
     totalServicios,

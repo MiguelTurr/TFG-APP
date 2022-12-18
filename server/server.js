@@ -717,6 +717,16 @@ server.get('/perfil/mis-alojamientos/:id', comprobarToken, (req, res) => {
 
         result[0].strServicios = arrayServicios.toString().replaceAll(',', ', ');
 
+        // FUENTES
+
+        const lenFonts = utils.fontsDisponibles.length;
+        for(var i = 0; i < lenFonts; i++) {
+            if(utils.fontsDisponibles[i] === result[0].defaultFont) {
+                result[0].fontIndex = i;
+                break;
+            }
+        }
+
         // ENVIA
 
         res.status(200).json({ respuesta: 'correcto', alojamiento: result[0] });
@@ -756,6 +766,9 @@ server.post('/perfil/mis-alojamientos/editar/', comprobarToken, (req, res) => {
 
     } else if(req.body.tipo === 'coste') {
         queryStr += 'precio=' +req.body.precio+ ',precioAnterior=' +req.body.precioAnterior+ ' ';
+
+    } else if(req.body.tipo === 'fuente') {
+        queryStr += 'defaultFont="' +utils.fontsDisponibles[parseInt(req.body.fontIndex)]+ '" ';
 
     } else {
         queryStr += req.body.tipo+ '="' +req.body.editado+ '" ';

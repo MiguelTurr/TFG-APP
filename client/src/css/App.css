@@ -8,6 +8,7 @@
 
 .filtros-botones {
     background-color: #ffe841 !important;
+    /*background-color: #ffe841 !important;*/
     border-color: black !important;
 
     color: black !important;
@@ -18,18 +19,6 @@
     background-color: #d6c437 !important;
     border-color: black !important;
 }
-/*
-.color-boton {
-    background-color: #ffe841 !important;
-    border-color: black !important;
-
-    color: black !important;
-}
-
-.color-boton:hover {
-    background-color: #d6c437 !important;
-    border-color: black !important;
-}*/
 
 .borrar-botones {
     background-color: #fb4141 !important;

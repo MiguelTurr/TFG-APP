@@ -63,6 +63,10 @@ function UserValoraciones() {
 
         } else if(items.respuesta === 'correcto') {
             setValoracionesAlo([...valoracionesAlo, ...items.valoracion]);
+
+            if(items.valoracion.length === 0) {
+                btn.disabled = true;
+            }
         }
     };
 
@@ -81,6 +85,10 @@ function UserValoraciones() {
 
         } else if(items.respuesta === 'correcto') {
             setValoracionesUser([...valoracionesUser, ...items.valoracion]);
+            
+            if(items.valoracion.length === 0) {
+                btn.disabled = true;
+            }
         }
     };
 

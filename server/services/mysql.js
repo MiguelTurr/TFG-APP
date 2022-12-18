@@ -1,8 +1,10 @@
 const mysql = require('mysql');
-const { mysql_user, mysql_password, mysql_database } = require('./config.js');
+const { mysql_host, mysql_user, mysql_password, mysql_database } = require('./config.js');
+
+//
 
 var connection = mysql.createConnection({
-    host     : 'localhost',
+    host     : mysql_host,
     port     : 3306,
     user     : mysql_user,
     password : mysql_password,
@@ -18,6 +20,5 @@ connection.connect(function(err) {
    
     console.log('[OK] MYSQL');
 });
-
 
 module.exports = connection;
