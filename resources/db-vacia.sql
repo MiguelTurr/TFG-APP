@@ -23,9 +23,6 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 	`imgPerfil` varchar(50) NOT NULL default 'default.png',
 	`recibirCorreos` tinyint NOT NULL default 1,
 
-	
-
-
     PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -48,6 +45,8 @@ CREATE TABLE IF NOT EXISTS `alojamientos` (
 	`descripcion` varchar(2500) NOT NULL,
 	`precio` smallint NOT NULL,
 	`precioAnterior` smallint default NULL,
+
+	`defaultFont` varchar(50) default 'Segoe UI',
 
 	--`oculto` tinyint NOT NULL default 0,
 

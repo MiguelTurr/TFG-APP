@@ -85,6 +85,44 @@ function queryOrdenar(ordenarTipo) {
     return str_final;
 }
 
+function queryFiltros(filtros) {
+    var str_final = '';
+
+    // PRECIO
+
+    if(filtros.precio_min !== null) {
+        str_final += 'AND alo.precio BETWEEN ' +parseInt(filtros.precio_min)+ ' AND ' +parseInt(filtros.precio_max)+ ' ';
+    }
+
+    //
+
+    if(filtros.viajeros !== null) {
+        str_final += 'AND alo.viajeros>=' +parseInt(filtros.viajeros)+ ' ';
+    }
+
+    if(filtros.habitaciones !== null) {
+        str_final += 'AND alo.habitaciones>=' +parseInt(filtros.habitaciones)+ ' ';
+    }
+
+    if(filtros.camas !== null) {
+        str_final += 'AND alo.camas>=' +parseInt(filtros.camas)+ ' ';
+    }
+
+    if(filtros.aseos !== null) {
+        str_final += 'AND alo.aseos>=' +parseInt(filtros.aseos)+ ' ';
+    }
+
+    //
+
+    if(filtros.valoracion !== null && filtros.valoracion > 0) {
+        str_final += 'AND alo.valoracionMedia>' +parseInt(filtros.valoracion)+ ' ';
+    }  
+
+    //
+
+    return str_final;
+}
+
 function queryLimit(contador) {
     return 'LIMIT ' +(contador * columnasPorPagina)+ ',' +columnasPorPagina;
 }
@@ -101,4 +139,5 @@ module.exports = {
 
     queryOrdenar,
     queryLimit,
+    queryFiltros,
 }

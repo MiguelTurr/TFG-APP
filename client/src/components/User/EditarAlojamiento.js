@@ -21,6 +21,7 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
 
     const [alojamientoImg, setAlojamientoImg] = useState([]);
     const [alojamiento, setAlojamiento] = useState({});
+    const [previewImg, setPreviewImg] = useState([]);
 
     const [cambiarDatos, setCambiarDatos] = useState(null);
 
@@ -76,11 +77,18 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
         });
         const items = await data.json();
 
-        if (items.respuesta === 'err_db') {
+        if (items.respuesta === 'err_user') {
+            crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
+
+        } else if (items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if (items.respuesta === 'err_datos') {
+            crearAlerta('error', '¡La contraseña no coincide!');
 
         } else if (items.respuesta === 'correcto') {
             crearAlerta('exito', '¡Alojamiento eliminado!');
+            
             setTimeout(() => { console.log('Correcto'); }, 1000);
         }
     };
@@ -90,6 +98,10 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
         if(cambiarDatos?.dato === tipoId) {
             return;
         }
+
+        setAlojamientoImg([]);
+        setPreviewImg([]);
+        document.getElementById('imagenes-edit').value = '';
 
         var objeto = {};
 
@@ -185,6 +197,12 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
         }
 
         setCambiarDatos({ ...cambiarDatos, nuevasImagenes: len, modificado: true });
+
+        var array = [];
+        for (var i = 0; i < len; i++) {
+            array.push(URL.createObjectURL(e.target.files[i]));
+        }
+        setPreviewImg(array);
     };
 
     //
@@ -225,6 +243,7 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
             formData.append('cocina', cambiarDatos.cocina);
             formData.append('wifi', cambiarDatos.wifi);
             formData.append('mascotas', cambiarDatos.mascotas);
+            formData.append('aparcamiento', cambiarDatos.aparcamiento);
             formData.append('piscina', cambiarDatos.piscina);
             formData.append('lavadora', cambiarDatos.lavadora);
             formData.append('aire', cambiarDatos.aire);
@@ -252,13 +271,13 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                 return crearAlerta('error', '¡No puedes eliminar todas las imágenes!');
             }
 
-            const len = e.target.files.length;
+            const inputImagenes = document.getElementById('imagenes-edit');
+            const len = inputImagenes.files.length;
      
             if (len+alojamiento.imgCantidad > 10) {
                  return crearAlerta('error', '¡El máximo son 10 imágenes!')
              }
 
-            const inputImagenes = document.getElementById('imagenes-edit');
             const maxSize = 2 * 1024 * 1024;
     
             for (var i = 0; i < len; i++) {
@@ -296,7 +315,32 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
             crearAlerta('exito', '¡Dato modificado!');
 
             if(cambiarDatos.dato === 'alojamiento') {
+
+                var strFinal = [];
+
+                if(cambiarDatos.cocina === true) strFinal.push('Cocina');
+                if(cambiarDatos.wifi === true) strFinal.push('Wifi');
+                if(cambiarDatos.mascotas === true) strFinal.push('Mascotas');
+                if(cambiarDatos.aparcamiento === true) strFinal.push('Aparcamiento');
+                if(cambiarDatos.piscina === true) strFinal.push('Piscina');
+                if(cambiarDatos.lavadora === true) strFinal.push('Lavadora');
+                if(cambiarDatos.aire === true) strFinal.push('Aire');
+                if(cambiarDatos.calefaccion === true) strFinal.push('Calefacción');
+                if(cambiarDatos.television === true) strFinal.push('Televisión');
+
                 // HACER
+                setAlojamiento({ 
+                    ...alojamiento,
+                    viajeros: cambiarDatos.viajeros,
+                    habitaciones: cambiarDatos.habitaciones,
+                    camas: cambiarDatos.camas,
+                    aseos: cambiarDatos.aseos, 
+
+                    strServicios: strFinal.toString().replaceAll(',', ', '),
+
+                    puedeFumar: cambiarDatos.puedeFumar,
+                    puedeFiestas: cambiarDatos.puedeFiestas,
+                });
 
             } else if(cambiarDatos.dato === 'titulo') {
                 setAlojamiento({ ...alojamiento, titulo: cambiarDatos.titulo });
@@ -436,6 +480,19 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                                     </small>
                                     <br />
                                     <small>{alojamiento.strServicios}</small>
+                                </td>
+                                <td className="arrow-style">
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                </td>
+                            </tr>
+
+                            <tr className={cambiarDatos?.dato === 'fuente' ? 'tabla-activa' : "tabla-seleccion"} onClick={() => { modificarDato('fuente'); }}>
+                                <td>
+                                    Fuente:
+                                    <br />
+                                    <small style={{ fontFamily: alojamiento.defaultFont }}>
+                                        {alojamiento.defaultFont} - Texto de prueba
+                                    </small>
                                 </td>
                                 <td className="arrow-style">
                                     <FontAwesomeIcon icon={faArrowRight} />
@@ -727,6 +784,100 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                                 <Form.Control type="password" placeholder="Contraseña" id="eliminar" value={cambiarDatos?.eliminar} onChange={controlDato} />
                             </Form.Group>
 
+                            <Form.Group className="mb-3" style={cambiarDatos?.dato === 'fuente' ? {} : { display: 'none' }} >
+                                <Form.Label>
+                                    <small className="text-muted">Cambia la fuente de la vista de tu alojamiento.</small>
+                                </Form.Label>
+
+                                <br/>
+
+                                <Button 
+                                    className="btn-fuente mb-3"
+                                    style={{ border: '1px solid black', fontFamily: 'Segoe UI' }}>
+                                    Segoe UI
+                                    <br />
+                                    Texto de prueba
+                                </Button>
+
+                                &nbsp;
+                                &nbsp;
+
+                                <Button 
+                                    className="btn-fuente mb-3"
+                                    style={{ border: '1px solid black', fontFamily: 'Arial' }}>
+                                    Arial
+                                    <br />
+                                    Texto de prueba
+                                </Button>
+
+                                &nbsp;
+                                &nbsp;
+
+                                <Button 
+                                    className="btn-fuente mb-3"
+                                    style={{ border: '1px solid black', fontFamily: 'Times New Roman' }}>
+                                        Times New Roman 
+                                        <br/>
+                                        Texto de prueba
+                                </Button>
+
+                                &nbsp;
+                                &nbsp;
+
+                                <Button 
+                                    className="btn-fuente mb-3"
+                                    style={{ border: '1px solid black', fontFamily: 'Helvetica' }}>
+                                        Helvetica
+                                        <br/>
+                                        Texto de prueba
+                                </Button>
+
+                                &nbsp;
+                                &nbsp;
+
+                                <Button 
+                                    className="btn-fuente mb-3"
+                                    style={{ border: '1px solid black', fontFamily: 'Calibri' }}>
+                                        Calibri
+                                        <br/>
+                                        Texto de prueba
+                                </Button>
+
+                                &nbsp;
+                                &nbsp;
+
+                                <Button 
+                                    className="btn-fuente mb-3"
+                                    style={{ border: '1px solid black', fontFamily: 'Georgia' }}>
+                                        Georgia
+                                        <br/>
+                                        Texto de prueba
+                                </Button>
+
+                                &nbsp;
+                                &nbsp;
+
+                                <Button 
+                                    className="btn-fuente mb-3"
+                                    style={{ border: '1px solid black', fontFamily: 'Cambria' }}>
+                                        Cambria
+                                        <br/>
+                                        Texto de prueba
+                                </Button>
+
+                                &nbsp;
+                                &nbsp;
+
+                                <Button 
+                                    className="btn-fuente mb-3"
+                                    style={{ border: '1px solid black', fontFamily: 'Veranda' }}>
+                                        Veranda
+                                        <br/>
+                                        Texto de prueba
+                                </Button>
+
+                            </Form.Group>
+
                             <Form.Group className="mb-3" style={cambiarDatos?.dato === 'imagenes' ? {} : { display: 'none' }} >
                                 <Form.Label>
                                     <small className="text-muted">Pulsa en alguna de las imágenes para eliminarlas.</small>
@@ -766,9 +917,22 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                                     Formatos aceptados ( .png / .jpg )
                                 </Form.Text>
 
-                            </Form.Group>
+                                <Row>
+                                    {
+                                        previewImg.map((x, index) => (
+                                            <Col key={index} className="mb-3">
+                                                    <img
+                                                        className='preview-img'
+                                                        height="150px"
+                                                        width="100px"
+                                                        src={x}
+                                                        alt="Imágenes del alojamiento"/>
+                                            </Col>
+                                        ))
+                                    }
+                                </Row>
 
-                            
+                            </Form.Group>
 
                             <Form.Group className="mb-3" style={cambiarDatos?.modificado === true ? {} : { display: 'none' }}>
                                 <Button type="submit" className="filtros-botones" size="sm" id="mod-btn">

@@ -604,7 +604,7 @@ server.post('/perfil/mis-alojamientos/crear', comprobarToken, (req, res) => {
     const horaEntrada = req.body.horaEntrada === 'undefined' ? null : req.body.horaEntrada;
     const horaSalida = req.body.horaSalida === 'undefined' ? null : req.body.horaSalida;
 
-    mysql.query('INSERT INTO alojamientos (usuarioID, titulo, descripcion, precio, ubicacion, localidad, provincia, comunidad, pais, lat, lng, viajeros, habitaciones, camas, aseos, horaEntrada, horaSalida, puedeFumar, puedeFiestas, servicios) VALUES (?)',
+    mysql.query('INSERT INTO alojamientos (usuarioID, titulo, descripcion, precio, ubicacion, localidad, provincia, comunidad, pais, lat, lng, viajeros, habitaciones, camas, aseos, horaEntrada, horaSalida, puedeFumar, puedeFiestas, servicios, imgCantidad) VALUES (?)',
         [
             [
                 req.userId,
@@ -618,7 +618,7 @@ server.post('/perfil/mis-alojamientos/crear', comprobarToken, (req, res) => {
                 req.body.comunidad,
                 req.body.pais,
                 parseFloat(req.body.lat),
-                parseFloat(req.body.long),
+                parseFloat(req.body.lng),
 
                 parseInt(req.body.viajeros),
                 parseInt(req.body.habitaciones),
@@ -628,12 +628,12 @@ server.post('/perfil/mis-alojamientos/crear', comprobarToken, (req, res) => {
                 horaSalida,
                 utils.boolToInt(req.body.puedeFumar),
                 utils.boolToInt(req.body.puedeFiestas),
-                servicios_final
+                servicios_final,
+                req.body.imgTotal,
             ]
         ], (err, result) => {
             if (err) {
                 res.status(500).json({ respuesta: 'err_db' });
-
                 console.log(err.message);
                 return;
             }
@@ -765,7 +765,7 @@ server.post('/perfil/mis-alojamientos/editar/', comprobarToken, (req, res) => {
 
     //
 
-    mysql.query(queryStr, function(err) {
+    mysql.query(queryStr, async function(err) {
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
             console.log(err.message);
@@ -823,40 +823,69 @@ server.post('/perfil/mis-alojamientos/editar/', comprobarToken, (req, res) => {
         } else if(req.body.tipo === 'imagenes') {
 
             const alojamientoId = req.body.alojamientoID;
-            var indexInicio = parseInt(req.body.imgTotal);
+            var indexInicio = parseInt(req.body.imgTotal) - parseInt(req.body.contadorEliminadas);
 
             if(req.body.contadorEliminadas > 0) {
                 console.log('HAY ELIMINADAS');
 
-                mysql.query('SELECT ID,nombre FROM alojamientos_img WHERE alojamientoID=?', alojamientoId, function(err, result) {
-                    if(err) {
-                        return;
+                const resolucion = await new Promise((resolve) => {
+                    mysql.query('SELECT ID,nombre FROM alojamientos_img WHERE alojamientoID=?', alojamientoId, function(err, result) {
+                        if(err) {
+                            return resolve([]);
+                        }
+                        resolve(result);
+                    });
+                });
+
+                if(resolucion.length === 0) {
+                    return;
+                }
+                
+                //
+
+                const arrayEliminadas = req.body.imagenesEliminadas.split(',');
+
+                for(var i = 0; i < req.body.imgTotal; i++) {
+
+                    //
+
+                    if(arrayEliminadas[i] === 'true') {
+
+                        fs.unlink('./imagenes/casas/' +resolucion[i].nombre, (err) => {
+                            if(err) throw err;
+                        });
+                        mysql.query('DELETE FROM alojamientos_img WHERE ID=?', resolucion[i].ID);
+                        resolucion[i].borrada = true;
+
                     }
+                }
 
-                    const arrayEliminadas = req.body.imagenesEliminadas.split(',');
-                    var utlimoEliminado = -1;
-    
-                    for(var i = 0; i < req.body.imgTotal; i++) {
+                var borradasAnterior = [];
 
-                        //
+                for(var i = 0; i < req.body.imgTotal; i++) {
 
-                        if(arrayEliminadas[i] === 'true') {
-                            utlimoEliminado = i;
-    
-                            fs.unlink('./imagenes/casas/' +result[i].nombre, (err) => {
+                    if(resolucion[i].borrada === true) {
+                        borradasAnterior.push(resolucion[i].nombre);
+
+                    } else {
+                        if(borradasAnterior.length > 0) {
+
+                            const nombre = borradasAnterior[0];
+
+                            fs.rename('./imagenes/casas/' +resolucion[i].nombre, './imagenes/casas/' +nombre, () => {
                                 if(err) throw err;
                             });
-                            mysql.query('DELETE FROM alojamientos_img WHERE ID=?', result[i].ID);
+                            mysql.query('UPDATE alojamientos_img SET nombre=? WHERE ID=?', [nombre, resolucion[i].ID]);
 
-                        } else {
-
-                            if(utlimoEliminado !== -1) {
-    
-                            }
+                            borradasAnterior.shift();
+                            borradasAnterior.push(resolucion[i].nombre);
                         }
                     }
-                });
+
+                }
             }
+
+            //
 
             if(req.files !== null) {
                 
@@ -883,6 +912,8 @@ server.post('/perfil/mis-alojamientos/editar/', comprobarToken, (req, res) => {
                         const extension = file.name.split('.')[1];
                         const nombreFile = utils.nombreFotoAlojamiento(alojamientoId, indexInicio+i, extension);
 
+                        console.log('Creado: ' +nombreFile);
+
                         file.mv('./imagenes/casas/' + nombreFile);
 
                         arrayNombreImagenes.push([alojamientoId, nombreFile]);
@@ -902,8 +933,30 @@ server.post('/perfil/mis-alojamientos/borrar', comprobarToken, (req, res) => {
         return;
     }
 
-    console.log(req.body);
-    res.status(200).json({ respuesta: 'correcto' });
+    mysql.query("SELECT password FROM usuarios WHERE ID=? LIMIT 1", req.userId, async (err, result) => {
+
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        if (result.length == 0) {
+            res.status(500).json({ respuesta: 'err_user' });
+            return;
+        }
+
+        const match = await bcrypt.compare(req.body.password, result[0].password);
+        if (!match) {
+            res.status(401).json({ respuesta: 'err_datos' });
+            return;
+        }
+
+        // HACER
+        
+        console.log(req.body);
+        res.status(200).json({ respuesta: 'correcto' });
+    });
 });
 
 //
@@ -1122,7 +1175,11 @@ server.post('/perfil/valorar/alojamiento', comprobarToken, (req, res) => {
 
             // ENVIAR CORREO AL DUEÑO ALOJAMIENTO
 
-            mysql.query('SELECT usu.email,alo.titulo,alo.ubicacion FROM alojamientos as alo INNER JOIN usuarios as usu ON alo.usuarioID=usu.ID WHERE alo.ID=?', req.body.alojamientoID, function (err, result) {
+            mysql.query(`SELECT usu.email,alo.titulo,alo.ubicacion 
+                FROM alojamientos as alo 
+                INNER JOIN usuarios as usu ON alo.usuarioID=usu.ID AND usu.recibirCorreos=1
+                WHERE alo.ID=?`, req.body.alojamientoID, function (err, result) {
+
                 if (err) {
                     console.log(err.message);
                     return;
@@ -2249,6 +2306,8 @@ server.post('/buscar', comprobarToken, (req, res) => {
 
     // FILTROS
 
+    queryStr += utils.queryFiltros(req.body.filtros);
+
     // DIRECCIÓN
 
     queryStr += 'AND alo.pais="' +req.body.pais+ '" ';
@@ -2298,6 +2357,7 @@ server.post('/home', comprobarToken, (req, res) => {
 
     // FILTROS
 
+    queryStr += utils.queryFiltros(req.body.filtros);
 
     // ORDENAR
 
@@ -2312,11 +2372,51 @@ server.post('/home', comprobarToken, (req, res) => {
     mysql.query(queryStr, function (err, result) {
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
-
             console.log(err.message);
             return;
         }
 
         res.status(200).json({ respuesta: 'correcto', alojamientos: result });
+    });
+});
+
+server.post('/alojamientos/filtros', (req, res) => {
+
+    var queryStr = 'SELECT * FROM alojamientos WHERE ';
+
+    // FILTROS
+
+    const filtros = req.body.filtros;
+
+    if(filtros.precio_min !== null) {
+        queryStr += 'precio BETWEEN ' +parseInt(filtros.precio_min)+ ' AND ' +parseInt(filtros.precio_max)+ ' ';
+    }
+
+    if(filtros.viajeros !== null) {
+        queryStr += 'AND viajeros>=' +parseInt(filtros.viajeros)+ ' ';
+    }
+
+    if(filtros.habitaciones !== null) {
+        queryStr += 'AND habitaciones>=' +parseInt(filtros.habitaciones)+ ' ';
+    }
+
+    if(filtros.camas !== null) {
+        queryStr += 'AND camas>=' +parseInt(filtros.camas)+ ' ';
+    }
+
+    if(filtros.aseos !== null) {
+        queryStr += 'AND aseos>=' +parseInt(filtros.aseos)+ ' ';
+    }
+
+    // VALORACION
+
+    if(filtros.valoracion !== null && filtros.valoracion > 0) {
+        queryStr += 'AND valoracionMedia>' +parseInt(filtros.valoracion)+ ' ';
+    }  
+
+    //
+
+    mysql.query(queryStr, function(err, result) {
+        res.status(200).json({ respuesta: 'correcto', cantidad: result === undefined ? 0 : result.length });
     });
 });

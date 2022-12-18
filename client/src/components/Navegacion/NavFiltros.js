@@ -49,15 +49,22 @@ function NavFiltros({ fav, rec }) {
 
         //
 
+        var urlFinal = '';
+
         if(finalLocation === '' || finalLocation.includes('home') === true) {
-            history('/home?ordenar=' +cambiarOrden+ '-' +cambiarTipo);
+            urlFinal = '/home?ordenar=' +cambiarOrden+ '-' +cambiarTipo;
 
         } else if(finalLocation.includes('buscar') === true) {
-            
             var nuevaURL = finalLocation;
-            nuevaURL = nuevaURL.substring(0, finalLocation.search('&ordenar'))+ '&ordenar=' +cambiarOrden+ '-' +cambiarTipo;
-            history(nuevaURL);
+            urlFinal = nuevaURL.substring(0, finalLocation.search('&ordenar'))+ '&ordenar=' +cambiarOrden+ '-' +cambiarTipo;
         }
+
+        var lenFiltros = finalLocation.search('precio_min');
+        if(lenFiltros !== -1) {
+            urlFinal += '&' +finalLocation.substring(finalLocation.search('precio_min'), location.length);
+        }
+
+        history(urlFinal);
     };
 
     // MODAL FILTROS

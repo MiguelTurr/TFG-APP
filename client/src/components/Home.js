@@ -4,6 +4,9 @@ import '../css/Home.css';
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from 'react';
 
+import { crearAlerta } from './Toast/Toast.js';
+import BotonTop from './Navegacion/BotonTop';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faLocationDot, faHeart, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 
@@ -36,9 +39,15 @@ function Home() {
                 contador: contador,
 
                 filtros: {
-                    camas: 0,
-                    habitaciones: 0,
-                    aseos: 0,
+                    precio_min: params.get('precio_min'),
+                    precio_max: params.get('precio_max'),
+
+                    viajeros: params.get('viajeros'),
+                    habitaciones: params.get('habitaciones'),
+                    camas: params.get('camas'),
+                    aseos: params.get('aseos'),
+
+                    valoracion: params.get('valoracion'),
                 }
             }),
             
@@ -51,6 +60,7 @@ function Home() {
         disableBtn.disabled = false;
 
         if(items.respuesta === 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
         } else if(items.respuesta === 'correcto') {
 
@@ -91,6 +101,9 @@ function Home() {
                 }
 
             } else {
+                if(contador === 0) {
+                    setAlojamientos([]);
+                } 
                 disableBtn.disabled = true;
             }
         }
@@ -107,10 +120,14 @@ function Home() {
     };
 
     return(
-    <>
         <div className="container-fluid">
 
             <div className="row">
+
+                <h4 style={ alojamientos.length === 0 ? {} : { display: 'none' }}>
+                    No se puede mostrar ningún alojamiento.
+                </h4>
+
                 {
                     alojamientos.map((x, index) => (
 
@@ -162,8 +179,8 @@ function Home() {
                     </Button>
                 </div>
             </div>
+            <BotonTop />
         </div>
-    </>
     );
 }
 

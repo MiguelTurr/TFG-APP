@@ -36,15 +36,15 @@ const formDefault = {
     puedeFiestas: false,
     puedeFumar: false,
 
-    cocina: 0,
-    wifi: 0,
-    mascotas: 0,
-    aparcamiento: 0,
-    piscina: 0,
-    lavadora: 0,
-    aire: 0,
-    calefaccion: 0,
-    television: 0,
+    cocina: false,
+    wifi: false,
+    mascotas: false,
+    aparcamiento: false,
+    piscina: false,
+    lavadora: false,
+    aire: false,
+    calefaccion: false,
+    television: false,
 
     imgTotal: 0,
 }
@@ -109,7 +109,7 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
         const inputImagenes = document.getElementById('imagenes');
 
         var fileActual = inputImagenes.files;
-        var fileBuffer = new DataTransfer()
+        var fileBuffer = new DataTransfer();
 
         for (let i = 0; i < fileActual.length; i++) {
             if (index !== i) {
@@ -726,8 +726,13 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
                             {
                                 imagenPreview.map((x, index) => (
 
-                                    <div className="col" key={index} onClick={(e) => { removeImagen(e, index) }}>
-                                        <img className="img-fluid preview-img" src={x} alt="preview de imagen" />
+                                    <div className="col mb-3" key={index} onClick={(e) => { removeImagen(e, index) }}>
+                                        <img 
+                                            height="150px"
+                                            width="150px"
+                                            className="preview-img"
+                                            src={x}
+                                            alt="preview de imagen" />
                                     </div>
                                 ))
                             }

@@ -72,6 +72,18 @@ function Buscar() {
                 provincia: provincia,
                 comunidad: comunidad,
                 pais: pais,
+
+                filtros: {
+                    precio_min: params.get('precio_min'),
+                    precio_max: params.get('precio_max'),
+
+                    viajeros: params.get('viajeros'),
+                    habitaciones: params.get('habitaciones'),
+                    camas: params.get('camas'),
+                    aseos: params.get('aseos'),
+
+                    valoracion: params.get('valoracion'),
+                }
             }),
 
             headers: {

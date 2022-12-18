@@ -13,7 +13,7 @@ import userLogin from '../../js/autorizado';
 import NoProfileImg from '../../img/no-profile-img.png';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faCodeCompare, faHouse, faMinus, faPlus, faAward, faMessage, faHeart, faDownload, faLocationDot, faKitchenSet, faWifi, faPaw, faParking, faSwimmingPool, faWater, faAirFreshener, faThermometer, faTelevision, faStopwatch, faSmoking, faGift, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faCodeCompare, faHouse, faMinus, faPlus, faMessage, faHeart, faDownload, faLocationDot, faKitchenSet, faWifi, faPaw, faParking, faSwimmingPool, faWater, faAirFreshener, faThermometer, faTelevision, faStopwatch, faSmoking, faGift, faStar } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
 import ProgressBar from 'react-bootstrap/ProgressBar';
@@ -21,7 +21,7 @@ import Carousel from 'react-bootstrap/Carousel';
 
 function VerAlojamiento() {
 
-    const { autorizado, setAutorizado } = userLogin();
+    const { autorizado } = userLogin();
 
     //
 
@@ -282,7 +282,7 @@ function VerAlojamiento() {
     //
     
     return (
-        <div className="container-fluid mt-4 mb-5" style={{ paddingLeft: '30px', paddingRight: '30px'}}>
+        <div className="container-fluid mt-4 mb-5" style={{ paddingLeft: '30px', paddingRight: '30px', fontFamily: alojamiento.defaultFont }}>
 
             <div className="row">
 
@@ -340,8 +340,6 @@ function VerAlojamiento() {
                             ))
                         }
                     </Carousel>
-                </div>
-                <div className="col-sm-1">
                 </div>
                 <div className="col">
 
@@ -523,98 +521,78 @@ function VerAlojamiento() {
                             <FontAwesomeIcon icon={faStar} /> {parseFloat(alojamiento.valoracionMedia).toFixed(2)} <span className="text-muted">({alojamiento.vecesValorado})</span>
                         </h3>
 
-                        <ul className="lista-sin-numeros">
-                            <li>
-                                <div className="row">
-                                    <div className="col">
+                        <table className="table">
+
+                            <tbody style={{ verticalAlign: 'bottom' }}>
+
+                                <tr style={{ borderBottom: 'transparent' }}>
+                                    <td>
                                         Llegada
-                                    </div>
-
-                                    <div className="col">
-                                        <ProgressBar now={valoraciones.llegada} max="5" />
-                                    </div>
-
-                                    <div className="col">
+                                    </td>
+                                    <td style={{ width: '50%' }}>
+                                        <ProgressBar now={valoraciones.llegada} style={{ height: '8px' }} max="5" />
+                                    </td>
+                                    <td>
                                         {valoraciones.llegada}
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="row">
-                                    <div className="col">
+                                    </td>
+                                </tr>
+                                <tr style={{ borderBottom: 'transparent' }}>
+                                    <td>
                                         Veracidad
-                                    </div>
-
-                                    <div className="col">
-                                        <ProgressBar now={valoraciones.veracidad} max="5" />
-                                    </div>
-
-                                    <div className="col">
+                                    </td>
+                                    <td style={{ width: '70%' }}>
+                                        <ProgressBar now={valoraciones.veracidad} style={{ height: '8px' }} max="5" />
+                                    </td>
+                                    <td>
                                         {valoraciones.veracidad}
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="row">
-                                    <div className="col">
+                                    </td>
+                                </tr>
+                                <tr style={{ borderBottom: 'transparent' }}>
+                                    <td>
                                         Comunicación
-                                    </div>
-
-                                    <div className="col">
-                                        <ProgressBar now={valoraciones.comunicacion} max="5" />
-                                    </div>
-
-                                    <div className="col">
+                                    </td>
+                                    <td style={{ width: '70%' }}>
+                                        <ProgressBar now={valoraciones.comunicacion} style={{ height: '8px' }} max="5" />
+                                    </td>
+                                    <td>
                                         {valoraciones.comunicacion}
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="row">
-                                    <div className="col">
+                                    </td>
+                                </tr>
+                                <tr style={{ borderBottom: 'transparent' }}>
+                                    <td>
                                         Ubicación
-                                    </div>
-
-                                    <div className="col">
-                                        <ProgressBar now={valoraciones.ubicacion} max="5" />
-                                    </div>
-
-                                    <div className="col">
+                                    </td>
+                                    <td style={{ width: '70%' }}>
+                                        <ProgressBar now={valoraciones.ubicacion} style={{ height: '8px' }} max="5" />
+                                    </td>
+                                    <td>
                                         {valoraciones.ubicacion}
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="row">
-                                    <div className="col">
+                                    </td>
+                                </tr>
+                                <tr style={{ borderBottom: 'transparent' }}>
+                                    <td>
                                         Limpieza
-                                    </div>
-
-                                    <div className="col">
-                                        <ProgressBar now={valoraciones.limpieza} max="5" />
-                                    </div>
-
-                                    <div className="col">
+                                    </td>
+                                    <td style={{ width: '70%' }}>
+                                        <ProgressBar now={valoraciones.limpieza} style={{ height: '8px' }} max="5" />
+                                    </td>
+                                    <td>
                                         {valoraciones.limpieza}
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="row">
-                                    <div className="col">
-                                        Calidad
-                                    </div>
-
-                                    <div className="col">
-                                        <ProgressBar now={valoraciones.calidad} max="5" />
-                                    </div>
-
-                                    <div className="col">
+                                    </td>
+                                </tr>
+                                <tr style={{ borderBottom: 'transparent' }}>
+                                    <td>
+                                    Calidad
+                                    </td>
+                                    <td style={{ width: '70%' }}>
+                                        <ProgressBar now={valoraciones.calidad} style={{ height: '8px' }} max="5" />
+                                    </td>
+                                    <td>
                                         {valoraciones.calidad}
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
 
                         <div className="d-grid gap-2">
                             <Button className="filtros-botones" size="sm" onClick={verValoraciones}>
