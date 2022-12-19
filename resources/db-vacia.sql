@@ -176,6 +176,8 @@ CREATE TABLE IF NOT EXISTS `usuarios_reservas` (
 	`fechaEntrada` datetime NOT NULL,
 	`fechaSalida` datetime NOT NULL,
 	`costeTotal` int NOT NULL,
+	`precioBase` int NOT NULL,
+	`pagoID` varchar(200) default NOT NULL,
 	`numeroViajeros` tinyint NOT NULL default 1,
 	`numeroMascotas` tinyint NOT NULL default 0,
 	`valoraEstancia` tinyint NOT NULL default -1,

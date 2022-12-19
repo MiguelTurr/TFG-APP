@@ -1,12 +1,17 @@
 import React,{ useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { useLocation, useParams } from "react-router-dom";
 
 import { crearAlerta } from '../Toast/Toast.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faLocationDot, faStar, faSquareCheck } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faLocationDot, faStar } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
+
+//
+
+const PayPalButton = window.paypal.Buttons.driver("react", { React, ReactDOM });
 
 function ReservarAlojamiento() {
 
@@ -86,14 +91,21 @@ function ReservarAlojamiento() {
         window.location.href = '/alojamiento/ver?casa=' +alojamiento.ID;
     };
 
-    const confirmarReserva = async () => {
+    //
+
+    const createOrder = async () => {
 
         const data = await fetch('/alojamiento/reservar', { 
             method: 'POST',
+
             body: JSON.stringify({
                 alojamientoID: alojamiento.ID,
                 fechaEntrada: params.get('entrada'),
                 fechaSalida: params.get('salida'),
+                personas: reserva.personas,
+                mascotas: reserva.mascotas,
+                noches: reserva.noches,
+                precioBase: alojamiento.precio,
                 costeTotal: reserva.noches * alojamiento.precio,
             }),
             
@@ -107,13 +119,48 @@ function ReservarAlojamiento() {
         if (items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
+        } else if (items.respuesta === 'err_paypal') {
+            crearAlerta('error', '¡Ha ocurrido un error con paypal!');
+
+        } else if (items.respuesta === 'correcto') {
+            return items.orderID;
+        }
+    };
+
+    const onApprove = async (pago) => {
+
+        const data = await fetch('/alojamiento/reservar/aceptada', {
+            
+            method: 'POST',
+
+            body: JSON.stringify({
+                alojamientoID: alojamiento.ID,
+                fechaEntrada: params.get('entrada'),
+                fechaSalida: params.get('salida'),
+                personas: reserva.personas,
+                mascotas: reserva.mascotas,
+                noches: reserva.noches,
+                precioBase: alojamiento.precio,
+                costeTotal: reserva.noches * alojamiento.precio,
+                orderID: pago.orderID,
+            }),
+            
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        const items = await data.json();
+
+        if (items.respuesta === 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if (items.respuesta === 'err_paypal') {
+            crearAlerta('error', '¡Ha ocurrido un error con paypal!');
+
         } else if (items.respuesta === 'correcto') {
             crearAlerta('exito', '¡Reserva hecha!');
-
-            setTimeout(() => {
-                window.location.href = '/';
-
-            }, 1000);
+            setTimeout(() => { window.location.href = '/'; }, 1000);
         }
     };
 
@@ -197,10 +244,6 @@ function ReservarAlojamiento() {
                             </tr>
                         </tbody>
                     </table>
-                    
-                    <Button className="filtros-botones" size="sm" onClick={confirmarReserva}>
-                        <FontAwesomeIcon icon={faSquareCheck} /> Confirmar reserva
-                    </Button>
 
                 </div>
                 <div className="col">
@@ -228,23 +271,13 @@ function ReservarAlojamiento() {
                 </div>
             </div>
 
-            <hr/>
-
             <div className="row">
-                <div className="col">
-                    <h4 style={{ fontWeight: 'bold'}}>
-                        MÉTODO DE PAGO
-                    </h4>
+                <div className="col-sm-4">
 
-                    <hr/>
-
-                    Paypal no se que nose crearNuevoAlojamiento
-
-                    <hr/>
-
-                    <Button className="filtros-botones" size="sm" onClick={confirmarReserva}>
-                        <FontAwesomeIcon icon={faSquareCheck} /> Confirmar reserva
-                    </Button>
+                    <PayPalButton
+                        createOrder={createOrder}
+                        onApprove={onApprove}
+                    />
                 </div>
             </div>
         </div>

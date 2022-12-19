@@ -3,6 +3,7 @@ const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const mysql = require("./services/mysql.js");
 const email = require("./services/email.js");
+const { paypal, paypalClient } = require("./services/paypal.js");
 
 const fs = require("fs");
 
@@ -1119,6 +1120,7 @@ server.get('/perfil/mis-reservas/alojamientos/activas', comprobarToken, (req, re
     }
 
     console.log('ACTIVAS');
+    // HACER
 
     res.status(200).json({ respuesta: 'correcto' });
 });
@@ -1131,6 +1133,7 @@ server.get('/perfil/mis-reservas/alojamientos/antiguas', comprobarToken, (req, r
     }
 
     console.log('ANTIGUAS');
+    // HACER
 
     res.status(200).json({ respuesta: 'correcto' });
 });
@@ -1204,23 +1207,20 @@ server.post('/perfil/valorar/alojamiento', comprobarToken, (req, res) => {
 
                 // ENVIA
 
-                if (dev_state === false) {
+                try {
 
-                    try {
+                    var texto = 'Hola, nuevas valoraciones sobre su alojamiento en ' + result[0].ubicacion + ' se han hecho, visite su perfil para leerlas.';
+                    texto += '\n\nUn saludo desde 2FH.'
 
-                        var texto = 'Hola, nuevas valoraciones sobre su alojamiento en ' + result[0].ubicacion + ' se han hecho, visite su perfil para leerlas.';
-                        texto += '\n\nUn saludo desde 2FH.'
+                    email.sendMail({
+                        from: 'FastForHolidays',
+                        to: (dev_state === true) ? 'pepecortezri@gmail.com' : result[0].email,
+                        subject: result[0].titulo + ' ha recibido una valoración',
+                        text: texto
+                    });
 
-                        email.sendMail({
-                            from: 'FastForHolidays',
-                            to: (dev_state === true) ? 'pepecortezri@gmail.com' : result[0].email,
-                            subject: result[0].titulo + ' ha recibido una valoración',
-                            text: texto
-                        });
-
-                    } catch (err) {
-                        console.log(err);
-                    }
+                } catch (err) {
+                    console.log(err);
                 }
             });
 
@@ -2164,32 +2164,145 @@ server.get('/alojamiento/reservar/:id', comprobarToken, (req, res) => {
     });
 });
 
-server.post('/alojamiento/reservar', comprobarToken, (req, res) => {
+server.post('/alojamiento/reservar', comprobarToken, async (req, res) => {
 
     if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
 
-    mysql.query('INSERT INTO usuarios_reservas (usuarioID, alojamientoID, fechaEntrada, fechaSalida, costeTotal) VALUES (?)', 
-    [
-        [
-            req.userId,
-            req.body.alojamientoID,
-            req.body.fechaEntrada,
-            req.body.fechaSalida,
-            req.body.costeTotal
-        ]
-    ], function(err) {
+    try {
 
-        if (err) {
-            res.status(500).json({ respuesta: 'err_db' });
-            console.log(err.message);
+        let request = new paypal.orders.OrdersCreateRequest();
+        const precioTotal = parseFloat(req.body.noches * req.body.precioBase).toFixed(2) * 1.00;
+
+        //
+        
+        request.prefer("return=representation");
+        request.requestBody({
+            intent: "CAPTURE",
+
+            purchase_units: [{
+                description: "Pago para la compañía FastForHolidays",
+                soft_descriptor: "Alquiler de casas",
+
+                amount: {
+                    currency_code: "EUR",
+                    value: precioTotal, 
+                    breakdown: {
+                        item_total: {
+                            currency_code: "EUR",
+                            value: precioTotal,
+                        },
+                    },
+                },
+                items: [
+                    {
+                        name: 'noches',
+                        unit_amount: {
+                            currency_code: 'EUR',
+                            value: Number.parseFloat(req.body.precioBase).toFixed(2) * 1.00,
+                        },
+                        quantity: Number.parseFloat(req.body.noches).toFixed(2) * 1.00,
+                    }
+                ]
+            }, ],
+        });
+
+        //
+
+        const order = await paypalClient.execute(request);
+        res.status(200).json({ respuesta: 'correcto', orderID: order.result.id });
+
+    } catch(e) {
+        res.status(500).json({ respuesta: 'err_paypal' });
+        console.log(e)
+    }
+});
+
+server.post('/alojamiento/reservar/aceptada', comprobarToken, async (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    const orderID = req.body.orderID;
+    const request = new paypal.orders.OrdersCaptureRequest(orderID);
+    request.requestBody({});
+
+    try {
+        const capture = await paypalClient.execute(request);
+
+        if(capture.result.status !== 'COMPLETED') {
+            res.status(500).json({ respuesta: 'err_paypal' });
             return;
         }
 
-        res.status(200).json({ respuesta: 'correcto' });
-    });
+        mysql.query('INSERT INTO usuarios_reservas (usuarioID, alojamientoID, fechaEntrada, fechaSalida, costeTotal, numeroViajeros, numeroMascotas, pagoID, precioBase) VALUES (?)',
+        [
+            [
+                req.userId,
+                req.body.alojamientoID,
+                req.body.fechaEntrada,
+                req.body.fechaSalida,
+                req.body.costeTotal,
+                req.body.personas,
+                req.body.mascotas,
+                capture.result.id,
+                req.body.precioBase
+            ]
+
+        ], function (err) {
+
+             if (err) {
+                res.status(500).json({ respuesta: 'err_db' });
+                console.log(err.message);
+                return;
+            }
+
+            res.status(200).json({ respuesta: 'correcto' });
+
+            // ENVIAR CORREO AL DUEÑO
+
+            mysql.query(`SELECT alo.ubicacion, alo.titulo, usu.email FROM alojamientos as alo
+                INNER JOIN usuarios as usu ON usu.ID=alo.usuarioID
+                WHERE alo.ID=?`, 
+                [
+                    req.body.alojamientoID
+                ], 
+                function(err, result) {
+
+                    if(err || result.length === 0) {
+                        return;
+                    }
+
+                    try {
+
+                        var textoEmail = 'Hola, parece que uno de tus alojamientos ha sido reservado por ' +req.body.noches+ ' noches.\n\n';
+                        textoEmail += 'Título: ' +result[0].titulo+ '\n';
+                        textoEmail += 'Ubicación: ' +result[0].ubicacion+ '\n';
+                        textoEmail += 'Reserva: ' +req.body.noches+ ' noches X ' +req.body.precioBase+'€\n';
+                        textoEmail += 'Coste total: ' +req.body.costeTotal+ '€\n';
+                        textoEmail += '\n\nUn saludo desde 2FH.'
+        
+                        email.sendMail({
+                            from: 'FastForHolidays',
+                            to: (dev_state === true) ? 'pepecortezri@gmail.com' : result[i].email,
+                            subject: '¡Uno de tus alojamientos ha sido reservado!',
+                            text: textoEmail
+                        });
+        
+                    } catch (err) {
+                        console.log(err);
+                    }
+                }
+            );
+        });
+
+    } catch (err) {
+        res.status(500).json({ respuesta: 'err_paypal' });
+    }
 });
 
 //
