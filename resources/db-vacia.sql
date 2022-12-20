@@ -222,3 +222,13 @@ CREATE TABLE IF NOT EXISTS `usuarios_chats_mensajes` (
 DELETE FROM `usuarios_chats_mensajes`;
 
 ----------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `usuarios_factura` (
+    `ID` int NOT NULL AUTO_INCREMENT,
+	`usuarioID` int NOT NULL,
+	`creadoEn` datetime NOT NULL default NOW(),
+
+
+    CONSTRAINT FK_EmisorMensaje FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
+    PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

@@ -7,55 +7,56 @@
 */
 
 .filtros-botones {
-    background-color: #ffe841 !important;
+    background-color: #4741ff !important;
     /*background-color: #ffe841 !important;*/
-    border-color: black !important;
+    /*border-color: black !important;*/
+    border-color: #4741ff !important;
 
-    color: black !important;
+    color: white !important;
     font-weight: bold !important;
 }
 
 .filtros-botones:hover {
-    background-color: #d6c437 !important;
+    background-color: #3531bf !important;
     border-color: black !important;
 }
 
 .borrar-botones {
     background-color: #fb4141 !important;
-    border-color: black !important;
+    border-color: #fb4141 !important;
 
-    color: black !important;
+    color: white !important;
     font-weight: bold !important;
 }
 
 .borrar-botones:hover {
-    background-color: #d63737 !important;
+    background-color: #c23131 !important;
     border-color: black !important;
 }
 
 .crear-botones {
-    background-color: #34c636 !important;
-    border-color: black !important;
+    background-color: #289b29 !important;
+    border-color: #289b29 !important;
 
-    color: black !important;
+    color: white !important;
     font-weight: bold !important;
 }
 
 .crear-botones:hover {
-    background-color: #00681f !important;
+    background-color: #1d721e !important;
     border-color: black !important;
 }
 
 .reservar-botones {
-    background-color: #ff81ec !important;
-    border-color: black !important;
+    background-color: #e354b8 !important;
+    border-color: #e354b8 !important;
 
-    color: black !important;
+    color: white !important;
     font-weight: bold !important;
 }
 
 .reservar-botones:hover {
-    background-color: #a7598c !important;
+    background-color: #ab408b !important;
     border-color: black !important;
 }
 

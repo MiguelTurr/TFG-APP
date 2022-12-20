@@ -5,6 +5,8 @@ const totalServicios = serviciosCasas.length - 1;
 
 const fontsDisponibles = ['Segoe UI', 'Arial', 'Times New Roman', 'Helvetica', 'Calibri', 'Georgia', 'Cambria', 'Veranda'];
 
+var opcFecha = { year: 'numeric', month: 'short', day: '2-digit' };
+
 //
 
 function nombreFotoPerfil(userId, extension) {
@@ -19,19 +21,51 @@ function boolToInt(value) {
     return value === 'false' ? 0 : 1;
 }
 
-function estadoReserva(estado, fechaFinal) {
+function estadoReserva(estado, fechaFinal, valoracion) {
     var resultado = {};
 
     if(estado === -1) {
         resultado.texto = 'Cancelado';
         resultado.color = '#ff2c2c'; // ROJO
-        resultado.puedeValorar = false;
 
     } else if(estado === 0) {
-        resultado.texto = 'En revisión';
+        resultado.texto = 'Revisión';
         resultado.color = '#ff962c'; // NARANJA
-        resultado.puedeValorar = false;
-        resultado.puedeCancelar = true;
+
+    } else if(estado === 1) {
+
+        const fechaHoy = new Date().getTime();
+
+        if(fechaHoy < fechaFinal.getTime()) {
+            resultado.texto = 'Aceptada';
+            resultado.color = '#50d932'; // VERDE
+            resultado.puedeEnviarMensaje = true;
+
+        } else if(valoracion != -1) {
+            resultado.texto = 'Valorada';
+            resultado.color = '#c22bff'; // MORADO
+
+        } else {
+            resultado.texto = 'Sin valorar';
+            resultado.color = '#476cff'; // AZUL
+            resultado.puedeValorar = true;
+        }
+    }
+
+    return resultado;
+}
+
+function estadoAlojamientoReserva(estado, fechaFinal, valoracion) {
+    var resultado = {};
+
+    if(estado === -1) {
+        resultado.texto = 'Cancelado';
+        resultado.color = '#ff2c2c'; // ROJO
+
+    }  else if(estado === 0) {
+        resultado.texto = 'Revisión';
+        resultado.color = '#ff962c'; // NARANJA
+        resultado.puedeModificar = true;
 
     } else if(estado === 1) {
 
@@ -41,19 +75,16 @@ function estadoReserva(estado, fechaFinal) {
 
             resultado.texto = 'Aceptada';
             resultado.color = '#50d932'; // VERDE
-            resultado.puedeValorar = false;
+
+        } else if(valoracion != -1) {
+            resultado.texto = 'Valorada';
+            resultado.color = '#c22bff'; // MORADO
 
         } else {
-
             resultado.texto = 'Sin valorar';
             resultado.color = '#476cff'; // AZUL
             resultado.puedeValorar = true;
         }
-
-    } else if(estado === 2) {
-        resultado.texto = 'Valorada';
-        resultado.color = '#c22bff'; // MORADO
-        resultado.puedeValorar = false;
     }
 
     return resultado;
@@ -61,6 +92,26 @@ function estadoReserva(estado, fechaFinal) {
 
 function diasEntreFechas(inicio, final) {
     return (final - inicio) / (1000 * 60 * 60 * 24);
+}
+
+function rangoFechas(inicio, final) {
+
+    const entradaStr = inicio.toLocaleDateString('es-ES', opcFecha);
+    const salidaStr = final.toLocaleDateString('es-ES', opcFecha);
+
+    const splitEntrada = entradaStr.split(' ');
+    const splitSalida = salidaStr.split(' ');
+
+    var finalStr = '';
+
+    if(splitEntrada[1] === splitSalida[1]) {
+        finalStr = splitEntrada[0]+ '-' +splitSalida[0]+ ' ' +splitEntrada[1]+ ' ' +splitEntrada[2];
+
+    } else {
+        finalStr = splitEntrada[0]+ ' '+splitEntrada[1]+ ' - ' +splitSalida[0]+ ' ' +splitSalida[1]+ ' ' +splitEntrada[2];
+    }
+
+    return finalStr;
 }
 
 function queryOrdenar(ordenarTipo) {
@@ -133,8 +184,11 @@ module.exports = {
     nombreFotoPerfil,
     nombreFotoAlojamiento,
     boolToInt,
+
     estadoReserva,
+    estadoAlojamientoReserva,
     diasEntreFechas,
+    rangoFechas,
 
     fontsDisponibles,
 

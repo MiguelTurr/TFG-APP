@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { crearAlerta } from "../Toast/Toast";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLocationDot, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot, faStar, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-import { crearAlerta } from "../Toast/Toast";
 
 const ValorarModal = ({ infoAlojamiento, funcionCerrar, valoracionCorrecto }) => {
 
@@ -96,8 +96,10 @@ const ValorarModal = ({ infoAlojamiento, funcionCerrar, valoracionCorrecto }) =>
         btnDesactivar.disabled = false;
 
         if(items.respuesta === 'err_user') {
+            crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
 
         } else if(items.respuesta === 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
         } else if(items.respuesta === 'correcto') {
             valoracionCorrecto(infoAlojamiento.index, items.userValoracion);
@@ -134,7 +136,7 @@ const ValorarModal = ({ infoAlojamiento, funcionCerrar, valoracionCorrecto }) =>
                             <FontAwesomeIcon icon={faStar} /> {infoAlojamiento.valoracionMedia} <span className="text-muted">({infoAlojamiento.vecesValorado})</span>
 
                         </div>
-                        <div className="col-sm-2">
+                        <div className="col-sm-1">
                         </div>
 
                         <div className="col">
@@ -219,8 +221,8 @@ const ValorarModal = ({ infoAlojamiento, funcionCerrar, valoracionCorrecto }) =>
                                 </Form.Group>
 
                                 <div className="d-grid gap-2">
-                                    <Button type="submit" variant="success" id="valoracion-btn">
-                                        Enviar valoración
+                                    <Button type="submit" className="crear-botones" id="valoracion-btn">
+                                        <FontAwesomeIcon icon={faPaperPlane} /> Enviar valoración
                                     </Button>
                                 </div>
                             </Form>

@@ -975,26 +975,6 @@ server.post('/perfil/mis-alojamientos/borrar', comprobarToken, (req, res) => {
 
 //
 
-server.get('/perfil/mis-reservas/cancelar/:id', comprobarToken, (req, res) => {
-
-    if (req.userId == undefined) {
-        res.status(500).json({ respuesta: 'err_user' });
-        return;
-    }
-
-    const reservaID = req.params.id;
-
-    mysql.query('UPDATE usuarios_reservas SET estado=-1 WHERE ID=? LIMIT 1', reservaID, function (err, result) {
-        if (err) {
-            res.status(500).json({ respuesta: 'err_db' });
-            console.log(err.message);
-            return;
-        }
-
-        res.status(200).json({ respuesta: 'correcto' });
-    });
-});
-
 server.get('/perfil/mis-reservas/activas', comprobarToken, (req, res) => {
 
     if (req.userId == undefined) {
@@ -1002,8 +982,9 @@ server.get('/perfil/mis-reservas/activas', comprobarToken, (req, res) => {
         return;
     }
 
-    mysql.query(`SELECT res.*,alo.ubicacion,alo.valoracionMedia,alo.vecesValorado FROM usuarios_reservas as res 
+    mysql.query(`SELECT res.*,alo.ubicacion,alo.valoracionMedia,alo.vecesValorado,alo.usuarioID,usu.nombre FROM usuarios_reservas as res 
         INNER JOIN alojamientos as alo ON res.alojamientoID=alo.ID
+        INNER JOIN usuarios as usu ON alo.usuarioID=usu.ID
         WHERE res.usuarioID=? AND res.valoraEstancia=-1 AND res.estado!=-1 ORDER BY res.creadoEn DESC`, req.userId, function (err, result) {
 
         if (err) {
@@ -1032,11 +1013,18 @@ server.get('/perfil/mis-reservas/activas', comprobarToken, (req, res) => {
                 reservaID: element.ID,
                 alojamientoID: element.alojamientoID,
 
-                fechaEntrada: inicio,
-                fechaSalida: final,
+                fechas: utils.rangoFechas(inicio, final),
                 dias: dias,
+                viajeros: element.numeroViajeros,
+                mascotas: element.numeroMascotas,
+                precioBase: element.precioBase,
                 costeTotal: element.costeTotal,
-                estado: utils.estadoReserva(element.estado, final),
+                estado: utils.estadoReserva(element.estado, final, element.valoraEstancia),
+
+                // DUEÑO
+
+                propietarioID: element.usuarioID,
+                propietarioNombre: element.nombre,
 
                 // ALOJAMIENTO
 
@@ -1049,8 +1037,7 @@ server.get('/perfil/mis-reservas/activas', comprobarToken, (req, res) => {
         }
 
         res.status(200).json({ respuesta: 'correcto', reservas: itemFinal });
-    }
-    );
+    });
 });
 
 server.get('/perfil/mis-reservas/antiguas', comprobarToken, (req, res) => {
@@ -1090,10 +1077,12 @@ server.get('/perfil/mis-reservas/antiguas', comprobarToken, (req, res) => {
                 alojamientoID: element.alojamientoID,
                 userValoracion: element.valoraEstancia,
                 hospedadorValoracion: element.valoraHospedador,
-
-                fechaEntrada: inicio,
-                fechaSalida: final,
+                
+                fechas: utils.rangoFechas(inicio, final, element.valoraEstancia),
                 dias: dias,
+                viajeros: element.numeroViajeros,
+                mascotas: element.numeroMascotas,
+                precioBase: element.precioBase,
                 costeTotal: element.costeTotal,
                 estado: utils.estadoReserva(element.estado, final),
 
@@ -1119,10 +1108,64 @@ server.get('/perfil/mis-reservas/alojamientos/activas', comprobarToken, (req, re
         return;
     }
 
-    console.log('ACTIVAS');
-    // HACER
+    mysql.query(`SELECT res.*,alo.ubicacion,alo.valoracionMedia,alo.vecesValorado,usu.nombre,usu.residencia,usu.fechaReg FROM usuarios_reservas as res 
+        INNER JOIN alojamientos as alo ON res.alojamientoID=alo.ID AND alo.usuarioID=?
+        INNER JOIN usuarios as usu ON usu.ID=res.usuarioID
+        WHERE res.valoraHospedador=-1 AND res.estado!=-1 ORDER BY res.creadoEn DESC`, req.userId, function (err, result) {
 
-    res.status(200).json({ respuesta: 'correcto' });
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+
+            console.log(err.message);
+            return;
+        }
+
+        var itemFinal = [];
+        var len = result.length;
+
+        for (var i = 0; i < len; i++) {
+
+            var element = result[i];
+
+            const inicio = new Date(element.fechaEntrada);
+            const final = new Date(element.fechaSalida);
+
+            var dias = utils.diasEntreFechas(inicio, final);
+
+            var objeto = {
+
+                // RESERVA
+
+                reservaID: element.ID,
+                alojamientoID: element.alojamientoID,
+                usuarioID: element.usuarioID,
+
+                fechas: utils.rangoFechas(inicio, final),
+                dias: dias,
+                viajeros: element.numeroViajeros,
+                mascotas: element.numeroMascotas,
+                precioBase: element.precioBase,
+                costeTotal: element.costeTotal,
+                estado: utils.estadoAlojamientoReserva(element.estado, final, element.valoraHospedador),
+
+                // ALOJAMIENTO
+
+                ubicacion: element.ubicacion,
+                vecesValorado: element.vecesValorado,
+                valoracionMedia: element.valoracionMedia,
+
+                // USUARIO
+
+                fechaReg: element.fechaReg,
+                nombre: element.nombre,
+                residencia: element.residencia,            
+            };
+
+            itemFinal.push(objeto);
+        }
+
+        res.status(200).json({ respuesta: 'correcto', reservas: itemFinal });
+    });
 });
 
 server.get('/perfil/mis-reservas/alojamientos/antiguas', comprobarToken, (req, res) => {
@@ -1132,9 +1175,226 @@ server.get('/perfil/mis-reservas/alojamientos/antiguas', comprobarToken, (req, r
         return;
     }
 
-    console.log('ANTIGUAS');
-    // HACER
+    
+    mysql.query(`SELECT res.*,alo.ubicacion,alo.valoracionMedia,alo.vecesValorado,usu.nombre,usu.residencia,usu.fechaReg FROM usuarios_reservas as res 
+        INNER JOIN alojamientos as alo ON res.alojamientoID=alo.ID AND alo.usuarioID=?
+        INNER JOIN usuarios as usu ON usu.ID=res.usuarioID
+        WHERE res.valoraHospedador!=-1 OR res.estado=-1 ORDER BY res.creadoEn DESC`, req.userId, function (err, result) {
 
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+
+            console.log(err.message);
+            return;
+        }
+
+        var itemFinal = [];
+        var len = result.length;
+
+        for (var i = 0; i < len; i++) {
+
+            var element = result[i];
+
+            const inicio = new Date(element.fechaEntrada);
+            const final = new Date(element.fechaSalida);
+
+            var dias = utils.diasEntreFechas(inicio, final);
+
+            var objeto = {
+
+                // RESERVA
+
+                reservaID: element.ID,
+                alojamientoID: element.alojamientoID,
+                usuarioID: element.usuarioID,
+                userValoracion: element.valoraEstancia,
+                hospedadorValoracion: element.valoraHospedador,
+
+                fechas: utils.rangoFechas(inicio, final),
+                dias: dias,
+                viajeros: element.numeroViajeros,
+                mascotas: element.numeroMascotas,
+                precioBase: element.precioBase,
+                costeTotal: element.costeTotal,
+                estado: utils.estadoAlojamientoReserva(element.estado, final, element.valoraHospedador),
+
+                // ALOJAMIENTO
+
+                ubicacion: element.ubicacion,
+                vecesValorado: element.vecesValorado,
+                valoracionMedia: element.valoracionMedia,
+
+                // USUARIO
+
+                fechaReg: element.fechaReg,
+                nombre: element.nombre,
+                residencia: element.residencia,            
+            };
+
+            itemFinal.push(objeto);
+        }
+
+        res.status(200).json({ respuesta: 'correcto', reservas: itemFinal });
+    });
+});
+
+server.get('/perfil/mis-reservas/alojamientos/cancelar/:id', comprobarToken, (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    const reservaID = req.params.id;
+
+    mysql.query('UPDATE usuarios_reservas SET estado=-1 WHERE ID=? LIMIT 1', reservaID, function (err) {
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        res.status(200).json({ respuesta: 'correcto' });
+
+        // CORREO AL USUARIO DE CANCELAR
+
+        mysql.query(`SELECT alo.ubicacion,alo.titulo,res.fechaEntrada,res.fechaSalida,usu.email FROM usuarios_reservas as res
+        INNER JOIN alojamientos as alo ON res.alojamientoID=alo.ID
+        INNER JOIN usuarios as usu ON res.usuarioID=usu.ID AND usu.recibirCorreos=1
+        WHERE res.ID=?`, 
+        [
+            reservaID
+        ], 
+        function(err, result) {
+
+            if(err || result.length === 0) {
+                return;
+            }
+
+            try {
+
+                var entrada = new Date(result[0].fechaEntrada);
+                var salida = new Date(result[0].fechaSalida);
+
+                var textoEmail = 'Hola, parece que se ha cancelado una de tus reservas.\n\n';
+                textoEmail += 'Título: ' +result[0].titulo+ '\n';
+                textoEmail += 'Ubicación: ' +result[0].ubicacion+ '\n';
+                textoEmail += 'Fechas: ' +utils.rangoFechas(entrada, salida);
+                textoEmail += '\n\nUn saludo desde 2FH.'
+
+                email.sendMail({
+                    from: 'FastForHolidays',
+                    to: (dev_state === true) ? 'pepecortezri@gmail.com' : result[0].email,
+                    subject: '¡Reserva cancelada!',
+                    text: textoEmail
+                });
+
+            } catch (err) {
+                console.log(err);
+            }
+        });
+    });
+});
+
+server.get('/perfil/mis-reservas/alojamientos/aceptar/:id', comprobarToken, (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    const reservaID = req.params.id;
+
+    mysql.query('UPDATE usuarios_reservas SET estado=1 WHERE ID=? LIMIT 1', reservaID, function (err) {
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+        res.status(200).json({ respuesta: 'correcto' });
+
+        // CORREO AL USUARIO DE ACEPTAR
+
+        mysql.query(`SELECT alo.ubicacion,alo.titulo,alo.usuarioID,res.fechaEntrada,res.fechaSalida,usu.email FROM usuarios_reservas as res
+        INNER JOIN alojamientos as alo ON res.alojamientoID=alo.ID
+        INNER JOIN usuarios as usu ON res.usuarioID=usu.ID AND usu.recibirCorreos=1
+        WHERE res.ID=?`, 
+        [
+            reservaID
+        ], 
+        function(err, result) {
+
+            if(err || result.length === 0) {
+                return;
+            }
+
+            try {
+
+                var entrada = new Date(result[0].fechaEntrada);
+                var salida = new Date(result[0].fechaSalida);
+
+                var textoEmail = 'Hola, parece que se ha aceptado una de tus reservas.\n\n';
+                textoEmail += 'Título: ' +result[0].titulo+ '\n';
+                textoEmail += 'Ubicación: ' +result[0].ubicacion+ '\n';
+                textoEmail += 'Fechas: ' +utils.rangoFechas(entrada, salida);
+                textoEmail += '\n\nUn saludo desde 2FH.'
+
+                email.sendMail({
+                    from: 'FastForHolidays',
+                    to: (dev_state === true) ? 'pepecortezri@gmail.com' : result[0].email,
+                    subject: '¡Reserva aceptada!',
+                    text: textoEmail
+                });
+
+            } catch (err) {
+                console.log(err);
+            }
+        });
+    });
+});
+
+server.get('/perfil/mis-reservas/ganancias/:id', comprobarToken, (req, res) => {
+    
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    const mesBuscar = req.params.id;
+
+    //
+
+    var queryStr = 'SELECT * FROM usuarios_reservas WHERE ';
+
+    var fecha = new Date();
+
+    if(mesBuscar === 'undefined') {
+
+        const mes = fecha.getMonth() + 1;
+        const year = fecha.getFullYear();
+        const primerDia = new Date(year, mes, 0).getDate();
+
+        queryStr += 'creadoEn BETWEEN "' +year+ '-' +mes+ '-1" AND "' +year+ '-' +mes+ '-' +primerDia+ '" ';
+    } else {
+        fecha = new Date(year, mesBuscar, 0);
+    }
+
+    const mesNombre = fecha.toLocaleString('default', { month: 'long' });
+
+    queryStr += 'AND ';
+    console.log(queryStr);
+
+    /*mysql.query(queryStr, function(err, result) {
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+
+    });*/
+
+    //console.log(mesBuscar);
     res.status(200).json({ respuesta: 'correcto' });
 });
 
@@ -1162,7 +1422,6 @@ server.post('/perfil/valorar/alojamiento', comprobarToken, (req, res) => {
 
             if (err) {
                 res.status(500).json({ respuesta: 'err_db' });
-
                 console.log(err.message);
                 return;
             }
@@ -1171,7 +1430,7 @@ server.post('/perfil/valorar/alojamiento', comprobarToken, (req, res) => {
 
             var valoracionId = result.insertId;
 
-            mysql.query('UPDATE usuarios_reservas SET estado=2,valoraEstancia=? WHERE ID=?', [valoracionId, req.body.reservaID]);
+            mysql.query('UPDATE usuarios_reservas SET valoraEstancia=? WHERE ID=?', [valoracionId, req.body.reservaID]);
 
             //
 
@@ -1237,19 +1496,30 @@ server.post('/perfil/valorar/inquilino', comprobarToken, (req, res) => {
         return;
     }
 
-    mysql.query('INSERT INTO usuarios_valoraciones (usuarioID, userValoradoID, mensaje) VALUES (?)', 
+    mysql.query('INSERT INTO usuarios_valoraciones (usuarioID, userValoradoID, tipo, mensaje) VALUES (?)', 
     [
         [
             req.userId,
-            req.body.userValoradoID,
+            req.body.usuarioID,
+            utils.boolToInt(req.body.tipo),
             req.body.mensaje,
         ]
     ], function(err, result) {
 
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
 
-        // HACER
+        // ACTUALIZAR RESERVA
 
-        //res.status(200).json({ respuesta: 'correcto', userValoracion: valoracionId });
+        var valoracionId = result.insertId;
+        mysql.query('UPDATE usuarios_reservas SET valoraHospedador=? WHERE ID=?', [valoracionId, req.body.reservaID]);
+
+        //
+
+        res.status(200).json({ respuesta: 'correcto', userValoracion: valoracionId });
     });
 });
 
@@ -1266,7 +1536,6 @@ server.get('/perfil/valoracion-hospedador/ver/:id', (req, res) => {
 
             if (err) {
                 res.status(500).json({ respuesta: 'err_db' });
-
                 console.log(err.message);
                 return;
             }
@@ -1335,7 +1604,7 @@ server.get('/perfil/mis-valoraciones/hechas-user/:id', comprobarToken, async (re
 
     const columns = req.params.id;
 
-    mysql.query(`SELECT val.*,usu.nombre,usu.residencia,usu.fechaReg FROM usuarios_valoraciones as val
+    mysql.query(`SELECT val.*,usu.nombre FROM usuarios_valoraciones as val
         INNER JOIN usuarios as usu ON usu.ID=val.userValoradoID
         WHERE val.usuarioID=? ORDER BY creadoEn DESC LIMIT ?, 3`, [req.userId, 3 * columns], function(err, result) {
 
@@ -1358,13 +1627,13 @@ server.get('/perfil/mis-valoraciones/recibidas-alo/:id', comprobarToken, async (
 
     const columns = req.params.id;
 
-    var queryStr = `SELECT alo.ubicacion,alo.valoracionMedia,alo.vecesValorado,val.ID,val.alojamientoID,val.usuarioID,val.creadaEn,val.sinLeer,val.mensaje,usu.nombre,usu.residencia,usu.fechaReg FROM alojamientos as alo
+    var queryStr = `SELECT alo.ubicacion,alo.valoracionMedia,alo.vecesValorado,val.ID,val.alojamientoID,val.usuarioID,val.creadaEn,val.sinLeer,val.mensaje,usu.nombre FROM alojamientos as alo
         INNER JOIN alojamientos_valoraciones as val ON alo.ID=val.alojamientoID AND val.sinLeer=0
         INNER JOIN usuarios as usu ON val.usuarioID=usu.ID
         WHERE alo.usuarioID=? ORDER BY creadaEn DESC`;
 
     if(columns > 0) {
-        queryStr = `SELECT alo.ubicacion,alo.valoracionMedia,alo.vecesValorado,val.ID,val.alojamientoID,val.usuarioID,val.creadaEn,val.sinLeer,val.mensaje,usu.nombre,usu.residencia,usu.fechaReg FROM alojamientos as alo
+        queryStr = `SELECT alo.ubicacion,alo.valoracionMedia,alo.vecesValorado,val.ID,val.alojamientoID,val.usuarioID,val.creadaEn,val.sinLeer,val.mensaje,usu.nombre FROM alojamientos as alo
         INNER JOIN alojamientos_valoraciones as val ON alo.ID=val.alojamientoID AND val.sinLeer!=0
         INNER JOIN usuarios as usu ON val.usuarioID=usu.ID
         WHERE alo.usuarioID=? ORDER BY creadaEn DESC LIMIT ${columns}, 3`;
@@ -1389,7 +1658,7 @@ server.get('/perfil/mis-valoraciones/recibidas-alo/:id', comprobarToken, async (
 
         } else if(columns == 0) {
 
-            mysql.query(`SELECT alo.ubicacion,alo.valoracionMedia,alo.vecesValorado,val.ID,val.alojamientoID,val.usuarioID,val.creadaEn,val.sinLeer,val.mensaje,usu.nombre,usu.residencia,usu.fechaReg FROM alojamientos as alo
+            mysql.query(`SELECT alo.ubicacion,alo.valoracionMedia,alo.vecesValorado,val.ID,val.alojamientoID,val.usuarioID,val.creadaEn,val.sinLeer,val.mensaje,usu.nombre FROM alojamientos as alo
                 INNER JOIN alojamientos_valoraciones as val ON alo.ID=val.alojamientoID AND val.sinLeer!=0
                 INNER JOIN usuarios as usu ON val.usuarioID=usu.ID
                 WHERE alo.usuarioID=? ORDER BY creadaEn DESC LIMIT 0, 3`, [req.userId], function(err, result) {
@@ -1418,12 +1687,12 @@ server.get('/perfil/mis-valoraciones/recibidas-user/:id', comprobarToken, async 
 
     const columns = req.params.id;
 
-    var queryStr = `SELECT val.ID,val.usuarioID,val.sinLeer,val.creadoEn,val.tipo,val.mensaje,usu.nombre,usu.residencia,usu.fechaReg FROM usuarios_valoraciones as val
+    var queryStr = `SELECT val.ID,val.usuarioID,val.sinLeer,val.creadoEn,val.tipo,val.mensaje,usu.nombre FROM usuarios_valoraciones as val
         INNER JOIN usuarios as usu ON usu.ID=val.usuarioID
         WHERE val.userValoradoID=? AND val.sinLeer=0 ORDER BY val.creadoEn DESC`;
 
     if(columns > 0) {
-        queryStr = `SELECT val.ID,val.usuarioID,val.sinLeer,val.creadoEn,val.tipo,val.mensaje,usu.nombre,usu.residencia,usu.fechaReg FROM usuarios_valoraciones as val
+        queryStr = `SELECT val.ID,val.usuarioID,val.sinLeer,val.creadoEn,val.tipo,val.mensaje,usu.nombre FROM usuarios_valoraciones as val
         INNER JOIN usuarios as usu ON usu.ID=val.usuarioID
         WHERE val.userValoradoID=? AND val.sinLeer!=0 ORDER BY val.creadoEn DESC LIMIT ${columns}, 3`;
     }
@@ -2104,7 +2373,7 @@ server.get('/alojamiento/reservas/dias/:id', (req, res) => {
 
     const alojamientoId = req.params.id;
 
-    mysql.query('SELECT fechaEntrada,fechaSalida FROM usuarios_reservas WHERE alojamientoID=? AND fechaEntrada >= CURDATE()', alojamientoId,
+    mysql.query('SELECT fechaEntrada,fechaSalida FROM usuarios_reservas WHERE alojamientoID=? AND fechaEntrada >= CURDATE() AND (estado=0 OR estado=1)', alojamientoId,
         function (err, result) {
 
             if (err) {
@@ -2288,7 +2557,7 @@ server.post('/alojamiento/reservar/aceptada', comprobarToken, async (req, res) =
         
                         email.sendMail({
                             from: 'FastForHolidays',
-                            to: (dev_state === true) ? 'pepecortezri@gmail.com' : result[i].email,
+                            to: (dev_state === true) ? 'pepecortezri@gmail.com' : result[0].email,
                             subject: '¡Uno de tus alojamientos ha sido reservado!',
                             text: textoEmail
                         });

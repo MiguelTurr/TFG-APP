@@ -141,31 +141,32 @@ const ValorarModal = ({ valoraciones, funcionCerrar }) => {
                                 </span>
 
                                 <br />
-                                <br />
                                 {valoracionUser?.mensaje}
 
                                 <br />
                                 <br />
-                                <div className="row">
-                                    <div className="col-sm-2">
+                                
+                                <table className="table">
 
-                                        <img
-                                            src={imgUser}
-                                            key={imgUser}
-                                            className="img-fluid rounded-pill"
-                                            alt="Imagen de perfil del usuario" />
-                                    </div>
-                                    <div className="col">
+                                    <tbody>
+                                        <tr style={{ verticalAlign: 'middle', borderBottom: 'transparent' }}>
+                                            <td style={{ width: '20%' }}>
 
-                                        <strong>
-                                            {valoracionUser?.nombre} de {valoracionUser?.residencia}
-                                        </strong>
-                                        <br />
-                                        <small>
-                                            {new Date(valoracionUser?.fechaReg).toLocaleDateString('es-ES', regFecha)}
-                                        </small>
-                                    </div>
-                                </div>
+                                                <img src={imgUser} key={imgUser} className="img-fluid rounded-pill" alt="Imagen de perfil del usuario"/>
+                                            </td>
+                                            <td></td>
+                                            <td>
+                                                <strong>
+                                                    {valoracionUser?.nombre} de {valoracionUser?.residencia} 
+                                                </strong>
+                                                <br/>
+                                                <small>
+                                                    Registrado en {new Date(valoracionUser?.fechaReg).toLocaleDateString('es-ES', regFecha)}
+                                                </small>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
 
                             <hr />
@@ -189,31 +190,33 @@ const ValorarModal = ({ valoraciones, funcionCerrar }) => {
                                 </span>
 
                                 <br />
-                                <br />
+
                                 {valoracionHospedador?.mensaje}
 
                                 <br />
                                 <br />
-                                <div className="row">
-                                    <div className="col-sm-2">
+                                
+                                <table className="table">
 
-                                        <img
-                                            src={imgHospedador}
-                                            key={imgHospedador}
-                                            className="img-fluid rounded-pill"
-                                            alt="Imagen de perfil del usuario" />
-                                    </div>
-                                    <div className="col">
+                                    <tbody>
+                                        <tr style={{ verticalAlign: 'middle', borderBottom: 'transparent' }}>
+                                            <td style={{ width: '20%' }}>
 
-                                        <strong>
-                                            {valoracionHospedador?.nombre} de {valoracionHospedador?.residencia}
-                                        </strong>
-                                        <br />
-                                        <small>
-                                            {new Date(valoracionHospedador?.fechaReg).toLocaleDateString('es-ES', regFecha)}
-                                        </small>
-                                    </div>
-                                </div>
+                                                <img src={imgHospedador} key={imgHospedador} className="img-fluid rounded-pill" alt="Imagen de perfil del usuario"/>
+                                            </td>
+                                            <td></td>
+                                            <td>
+                                                <strong>
+                                                    {valoracionHospedador?.nombre} de {valoracionHospedador?.residencia} 
+                                                </strong>
+                                                <br/>
+                                                <small>
+                                                    Registrado en {new Date(valoracionHospedador?.fechaReg).toLocaleDateString('es-ES', regFecha)}
+                                                </small>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

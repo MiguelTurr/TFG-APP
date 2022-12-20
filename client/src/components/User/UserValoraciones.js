@@ -5,6 +5,8 @@ import { crearAlerta } from '../Toast/Toast.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faLocationDot, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 
+import NoProfileImg from '../../img/no-profile-img.png';
+
 import Button from 'react-bootstrap/Button';
 
 var paginaHechasAlojamientos = 0;
@@ -20,9 +22,15 @@ function UserValoraciones() {
     //
     
     const [valoracionesAlo, setValoracionesAlo] = useState([]);
+
     const [valoracionesUser, setValoracionesUser] = useState([]);
+    const [sendUserImg, setSendUserImg] = useState([]);
+
     const [recibidasAlo, setRecibidasAlo] = useState([]);
+    const [recibidaAloImg, setRecibidaAloImg] = useState([]);
+
     const [recibidasUser, setRecibidasUser] = useState([]);
+    const [recibidaUserImg, setRecibidaUserImg] = useState([]);
 
     //
 
@@ -85,9 +93,28 @@ function UserValoraciones() {
 
         } else if(items.respuesta === 'correcto') {
             setValoracionesUser([...valoracionesUser, ...items.valoracion]);
+
+            const len = items.valoracion.length;
             
-            if(items.valoracion.length === 0) {
+            if(len === 0) {
                 btn.disabled = true;
+
+            } else {
+
+                var arrayImg = [];
+
+                for(var i = 0; i < len; i++) {
+                    
+                    const perfil = await fetch('/alojamiento/hospedador/foto/' +items.valoracion[i].userValoradoID, { method: 'GET' });
+
+                    if(perfil.status === 200) {
+                        arrayImg.push(perfil.url);
+
+                    } else {
+                        arrayImg.push(NoProfileImg);
+                    }
+                }
+                setSendUserImg([...sendUserImg, ...arrayImg]);
             }
         }
     };
@@ -113,6 +140,23 @@ function UserValoraciones() {
 
             if(len === 0) {
                 btn.disabled = true;
+
+            } else {
+    
+                var arrayImg = [];
+
+                for(var i = 0; i < len; i++) {
+                    
+                    const perfil = await fetch('/alojamiento/hospedador/foto/' +items.valoracion[i].usuarioID, { method: 'GET' });
+
+                    if(perfil.status === 200) {
+                        arrayImg.push(perfil.url);
+
+                    } else {
+                        arrayImg.push(NoProfileImg);
+                    }
+                }
+                setRecibidaAloImg([...recibidaAloImg, ...arrayImg]);            
             }
         }
     };
@@ -138,6 +182,23 @@ function UserValoraciones() {
 
             if(len === 0) {
                 btn.disabled = true;
+                
+            } else {
+    
+                var arrayImg = [];
+
+                for(var i = 0; i < len; i++) {
+                    
+                    const perfil = await fetch('/alojamiento/hospedador/foto/' +items.valoracion[i].usuarioID, { method: 'GET' });
+
+                    if(perfil.status === 200) {
+                        arrayImg.push(perfil.url);
+
+                    } else {
+                        arrayImg.push(NoProfileImg);
+                    }
+                }
+                setRecibidaUserImg([...recibidaUserImg, ...arrayImg]);            
             }
         }
     };
@@ -194,7 +255,7 @@ function UserValoraciones() {
                         {
                             valoracionesAlo.map((x, index) => (
 
-                                <tr key={index} className="tabla-seleccion" onClick={() => { window.location.href = '/alojamiento/ver?casa=' +x.alojamientoID }}>
+                                <tr key={index} className="tabla-seleccion" onClick={() => { window.location.href = '/alojamiento/ver?casa=' +x.alojamientoID }} style={{ verticalAlign: 'middle' }}>
 
                                     <td>
                                         <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green' }} /> {x.ubicacion}
@@ -240,29 +301,48 @@ function UserValoraciones() {
                     <h5 style={ valoracionesUser.length === 0 ? {} : { display: 'none' }}>
                         No has valorado ningún usuario.
                     </h5>
-                    
-                    <table className="table">   
-                        <tbody>
-                        {
-                            valoracionesUser.map((x, index) => (
 
-                                <tr key={index} className="tabla-seleccion" onClick={() => { window.location.href = '/usuario/ver/' +x.userValoradoID }}>
+                    <div className="table-responsive">
+                        <table className="table">   
+                            <tbody>
+                            {
+                                valoracionesUser.map((x, index) => (
 
-                                    <td>
-                                        <strong>{x.nombre}</strong> de {x.residencia}
-                                        <br/>
-                                        Registrado en {new Date(x.fechaReg).toLocaleDateString('es-ES', fechaOptions)}
-                                    </td>
+                                    <tr key={index} className="tabla-seleccion" onClick={() => { window.location.href = '/usuario/ver/' +x.userValoradoID }} style={{ verticalAlign: 'middle' }}>
 
-                                    <td>
-                                        {new Date(x.creadoEn).toLocaleDateString('es-ES', fechaOptions)}<br/>
-                                        <strong>{x.mensaje}</strong>
-                                    </td> 
-                                </tr> 
-                            ))
-                        }
-                        </tbody>
-                    </table>
+                                        <td style={ x.tipo === 0 ? { } : { display: 'none' }}>
+                                            <span style={{backgroundColor: '#50d932', padding: '6px', borderRadius: '10px', fontWeight: 'bold', color: 'white' }}>
+                                                Positiva
+                                            </span>
+                                        </td> 
+
+                                        <td style={ x.tipo !== 0 ? { } : { display: 'none' }}>
+                                            <span style={{backgroundColor: '#ff2c2c', padding: '6px', borderRadius: '10px', fontWeight: 'bold', color: 'white' }}>
+                                                Negativa
+                                            </span>
+                                        </td>   
+
+                                        <td className="text-center">
+                                            <img
+                                                className="rounded-pill"
+                                                width="50%"
+                                                key={index}
+                                                src={sendUserImg[index]}
+                                            />
+                                            <br/>
+                                            <strong>{x.nombre}</strong>
+                                        </td>
+
+                                        <td>
+                                            {new Date(x.creadoEn).toLocaleDateString('es-ES', fechaOptions)}<br/>
+                                            <strong>{x.mensaje}</strong>
+                                        </td> 
+                                    </tr> 
+                                ))
+                            }
+                            </tbody>
+                        </table>
+                    </div>
 
                     <div className="text-center" style={ valoracionesUser.length > 0 ? {} : { display: 'none' }}>
                         <Button className="filtros-botones" onClick={() => { obtenerUsuariosHechas(++paginaHechasUsuarios) }} id="mas-hechas-2">
@@ -309,11 +389,15 @@ function UserValoraciones() {
                                         <FontAwesomeIcon icon={faStar}/> {x.valoracionMedia} <span className="text-muted">({x.vecesValorado})</span>
                                     </td>
 
-                                    <td className="tabla-seleccion" onClick={() => { window.location.href = '/usuario/ver/' +x.alojamientoID }}>
-                                        <strong>{x.nombre}</strong> de {x.residencia}
-                                        <br/>
-                                        Registrado en {new Date(x.fechaReg).toLocaleDateString('es-ES', fechaOptions)}
-                                    </td> 
+                                    <td className="text-center tabla-seleccion" onClick={() => { window.location.href = '/usuario/ver/' +x.usuarioID }} style={{ width: '7%' }}>
+                                        <img
+                                            className="img-fluid rounded-pill"
+                                            key={index}
+                                            src={recibidaAloImg[index]}
+                                        />
+                                        <br />
+                                        <strong>{x.nombre}</strong>
+                                    </td>
 
                                     <td>
                                         {new Date(x.creadaEn).toLocaleDateString('es-ES', fechaOptions)}<br/>
@@ -352,35 +436,35 @@ function UserValoraciones() {
 
                                 <tr key={index}  style={{ verticalAlign: 'middle' }} className="tabla-seleccion" onClick={() => { window.location.href = '/usuario/ver/' +x.usuarioID }}>
 
-                                    <td style={ x.sinLeer === 0 ? { } : { display: 'none' }}>
-                                        <span style={{backgroundColor: '#476cff', padding: '6px', borderRadius: '10px', fontWeight: 'bold', color: 'white' }}>
+                                    <td>
+                                        <span style={{backgroundColor: '#476cff', padding: '6px', borderRadius: '10px', fontWeight: 'bold', color: 'white', display: x.sinLeer === 0 ? '' : 'none' }}>
                                             Nueva
                                         </span>
-                                    </td> 
 
-                                    <td style={ x.sinLeer !== 0 ? { } : { display: 'none' }}>
-                                        <span style={{backgroundColor: '#ff962c', padding: '6px', borderRadius: '10px', fontWeight: 'bold', color: 'white' }}>
+                                        <span style={{backgroundColor: '#ff962c', padding: '6px', borderRadius: '10px', fontWeight: 'bold', color: 'white', display: x.sinLeer !== 0 ? '' : 'none' }}>
                                             Vista
                                         </span>
-                                    </td> 
 
-                                    <td>
-                                        <strong>{x.nombre}</strong> de {x.residencia}
-                                        <br/>
-                                        Registrado en {new Date(x.fechaReg).toLocaleDateString('es-ES', fechaOptions)}
-                                    </td>
+                                        &nbsp;&nbsp;
 
-                                    <td style={ x.tipo === 0 ? { } : { display: 'none' }}>
-                                        <span style={{backgroundColor: '#50d932', padding: '6px', borderRadius: '10px', fontWeight: 'bold', color: 'white' }}>
+                                        <span style={{backgroundColor: '#50d932', padding: '6px', borderRadius: '10px', fontWeight: 'bold', color: 'white', display: x.tipo === 0 ? '' : 'none' }}>
                                             Positiva
                                         </span>
-                                    </td> 
 
-                                    <td style={ x.tipo !== 0 ? { } : { display: 'none' }}>
-                                        <span style={{backgroundColor: '#ff2c2c', padding: '6px', borderRadius: '10px', fontWeight: 'bold', color: 'white' }}>
+                                        <span style={{backgroundColor: '#ff2c2c', padding: '6px', borderRadius: '10px', fontWeight: 'bold', color: 'white', display: x.tipo !== 0 ? '' : 'none'  }}>
                                             Negativa
                                         </span>
-                                    </td> 
+                                    </td>           
+
+                                    <td className="text-center" style={{ width: '7%' }}>
+                                        <img
+                                            className="img-fluid rounded-pill"
+                                            key={index}
+                                            src={recibidaUserImg[index]}
+                                        />
+                                        <br />
+                                        <strong>{x.nombre}</strong>
+                                    </td>
 
                                     <td>
                                         {new Date(x.creadoEn).toLocaleDateString('es-ES', fechaOptions)}<br/>

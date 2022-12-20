@@ -19,11 +19,16 @@
  */
 
 .user-btn-no {
-    
-    background-color: #ffe841 !important;
-    border: 1px solid black !important;
+    /*background-color: #ffe841 !important;*/
+    background-color: #4741ff !important;
+    /*border: 1px solid black !important;*/
 
     border-radius: 15px;
+}
+
+.user-btn-no:hover {
+    background-color: #3531bf !important;
+    border-color: black !important;
 }
 
 .user-col {
@@ -40,7 +45,7 @@
     margin-left: 1px;
     font-size: 20px;
 
-    color: black;
+    color: white;
     vertical-align: middle;
 }
 
