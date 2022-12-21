@@ -6,9 +6,10 @@ import { crearAlerta } from '../Toast/Toast.js';
 import ToolTipRec from './ToolTipRec';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar, faLocationDot, faHandSparkles } from '@fortawesome/free-solid-svg-icons';
+import { faStar, faLocationDot, faHandSparkles, faHeart } from '@fortawesome/free-solid-svg-icons';
 
 import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
 
 function Recomendaciones() {
 
@@ -82,17 +83,21 @@ function Recomendaciones() {
     return (
         <div className="container-fluid mb-5">
 
+            <h4 style={{ fontWeight: 'bold' }}>
+
+                <ToolTipRec> </ToolTipRec>
+
+                &nbsp;
+                RECOMENDADOS
+
+                <Button className="filtros-botones" size="sm" href='/perfil/favoritos' style={{ float: 'right' }}>
+                    <FontAwesomeIcon icon={faHeart} /> Favoritos
+                </Button>
+            </h4>
+
+            <hr />
+
             <div className="row">
-
-                <h4 style={{ fontWeight: 'bold' }}>
-
-                    <ToolTipRec> </ToolTipRec>
-
-                    &nbsp;
-                    RECOMENDADOS
-                </h4>
-
-                <hr />
 
                 <h4 style={alojamientos.length === 0 ? {} : { display: 'none' } }>
                     Debes explorar más lugares para que podamos hacer alguna recomendación.
@@ -135,14 +140,17 @@ function Recomendaciones() {
 
                     ))
                 }
+            </div>
 
-                <hr />
+            <hr />
 
-                <h4 style={{ fontWeight: 'bold' }}>
-                    <FontAwesomeIcon icon={faHandSparkles}/> NUEVAS EXPERIENCIAS
-                </h4>
+            <h4 style={{ fontWeight: 'bold' }}>
+                <FontAwesomeIcon icon={faHandSparkles}/> NUEVAS EXPERIENCIAS
+            </h4>
 
-                <hr />
+            <hr />
+            
+            <div className="row">
 
                 <h4 style={nuevasExperiencias.length === 0 ? {} : { display: 'none' } }>
                     Debes explorar más lugares para que podamos hacer alguna recomendación.

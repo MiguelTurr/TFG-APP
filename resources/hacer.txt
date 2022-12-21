@@ -56,6 +56,11 @@ https://www.npmjs.com/package/@paypal/checkout-server-sdk
 https://www.npmjs.com/package/react-paypal-button-v2
 https://developer.paypal.com/home
 
+PDF GENERADOR
+https://www.npmjs.com/package/pdfkit
+http://pdfkit.org/docs/text.html
+http://pdfkit.org/demo/browser.html
+
 https://raw.githubusercontent.com/russ666/all-countries-and-cities-json/master/countries.json
 
 

@@ -672,12 +672,12 @@ function VerAlojamiento() {
                         </div>
                     </div>
 
-                    <div className="row mt-3" style={ alojamiento.animales === true ? {} : { display: 'none' }}>
+                    <div className="row mt-3" style={ alojamiento.mascotas ? {} : { display: 'none' }}>
                         <div className="col">
                             Mascotas
                         </div>
                         <div className="col">
-                            <Button id="mascota-resta" disabled={reservaInfo.mascotas <= 1} className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
+                            <Button id="mascotas-resta" disabled={reservaInfo.mascotas <= 1} className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
                                 <FontAwesomeIcon icon={faMinus} style={{ color: 'black' }} />
                             </Button>
                         </div>
@@ -687,7 +687,7 @@ function VerAlojamiento() {
                             </h5>
                         </div>
                         <div className="col">
-                            <Button id="mascota-suma" className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
+                            <Button id="mascotas-suma" disabled={reservaInfo.mascotas >= 3} className="rounded-pill btn-plus-minus" size="sm" onClick={botonesSumaResta}>
                                 <FontAwesomeIcon icon={faPlus} style={{ color: 'black' }} />
                             </Button>
                         </div>

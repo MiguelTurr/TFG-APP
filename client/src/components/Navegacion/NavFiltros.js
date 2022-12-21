@@ -87,29 +87,30 @@ function NavFiltros({ fav, rec }) {
 
                     <strong>Ordenar por:&nbsp;</strong>
 
-                    <div className="btn-group" role="group">
-                        
                         <Button className="filtros-botones" size="sm" onClick={() => { ordenarPor('fecha'); }}>
-                            <FontAwesomeIcon icon={faCalendarDays} /> Fecha 
-                            <span style={ordenar.orden === 'fecha' ? {} : { display: 'none' } }>
+                            <FontAwesomeIcon icon={faCalendarDays} /> Fecha
+                            <span style={ordenar.orden === 'fecha' ? {} : { display: 'none' }}>
                                 &nbsp;<FontAwesomeIcon icon={flecha} />
                             </span>
                         </Button>
+
+                        &nbsp;
 
                         <Button className="filtros-botones" size="sm" onClick={() => { ordenarPor('relevancia'); }}>
                             <FontAwesomeIcon icon={faChartSimple} /> Relevancia
-                            <span style={ordenar.orden === 'relevancia' ? {} : { display: 'none' } }>
+                            <span style={ordenar.orden === 'relevancia' ? {} : { display: 'none' }}>
                                 &nbsp;<FontAwesomeIcon icon={flecha} />
                             </span>
                         </Button>
 
+                        &nbsp;
+
                         <Button className="filtros-botones" size="sm" onClick={() => { ordenarPor('precio'); }}>
                             <FontAwesomeIcon icon={faDollarSign} /> Precio
-                            <span style={ordenar.orden === 'precio' ? {} : { display: 'none' } }>
+                            <span style={ordenar.orden === 'precio' ? {} : { display: 'none' }}>
                                 &nbsp;<FontAwesomeIcon icon={flecha} />
                             </span>
                         </Button>
-                    </div>
 
                 </div>
 
@@ -123,16 +124,15 @@ function NavFiltros({ fav, rec }) {
                 <div className={window.innerWidth < 600 ? "" : "col filtros-derecha"}>
                     <strong>Ir a:&nbsp;</strong>
 
-                    <div className="btn-group" role="group">
-                        
-                        <Button className="filtros-botones" size="sm" onClick={() => { fav() }}>
-                            <FontAwesomeIcon icon={faHeart} /> Favoritos
-                        </Button>
+                    <Button className="filtros-botones" size="sm" onClick={fav}>
+                        <FontAwesomeIcon icon={faHeart} /> Favoritos
+                    </Button>
 
-                        <Button className="filtros-botones" size="sm" onClick={() => { rec() }}>
-                            <FontAwesomeIcon icon={faComputer} /> Recomendados
-                        </Button>
-                    </div>
+                        &nbsp;
+
+                    <Button className="filtros-botones" size="sm" onClick={rec}>
+                        <FontAwesomeIcon icon={faComputer} /> Recomendados
+                    </Button>
 
                 </div>
             </div>

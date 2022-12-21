@@ -5,9 +5,10 @@ import { useEffect, useState } from 'react';
 import ToolTipFav from './ToolTipFav.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar, faLocationDot, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { faStar, faLocationDot, faHeart, faComputer } from '@fortawesome/free-solid-svg-icons';
 
 import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
 
 function Favoritos() {
 
@@ -57,18 +58,21 @@ function Favoritos() {
 
     return ( 
         <div className="container-fluid mb-5">
+            <h4 style={{ fontWeight: 'bold' }}>
+
+                <ToolTipFav> </ToolTipFav>
+
+                &nbsp;
+                TUS FAVORITOS
+
+                <Button className="filtros-botones" size="sm" href="/perfil/recomendados" style={{ float: 'right' }}>
+                    <FontAwesomeIcon icon={faComputer} /> Recomendados
+                </Button>
+            </h4>
+
+            <hr/>
 
             <div className="row">
-
-                <h4 style={{ fontWeight: 'bold' }}>
-
-                    <ToolTipFav> </ToolTipFav>
-
-                    &nbsp;
-                    TUS FAVORITOS
-                </h4>
-
-                <hr/>
 
                 <h4 style={alojamientos.length === 0 ? {} : { display: 'none' } }>
                     No has añadido ningún alojamiento a favoritos.

@@ -8,9 +8,12 @@ import { crearAlerta } from '../Toast/Toast.js';
 //import userLogin from '../../js/autorizado';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowDown, faLocationDot, faPen, faStar, faMagnifyingGlass, faBan, faCheck, faMessage, faCalendar } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown, faArrowUp, faLocationDot, faPen, faStar, faMagnifyingGlass, faBan, faCheck, faMessage, faCalendar, faDownload } from '@fortawesome/free-solid-svg-icons';
 
 import Button from 'react-bootstrap/Button';
+
+var totalGanancias = [];
+const cantidadColumnas = 5;
 
 function UserReservas() {
 
@@ -20,7 +23,8 @@ function UserReservas() {
     const [alojamientosActivos, setAlojamientosActivos] = useState([]);
     const [alojamientosInactivos, setAlojamientosInactivos] = useState(null);
 
-    const [ganancias, setGanancias] = useState([]);
+    const [ganancias, setGanancias] = useState({});
+    const [gananciasInfo, setGananciasInfo] = useState([]);
 
     //
 
@@ -68,7 +72,10 @@ function UserReservas() {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
         } else if(items.respuesta === 'correcto') {
-            setGanancias(items.ganancias);
+            setGanancias(items.mesInfo);
+
+            setGananciasInfo(items.reservasInfo.splice(0, cantidadColumnas));
+            totalGanancias = items.reservasInfo;
         }
     };
 
@@ -173,6 +180,7 @@ function UserReservas() {
 
         //
 
+        // HACER
         console.log(index+ ' ' +userValoracion);
     };
 
@@ -285,6 +293,71 @@ function UserReservas() {
 
             setAlojamientosActivos(array);
         }
+    };
+
+    //
+
+    const obtenerMesAnterior = () => {
+        obtenerGanancias(ganancias.mesAnteriorNumero+ '-' +ganancias.yearAnteriorNumero);
+    }
+
+    const obtenerMesSiguiente = () => {
+        obtenerGanancias(ganancias.mesSiguienteNumero+ '-' +ganancias.yearSiguienteNumero);
+    }
+
+    const descargarFactura = async () => {
+
+        var totalArray = gananciasInfo.concat(totalGanancias);
+
+        const desactivarBtn = document.getElementById('descargar-btn');
+        desactivarBtn.disabled = true;
+
+        const data = await fetch('/perfil/mis-ganancias/descargar', 
+        { 
+            method: 'POST',
+
+            body: JSON.stringify({
+                mesNombre: ganancias.mes,
+                mesYear: ganancias.year,
+
+                primerDia: ganancias.primerDia,
+                ultimoDia: ganancias.ultimoDia,
+
+                reservas: totalArray,
+
+                totalGanancias: ganancias.totalGanancias,
+
+                //
+
+                clienteNombre: ganancias.clienteNombre,
+                clienteResidencia: ganancias.clienteResidencia,
+            }),
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if(data.status === 200) {
+            const items = await data.blob();
+
+            var a = document.createElement("a");
+            a.href = window.URL.createObjectURL(items);
+            a.download = ganancias?.mes+ '-' +ganancias?.year+ '.pdf';
+            a.click();
+        }
+
+        desactivarBtn.disabled = false;
+    };
+
+    const mostrarMasGanancias = () => {
+        setGananciasInfo([...gananciasInfo, ...totalGanancias]);
+        totalGanancias = [];
+    };
+
+    const mostrarMenosGanancias = () => {
+        setGananciasInfo(gananciasInfo.splice(0, cantidadColumnas));
+        totalGanancias = gananciasInfo;
     };
 
     //
@@ -582,16 +655,138 @@ function UserReservas() {
 
             <div style={ reservasVista === 'ganancias' ? {} : { display: 'none' } }>
 
-                <Button className="filtros-botones" size="sm" onClick={console.log('a')}>
-                    <FontAwesomeIcon icon={faCalendar} /> Mostrar Noviembre
+                <h4 style={{ fontWeight: 'bold' }}> 
+                    {ganancias?.mes} DE {ganancias?.year}
+                </h4>
+
+                <small className="text-muted">
+                    {ganancias?.primerDia} - {ganancias?.ultimoDia}
+                </small>
+
+                <Button className="borrar-botones" size="sm" style={{ float: 'right', display: ganancias?.reservas === 0 ? 'none' : '' }} onClick={descargarFactura} id="descargar-btn">
+                    <FontAwesomeIcon icon={faDownload} /> Descargar como .pdf
                 </Button>
 
                 <hr />
 
-                <h4 style={{ fontWeight: 'bold' }}> 
-                    MES:
-                </h4>
+                <div className="row" style={ ganancias?.reservas === 0 ? { } : { display: 'none' }}>
+                    <div className="col">
+                        <h4>
+                            No hay datos sobre este mes.
+                        </h4>
 
+                        <hr/>
+                    </div>
+                </div>
+
+                <div className="row" style={ ganancias?.reservas > 0 ? { } : { display: 'none' }}>
+                    <div className="col">
+
+                        <table className="table">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        ID:
+                                    </td>
+                                    <td>
+                                        {ganancias?.clienteID}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Cliente:
+                                    </td>
+                                    <td>
+                                        {ganancias?.clienteNombre}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Reservas:
+                                    </td>
+                                    <td>
+                                        {ganancias?.reservas}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div className={window.innerWidth < 600 ? '' : "col"}>
+
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <td>
+                                        ID
+                                    </td>
+                                    <td>
+                                        Info
+                                    </td>
+                                    <td>
+                                        Coste
+                                    </td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    gananciasInfo?.map((x, index) => (
+                                        <tr key={index}>
+                                            <td>
+                                                {x.ID}
+                                            </td>
+                                            <td>
+                                                <small className="text-muted">
+                                                    {x.dias} noches x {x.precioBase}€
+                                                </small>
+                                            </td>
+                                            <td>
+                                                {x.costeTotal}€
+                                            </td>
+                                        </tr>
+                                    ))
+                                }
+
+                                <tr style={totalGanancias.length !== 0 ? {} : { display: 'none' }}>
+                                    <td>...</td>
+                                    <td>...</td>
+                                    <td>...</td>
+                                </tr>
+
+                                <tr style={{ fontWeight: 'bold' }}>
+                                    <td>
+                                        Total:
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                        {ganancias?.totalGanancias}€
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                                
+                        <div className="text-center">
+                            <Button className="filtros-botones text-center" size="sm" onClick={mostrarMasGanancias} style={totalGanancias.length !== 0 ? {} : { display: 'none' }}>
+                                <FontAwesomeIcon icon={faArrowDown} /> Mostrar todo
+                            </Button>
+
+                            <Button className="filtros-botones text-center" size="sm" onClick={mostrarMenosGanancias} style={totalGanancias.length === 0 && gananciasInfo?.length > cantidadColumnas ? {} : { display: 'none' }}>
+                                <FontAwesomeIcon icon={faArrowUp} /> Mostrar menos
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
+                <Button className="filtros-botones" size="sm" onClick={obtenerMesAnterior}>
+                    <FontAwesomeIcon icon={faCalendar} /> {ganancias?.mesAnterior} DE {ganancias?.yearAnteriorNumero}
+                </Button>
+
+                &nbsp;&nbsp;
+
+                <Button className="crear-botones" size="sm" style={ ganancias?.mesSiguiente !== '' ? {} : { display: 'none' }} onClick={obtenerMesSiguiente}>
+                    <FontAwesomeIcon icon={faCalendar} /> {ganancias?.mesSiguiente} DE {ganancias?.yearSiguienteNumero}
+                </Button>
 
             </div>
 
