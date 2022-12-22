@@ -366,7 +366,7 @@ function UserChats() {
                         </span>
 
                         <span style={{ fontWeight: 'bold', textAlign: 'center', fontSize: '1em' }}>
-                            {chats[chatIndex]?.nombre.toUpperCase()}
+                            {chats[chatIndex]?.nombre.toUpperCase()} <br/> <small className="text-muted">{chats[chatIndex]?.ultimaConexion}</small>
                         </span>
 
                         <hr/>

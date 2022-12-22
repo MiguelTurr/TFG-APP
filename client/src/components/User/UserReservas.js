@@ -180,8 +180,15 @@ function UserReservas() {
 
         //
 
-        // HACER
-        console.log(index+ ' ' +userValoracion);
+        const array = [...alojamientosActivos];
+
+        array[index].estado.puedeValorar = false;
+        array[index].estado.texto = 'Valorada';
+        array[index].estado.color = '#c22bff'; // MORADO
+
+        array[index].userValoracion = userValoracion;
+
+        setAlojamientosActivos(array);
     };
 
     //

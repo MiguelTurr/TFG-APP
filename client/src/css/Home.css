@@ -1,6 +1,10 @@
 .container-casa {
     cursor: pointer;
 }
+/*
+.container-casa:hover {
+    opacity: 90%;
+}*/
 
 .derecha-casa {
     width: 50%;

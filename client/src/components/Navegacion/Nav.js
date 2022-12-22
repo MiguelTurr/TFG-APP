@@ -125,7 +125,7 @@ function Nav() {
 
     const cerrarSesion = async () => {
 
-        const data = await fetch('/logout', { 
+        const data = await fetch('/cuenta/logout', { 
             method: 'POST',
             
             headers: {

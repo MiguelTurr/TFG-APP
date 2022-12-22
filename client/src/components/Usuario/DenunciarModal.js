@@ -23,7 +23,7 @@ const DenunciaModal = ({ mostrar, funcionCerrar }) => {
         var desactivarBtn = document.getElementById('denuncia-btn');
         desactivarBtn.disabled = true;
 
-        const data = await fetch('/usuario/denuncia', { 
+        const data = await fetch('/cuenta/denunciar', { 
             method: 'POST',
 
             body: JSON.stringify({ 
@@ -41,12 +41,6 @@ const DenunciaModal = ({ mostrar, funcionCerrar }) => {
 
         if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error en la base de datos!');
-
-        } else if(items.respuesta === 'err_datos') {
-            crearAlerta('error', '¡Los datos introducidos son incorrectos!');
-
-        } else if(items.respuesta === 'err_validado') {
-            crearAlerta('error', '¡Mira tu correo para validar la cuenta!');
 
         } else {
             crearAlerta('exito', '¡Denuncia enviada!');

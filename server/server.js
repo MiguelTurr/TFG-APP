@@ -59,6 +59,8 @@ const comprobarToken = (req, _, next) => {
             const decoded = jwt.verify(token, cookie_secret);
             req.userId = decoded.id;
 
+            mysql.query('UPDATE usuarios SET ultimaConexion=NOW() WHERE ID=?', decoded.id);
+
         } catch (err) {
         }
     }
@@ -67,17 +69,6 @@ const comprobarToken = (req, _, next) => {
 };
 
 //
-
-server.get('/cookies/aceptar', (req, res) => {
-
-    res.status(200).cookie('cookiesAceptadas', true, {
-        httpOnly: false,
-        expires: new Date(Date.now() + 31536000000),
-        secure: false,
-        sameSite: true
-    }).end();
-
-});
 
 server.post('/registrar', async (req, res) => {
 
@@ -190,11 +181,6 @@ server.post('/login', (req, res) => {
                 nombre: result[0].nombre
             });
     });
-});
-
-server.post('/logout', comprobarToken, (req, res) => {
-    res.status(200).clearCookie("token");
-    res.end();
 });
 
 server.post('/noPassword', (req, res) => {
@@ -968,8 +954,8 @@ server.post('/perfil/mis-alojamientos/borrar', comprobarToken, (req, res) => {
         }
 
         // HACER
-        
-        console.log(req.body);
+
+        console.log('BORRAR ALOJAMIENTO');
         res.status(200).json({ respuesta: 'correcto' });
     });
 });
@@ -1952,7 +1938,7 @@ server.get('/perfil/mis-chats', comprobarToken, (req, res) => {
         return;
     }
 
-    mysql.query(`SELECT chat.*, usu.nombre FROM usuarios_chats as chat 
+    mysql.query(`SELECT chat.*,usu.nombre,usu.ultimaConexion FROM usuarios_chats as chat 
         INNER JOIN usuarios as usu ON usu.ID!=? AND (chat.usuario1=usu.ID OR chat.usuario2=usu.ID)
         WHERE chat.usuario1=? OR chat.usuario2=?
         ORDER BY chat.nuevoEn DESC`, [req.userId, req.userId, req.userId], async function(err, result) {
@@ -1983,10 +1969,23 @@ server.get('/perfil/mis-chats', comprobarToken, (req, res) => {
             var fechaFin = new Date(result[i].nuevoEn).getTime();
             var diff = utils.diasEntreFechas(fechaFin, fechaHoy);
 
+            var ultimaConexion = new Date(result[i].ultimaConexion);
+            var ultimaVez = utils.diasEntreFechas(ultimaConexion.getTime(), fechaHoy);
+
+            var textoUltimaConexion = '';
+
+            if(ultimaVez <= 1) {
+                textoUltimaConexion = 'Hoy a las ' + ultimaConexion.toLocaleTimeString('es-Es', { hour: '2-digit', minute: '2-digit'});
+
+            } else {
+                textoUltimaConexion = ultimaConexion.toLocaleDateString('es-Es', { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit'});
+            }
+
             var objeto = {
                 chatID: result[i].ID,
                 hablarID: result[i].usuario1 === req.userId ? result[i].usuario2 : result[i].usuario1,
                 nombre: result[i].nombre,
+                ultimaConexion: textoUltimaConexion,
                 fecha: result[i].nuevoEn,
                 hoy: diff <= 1 ? true : false,
                 sinLeer: mensaje[0].emisorID === req.userId ? 0 : result[i].nuevosMensajes,
@@ -2841,10 +2840,10 @@ server.post('/buscar', comprobarToken, (req, res) => {
     var queryStr = '';
 
     if (req.userId == undefined) {
-        queryStr += 'SELECT * FROM alojamientos as alo ';
+        queryStr = 'SELECT * FROM alojamientos as alo WHERE alo.usuarioID!=0 ';
 
     } else {
-        queryStr += 'SELECT alo.*, fav.ID as favorito FROM `alojamientos` as alo ';
+        queryStr = 'SELECT alo.*, fav.ID as favorito FROM `alojamientos` as alo ';
         queryStr += 'LEFT JOIN `usuarios_favoritos` as fav ON fav.alojamientoID=alo.ID AND fav.usuarioID=' + req.userId + ' ';
         queryStr += 'WHERE alo.usuarioID!=' + req.userId + ' ';
     }
@@ -2879,6 +2878,7 @@ server.post('/buscar', comprobarToken, (req, res) => {
         
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
+            console.log(err);
             console.log(err.message);
             return;
         }
@@ -2892,7 +2892,7 @@ server.post('/home', comprobarToken, (req, res) => {
     var queryStr = '';
 
     if (req.userId == undefined) {
-        queryStr += 'SELECT * FROM alojamientos as alo ';
+        queryStr += 'SELECT * FROM alojamientos as alo WHERE alo.usuarioID!=0 ';
 
     } else {
         queryStr += 'SELECT alo.*, fav.ID as favorito FROM `alojamientos` as alo ';
@@ -2965,3 +2965,9 @@ server.post('/alojamientos/filtros', (req, res) => {
         res.status(200).json({ respuesta: 'correcto', cantidad: result === undefined ? 0 : result.length });
     });
 });
+
+//
+
+server.use('/birds', comprobarToken, require('./routes/home'));
+server.use('/cookies', require('./routes/cookies'));
+server.use('/cuenta', comprobarToken, require('./routes/cuenta'));
