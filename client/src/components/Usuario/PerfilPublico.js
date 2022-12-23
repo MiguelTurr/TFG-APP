@@ -447,7 +447,8 @@ function PerfilPublico() {
                     <ul className="lista-sin-numeros mt-3">
                         {
                             userValoraciones.map((x, index) => (
-                                <li>
+
+                                <li key={index}>
                                     <span style={{ fontWeight: 'bold' }}>
                                         <small className="text-muted">
                                             {new Date(x.creadoEn).toLocaleDateString('es-ES', regFecha)}

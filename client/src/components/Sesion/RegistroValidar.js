@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from 'react';
 
 function RegistroValidar() {
     const { id } = useParams();
@@ -15,7 +14,7 @@ function RegistroValidar() {
 
     const fetchValidar = async () => {
 
-        const data = await fetch('/validar/' +id, { method: 'GET' });
+        const data = await fetch('/cuenta/validar/' +id, { method: 'GET' });
         const items = await data.json();
 
         if(items.respuesta === 'err_db') {
@@ -37,8 +36,14 @@ function RegistroValidar() {
 
         <div className="container-fluid">
 
+            <h4 style={{ fontWeight: 'bold' }}>
+                Valida tu cuenta
+            </h4>
+
+            <hr/>
+
             <div className="row">
-                <div className="col-sm-5 mx-auto text-center">
+                <div className="col">
                     <h5>
                         {resultadoTexto}
                     </h5>

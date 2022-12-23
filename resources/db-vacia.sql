@@ -158,6 +158,7 @@ CREATE TABLE IF NOT EXISTS `usuarios_denuncias` (
 	`usuarioID` int NOT NULL,
 	`reportadoID` int NOT NULL,
 	`creadoEn` datetime NOT NULL default NOW(),
+	`razones` varchar(200) default '',
 	`mensaje` varchar(150) NOT NULL,
 
     CONSTRAINT FK_UsuarioReportante FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),

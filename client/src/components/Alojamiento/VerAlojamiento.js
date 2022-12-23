@@ -175,13 +175,13 @@ function VerAlojamiento() {
             return setShowLogin(true);
         }
 
-        var opcion = 'remove-favorito';
+        var opcion = 'borrar';
 
         if(alojamiento.favorito === null) {
-            opcion = 'add-favorito';
+            opcion = 'add';
         }
 
-        const data = await fetch('/alojamiento/' +opcion+ '/' +alojamiento.ID, {
+        const data = await fetch('/perfil/favoritos/' +opcion+ '/' +alojamiento.ID, {
             method: 'GET',
         
             headers: {

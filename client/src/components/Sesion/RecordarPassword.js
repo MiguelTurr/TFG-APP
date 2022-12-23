@@ -1,30 +1,30 @@
-import React from "react";
+import React, { useRef } from "react";
 
 import { crearAlerta } from '../Toast/Toast.js';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import Card from 'react-bootstrap/Card';
 
 function RecordarPassword() {
 
+    const correoElectronico = useRef();
+
     const recordarPassword = async (event) => {
         event.preventDefault();
-        
-        const email = document.getElementById('recordar-email').value;
 
-        if(email === '') {
-            return crearAlerta('error', '¡Escribe un correo!');
-        }
+        //
 
         const desactivarBtn = document.getElementById('recordar-btn');
         desactivarBtn.disabled = true;
 
-        const data = await fetch('/noPassword', { 
+        const data = await fetch('/cuenta/recordar-password', { 
             method: 'POST',
 
             body: JSON.stringify({ 
-                email: email
+                email: correoElectronico.current.value,
             }),
             
             headers: {
@@ -53,41 +53,41 @@ function RecordarPassword() {
         }
     };
 
+    //
+
     return (
         <div className="container-fluid">
+                    
+            <h4 style={{ fontWeight: 'bold' }}>
+                ¿Has olvidado tu contraseña?
+            </h4>
+
+            <hr/>
 
             <div className="row">
 
-                <div className="col-sm-3">
-                </div>
+                <div className="col-sm-4 mx-auto">
 
-                <div className="col">
+                    <Form onSubmit={recordarPassword}>
 
-                    <Card>
+                        <Form.Group className="mb-3" controlId="recordar-email">
+                            <Form.Label>Escribe el correo de tu cuenta:</Form.Label>
+                            <Form.Control type="email" placeholder="Correo" ref={correoElectronico} required/>
+                        </Form.Group>
 
-                        <Card.Header className="text-center">
-                            ¿Has olvidado tu contraseña?
-                        </Card.Header>
+                        <hr/>
 
-                        <Card.Body>
-                            <Form onSubmit={recordarPassword}>
+                        <div className="d-grid gap-2">      
+                            <Button type="submit" className="crear-botones" id='recordar-btn'>
+                                <FontAwesomeIcon icon={faPaperPlane} /> Enviar
+                            </Button>
+                        </div>
 
-                                <Form.Group className="mb-3" controlId="recordar-email">
-                                    <Form.Control type="email" placeholder="Escribe correo" />
-                                </Form.Group>
+                        <small className="text-muted">
+                            * Recibirás una nueva contraseña al correo.
+                        </small>
 
-                                <div className="d-grid gap-2">
-                                    <Button type="submit" variant="success" id='recordar-btn'>
-                                        Enviar
-                                    </Button>
-                                </div>
-
-                            </Form>
-                        </Card.Body>
-                    </Card>
-                </div>
-
-                <div className="col-sm-3">
+                    </Form>
                 </div>
 
             </div>

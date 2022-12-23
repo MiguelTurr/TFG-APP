@@ -21,18 +21,10 @@ function Home() {
 
     useEffect(() => {
         fetchItems(params.get("ordenar"), 0);
-        pruebaPrueba();
     }, [location.search]);
 
     const [alojamientos, setAlojamientos] = useState([]);
     const [imgAlojamientos, setImgAlojamientos] = useState([]);
-
-    const pruebaPrueba = async () => {
-        const data = await fetch('/birds/prueba', { method: 'GET' });
-        const items = await data.json();
-
-        console.log(items);
-    }
 
     const fetchItems = async (orden, contador) => {
 

@@ -120,7 +120,6 @@ const FiltrosModal = ({ mostrar, funcionCerrar }) => {
     };
 
     const borrarFiltros = () => {
-
         const url = window.location.href;
 
         history(url.substring('http://localhost:3000/'.length, url.search('&precio_min')));
@@ -130,7 +129,7 @@ const FiltrosModal = ({ mostrar, funcionCerrar }) => {
     //
 
     const alojamientosAprox = async () => {
-        const data = await fetch('/alojamientos/filtros', {
+        const data = await fetch('/filtrar/resultado', {
             method: 'POST',
 
             body: JSON.stringify({

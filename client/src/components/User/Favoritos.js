@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState }  from 'react';
 
-import { useEffect, useState } from 'react';
-
+import { crearAlerta } from '../Toast/Toast.js';
 import ToolTipFav from './ToolTipFav.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar, faLocationDot, faHeart, faComputer } from '@fortawesome/free-solid-svg-icons';
+import { faStar, faLocationDot, faHeart, faComputer, faBan } from '@fortawesome/free-solid-svg-icons';
 
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
@@ -25,6 +24,7 @@ function Favoritos() {
         const items = await data.json();
 
         if(items.respuesta === 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
         } else if(items.respuesta === 'correcto') {
             setAlojamientos(items.alojamientos);
@@ -56,6 +56,28 @@ function Favoritos() {
 
     //
 
+    const eliminarTodos = async () => {
+
+        if(window.confirm('¿Estás seguro?') === false) {
+            return;
+        }
+
+        const data = await fetch('/perfil/favoritos/borrar-todos', { method: 'GET' });
+        const items = await data.json();
+
+        if(items.respuesta === 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if(items.respuesta === 'correcto') {
+            crearAlerta('error', '¡Eliminados todos!');
+
+            setAlojamientos([]);
+            setImgAlojamientos([]);
+        }
+    };
+
+    //
+
     return ( 
         <div className="container-fluid mb-5">
             <h4 style={{ fontWeight: 'bold' }}>
@@ -65,9 +87,18 @@ function Favoritos() {
                 &nbsp;
                 TUS FAVORITOS
 
-                <Button className="filtros-botones" size="sm" href="/perfil/recomendados" style={{ float: 'right' }}>
+                <span style={{ float: 'right' }}>
+
+                <Button className="filtros-botones" size="sm" href="/perfil/recomendados">
                     <FontAwesomeIcon icon={faComputer} /> Recomendados
                 </Button>
+
+                &nbsp;
+
+                <Button className="borrar-botones" size="sm" onClick={eliminarTodos} style={ alojamientos.length !== 0 ? {} : { display: 'none' } }>
+                    <FontAwesomeIcon icon={faBan} /> Eliminar todos
+                </Button>
+                </span>
             </h4>
 
             <hr/>

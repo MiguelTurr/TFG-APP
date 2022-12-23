@@ -36,83 +36,8 @@ function Nav() {
 
     var [registroModal, setShowRegistro] = useState(false);
 
-    const mostrarRegistro= () => setShowRegistro(true);
+    const mostrarRegistro = () => setShowRegistro(true);
     const cerrarRegistro = () => setShowRegistro(false);
-
-    const enviarRegistro = async (event) => {
-        event.preventDefault();
-
-        const fechaNac = document.getElementById('reg-fechaNac').value;
-        const fechaHoy = new Date().getTime();
-        const fechaFinal = (fechaHoy - new Date(fechaNac).getTime()) / (1000 * 60 * 60 * 24 * 365);
-
-        if(fechaFinal < 18) {
-            return crearAlerta('error', '¡Debes tener más de 18 años!');
-        }
-
-        const password = document.getElementById('reg-password').value;
-        if(password.length < 5) {
-            return crearAlerta('error', '¡La contraseña debe tener al menos 5 caracteres!');
-        }
-
-        const passwordRepite = document.getElementById('reg-password-2').value;
-        if(password !== passwordRepite) {
-            return crearAlerta('error', '¡Las contraseñas no coinciden!');
-        }
-
-        const condiciones = document.getElementById('reg-condiciones').checked;
-        if(condiciones === false) {
-            return crearAlerta('error', '¡Acepta los términos y condiciones!');
-        }
-
-        const privacidad = document.getElementById('reg-privacidad').checked;
-        if(privacidad === false) {
-            return crearAlerta('error', '¡Acepta el aviso de privacidad!');
-        }
-
-        const nombre = document.getElementById('reg-nombre').value;
-        const apellidos = document.getElementById('reg-apellidos').value;
-        const email = document.getElementById('reg-email').value;
-        const numero = document.getElementById('reg-telefono').value;
-        const prefijo = document.getElementById('reg-prefijo').value;
-        const genero = document.getElementById('reg-genero').value;
-
-        //
-
-        var desactivarBtn = document.getElementById('reg-btn');
-        desactivarBtn.disabled = true;
-
-        const data = await fetch('/registrar', { 
-            method: 'POST',
-
-            body: JSON.stringify({ 
-                nombre: nombre,
-                apellidos: apellidos,
-                email: email,
-                password: password,
-                telefono: prefijo+ ' ' +numero,
-                genero: genero,
-                fechaNac: fechaNac
-            }),
-            
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
-
-        const items = await data.json();
-        desactivarBtn.disabled = false;
-
-        if(items.respuesta === 'err_db') {
-            crearAlerta('error', '¡Ha ocurrido un error en la base de datos!');
-
-        } else if(items.respuesta === 'err_email') {
-            crearAlerta('error', '¡Ese correo ya está en uso!');
-
-        } else {
-            crearAlerta('exito', 'Verifica tu cuenta en el correo electrónico');
-        }
-    };
 
     // LOGIN
 
@@ -170,7 +95,7 @@ function Nav() {
     const [valoraciones, setValoraciones] = useState(0);
 
     const cargarNovedades = async () => {
-        const data = await fetch('/perfil/nuevos-mensajes', { method: 'GET' });
+        const data = await fetch('/perfil/notificaciones', { method: 'GET' });
 
         if(data.status === 200) {
             const items = await data.json();
@@ -290,7 +215,7 @@ function Nav() {
             </div>
 
             <LoginModal mostrar={loginModal} funcionCerrar={cerrarLogin}/>
-            <RegistroModal mostrar={registroModal} funcionCerrar={cerrarRegistro} funcionRegistro={enviarRegistro} />
+            <RegistroModal mostrar={registroModal} funcionCerrar={cerrarRegistro} />
 
         </div>
 

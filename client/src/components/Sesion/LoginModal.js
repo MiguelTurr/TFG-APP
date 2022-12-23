@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useRef } from "react";
 
 import { crearAlerta } from '../Toast/Toast.js';
 import userLogin from '../../js/autorizado';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -9,25 +12,27 @@ import Form from 'react-bootstrap/Form';
 
 const Login = ({ mostrar, funcionCerrar }) => {
 
-    const { autorizado, setAutorizado } = userLogin();
+    const { setAutorizado } = userLogin();
+
+    const loginEmail = useRef();
+    const loginPassword = useRef();
 
     //
     
     const enviarLogin = async (event) => {
         event.preventDefault();
-        
-        const email = document.getElementById('log-email').value;
-        const password = document.getElementById('log-password').value;
+
+        //
 
         var desactivarBtn = document.getElementById('log-btn');
         desactivarBtn.disabled = true;
 
-        const data = await fetch('/login', { 
+        const data = await fetch('/cuenta/login', { 
             method: 'POST',
 
             body: JSON.stringify({ 
-                email: email,
-                password: password
+                email: loginEmail.current.value,
+                password: loginPassword.current.value,
             }),
             
             headers: {
@@ -73,19 +78,20 @@ const Login = ({ mostrar, funcionCerrar }) => {
                         <div className="col-sm-6 mx-auto">
 
                             <Form onSubmit={enviarLogin}>
-                                <Form.Group className="mb-3" controlId="log-email">
+
+                                <Form.Group className="mb-3">
                                     <Form.Label>Correo electrónico</Form.Label>
-                                    <Form.Control type="email" placeholder="Escribe correo" required />
+                                    <Form.Control type="email" placeholder="Escribe correo" ref={loginEmail} required />
                                 </Form.Group>
 
-                                <Form.Group className="mb-3" controlId="log-password">
+                                <Form.Group className="mb-3">
                                     <Form.Label>Contraseña</Form.Label>
-                                    <Form.Control type="password" placeholder="Escribe contraseña" required />
+                                    <Form.Control type="password" placeholder="Escribe contraseña" ref={loginPassword} required />
                                 </Form.Group>
                             
                                 <div className="d-grid gap-2">
-                                    <Button type="submit" variant="success" id="log-btn">
-                                        Iniciar sesión
+                                    <Button type="submit" className="crear-botones" id="log-btn">
+                                        <FontAwesomeIcon icon={faRightToBracket} /> Iniciar sesión
                                     </Button>
 
                                     <hr/>
