@@ -47,7 +47,7 @@ const ValorarModal = ({ valoraciones, funcionCerrar }) => {
             return;
         }
 
-        const data = await fetch('/perfil/valoracion-cliente/ver/' + valoraciones.userValoracion, { method: 'GET' });
+        const data = await fetch('/perfil/mis-reservas/valoracion-cliente/' + valoraciones.userValoracion, { method: 'GET' });
         const items = await data.json();
 
         if (items.respuesta === 'correcto') {
@@ -68,7 +68,7 @@ const ValorarModal = ({ valoraciones, funcionCerrar }) => {
             return;
         }
 
-        const data = await fetch('/perfil/valoracion-hospedador/ver/' + valoraciones.hospedadorValoracion, { method: 'GET' });
+        const data = await fetch('/perfil/mis-reservas/valoracion-hospedador/' + valoraciones.hospedadorValoracion, { method: 'GET' });
         const items = await data.json();
 
         if (items.respuesta === 'correcto') {

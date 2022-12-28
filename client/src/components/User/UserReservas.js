@@ -63,7 +63,7 @@ function UserReservas() {
     };
 
     const obtenerGanancias = async (mes) => {
-        const data = await fetch('/perfil/mis-reservas/ganancias/' +mes, { method: 'GET' });
+        const data = await fetch('/perfil/mis-ganancias/' +mes, { method: 'GET' });
         const items = await data.json();
 
         if(items.respuesta === 'err_user') {

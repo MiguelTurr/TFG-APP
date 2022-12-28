@@ -78,8 +78,9 @@ function ValorarModalInquilino({ infoHuesped, funcionCerrar, valoracionCorrecto 
         const btnDesactivar = document.getElementById('huesped-valoracion');
         btnDesactivar.disabled = true;
 
-        const data = await fetch('/perfil/valorar/inquilino', {
+        const data = await fetch('/usuario/valorar/', {
             method: 'POST',
+            
             body: JSON.stringify({
                 reservaID:  infoHuesped.reservaID,
                 usuarioID: infoHuesped.usuarioID,

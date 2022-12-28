@@ -35,7 +35,7 @@ const DenunciaModal = ({ mostrar, funcionCerrar }) => {
         var desactivarBtn = document.getElementById('denuncia-btn');
         desactivarBtn.disabled = true;
 
-        const data = await fetch('/denunciar', { 
+        const data = await fetch('/usuario/denunciar', { 
             method: 'POST',
 
             body: JSON.stringify({ 

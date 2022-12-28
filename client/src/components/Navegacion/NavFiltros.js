@@ -22,7 +22,7 @@ function NavFiltros({ fav, rec }) {
     const location = window.location.href;
     const finalLocation = location.substring('http://localhost:3000/'.length);
 
-    if(finalLocation !== ''
+    if (finalLocation !== ''
         && finalLocation.includes('home') === false
         && finalLocation.includes('buscar') === false) {
 
@@ -33,13 +33,13 @@ function NavFiltros({ fav, rec }) {
 
         var cambiarTipo = 'desc';
 
-        if(ordenar.orden === cambiarOrden) {
+        if (ordenar.orden === cambiarOrden) {
 
             var tipoOrden = ordenar.tipo;
 
             cambiarTipo = (tipoOrden === 'desc' ? 'asc' : 'desc');
 
-            setOrdenar({...ordenar , tipo: cambiarTipo });
+            setOrdenar({ ...ordenar, tipo: cambiarTipo });
             setFlecha(tipoOrden === 'desc' ? faArrowUp : faArrowDown);
 
         } else {
@@ -51,17 +51,17 @@ function NavFiltros({ fav, rec }) {
 
         var urlFinal = '';
 
-        if(finalLocation === '' || finalLocation.includes('home') === true) {
-            urlFinal = '/home?ordenar=' +cambiarOrden+ '-' +cambiarTipo;
+        if (finalLocation === '' || finalLocation.includes('home') === true) {
+            urlFinal = '/home?ordenar=' + cambiarOrden + '-' + cambiarTipo;
 
-        } else if(finalLocation.includes('buscar') === true) {
+        } else if (finalLocation.includes('buscar') === true) {
             var nuevaURL = finalLocation;
-            urlFinal = nuevaURL.substring(0, finalLocation.search('&ordenar'))+ '&ordenar=' +cambiarOrden+ '-' +cambiarTipo;
+            urlFinal = nuevaURL.substring(0, finalLocation.search('&ordenar')) + '&ordenar=' + cambiarOrden + '-' + cambiarTipo;
         }
 
         var lenFiltros = finalLocation.search('precio_min');
-        if(lenFiltros !== -1) {
-            urlFinal += '&' +finalLocation.substring(finalLocation.search('precio_min'), location.length);
+        if (lenFiltros !== -1) {
+            urlFinal += '&' + finalLocation.substring(finalLocation.search('precio_min'), location.length);
         }
 
         history(urlFinal);
@@ -77,17 +77,17 @@ function NavFiltros({ fav, rec }) {
 
     return (
         <>
-        <hr/>
+            <hr />
 
-        <div className="container-fluid mb-2">
+            <div className="container-fluid mb-2">
 
-            <div className="row mb-2">
+                <div className="row mb-2">
 
-                <div className={window.innerWidth < 600 ? "mb-4" : "col"}>
+                    <div className="col">
 
-                    <strong>Ordenar por:&nbsp;</strong>
+                        <strong>Ordenar por:&nbsp;</strong>
 
-                        <Button className="filtros-botones" size="sm" onClick={() => { ordenarPor('fecha'); }}>
+                        <Button className="selected-botones mb-1" size="sm" onClick={() => { ordenarPor('fecha'); }}>
                             <FontAwesomeIcon icon={faCalendarDays} /> Fecha
                             <span style={ordenar.orden === 'fecha' ? {} : { display: 'none' }}>
                                 &nbsp;<FontAwesomeIcon icon={flecha} />
@@ -96,7 +96,7 @@ function NavFiltros({ fav, rec }) {
 
                         &nbsp;
 
-                        <Button className="filtros-botones" size="sm" onClick={() => { ordenarPor('relevancia'); }}>
+                        <Button className="filtros-botones mb-1" size="sm" onClick={() => { ordenarPor('relevancia'); }}>
                             <FontAwesomeIcon icon={faChartSimple} /> Relevancia
                             <span style={ordenar.orden === 'relevancia' ? {} : { display: 'none' }}>
                                 &nbsp;<FontAwesomeIcon icon={flecha} />
@@ -105,40 +105,40 @@ function NavFiltros({ fav, rec }) {
 
                         &nbsp;
 
-                        <Button className="filtros-botones" size="sm" onClick={() => { ordenarPor('precio'); }}>
+                        <Button className="filtros-botones mb-1" size="sm" onClick={() => { ordenarPor('precio'); }}>
                             <FontAwesomeIcon icon={faDollarSign} /> Precio
                             <span style={ordenar.orden === 'precio' ? {} : { display: 'none' }}>
                                 &nbsp;<FontAwesomeIcon icon={flecha} />
                             </span>
                         </Button>
 
-                </div>
+                    </div>
 
-                <div className={window.innerWidth < 600 ? "mb-4" : "col text-center"}>
+                    <div className="col text-center">
 
-                    <Button className="filtros-botones" size="sm" onClick={abrirFiltros}>
-                        <FontAwesomeIcon icon={faSliders} /> Otros filtros
-                    </Button>
-                </div>
+                        <Button className="filtros-botones" size="sm" onClick={abrirFiltros}>
+                            <FontAwesomeIcon icon={faSliders} /> Otros filtros
+                        </Button>
+                    </div>
 
-                <div className={window.innerWidth < 600 ? "" : "col filtros-derecha"}>
-                    <strong>Ir a:&nbsp;</strong>
+                    <div className="col filtros-derecha">
+                        <strong>Ir a:&nbsp;</strong>
 
-                    <Button className="filtros-botones" size="sm" onClick={fav}>
-                        <FontAwesomeIcon icon={faHeart} /> Favoritos
-                    </Button>
+                        <Button className="filtros-botones mb-1" size="sm" onClick={fav}>
+                            <FontAwesomeIcon icon={faHeart} /> Favoritos
+                        </Button>
 
                         &nbsp;
 
-                    <Button className="filtros-botones" size="sm" onClick={rec}>
-                        <FontAwesomeIcon icon={faComputer} /> Recomendados
-                    </Button>
+                        <Button className="filtros-botones mb-1" size="sm" onClick={rec}>
+                            <FontAwesomeIcon icon={faComputer} /> Recomendados
+                        </Button>
 
+                    </div>
                 </div>
+
+                <FiltrosModal mostrar={filtros} funcionCerrar={cerrarFiltros} />
             </div>
-            
-            <FiltrosModal mostrar={filtros} funcionCerrar={cerrarFiltros} />
-        </div>
         </>
     );
 }

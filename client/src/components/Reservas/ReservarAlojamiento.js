@@ -68,6 +68,9 @@ function ReservarAlojamiento() {
         if (items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
+        } else if(items.respuesta === 'err_reserva') {
+            window.location.href = '/';
+            
         } else if (items.respuesta === 'correcto') {
             setAlojamiento(items.alojamiento);
 

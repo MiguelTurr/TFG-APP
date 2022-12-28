@@ -156,6 +156,12 @@ function UserChats() {
         if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
+        } else if(items.respuesta === 'err_chat') {
+            crearAlerta('error', '¡No puedes enviarte mensajes a ti mismo!');
+            
+            setNuevoChat(null);
+            setChatMensajes([]);
+
         } else if(items.respuesta === 'correcto') {
 
             setNuevoMensajes([...nuevoMensajes, { 

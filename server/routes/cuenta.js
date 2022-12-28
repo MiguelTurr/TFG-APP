@@ -57,7 +57,7 @@ router.post('/registrar', async (req, res) => {
 
                 var texto = 'Hola ' + req.body.nombre + ' ' + req.body.apellidos + ', su cuenta se ha creado correctamente, para verificarla pulsa el siguiente link:';
                 texto += '\n\n';
-                texto += 'localhost:3000/validar/' + validarEmail;
+                texto += 'http://localhost:3000/validar/' + validarEmail;
                 texto += '\n\nUn saludo desde 2FH.'
 
                 email.sendMail({

@@ -71,8 +71,9 @@ const ValorarModal = ({ infoAlojamiento, funcionCerrar, valoracionCorrecto }) =>
 
         //
 
-        const data = await fetch('/perfil/valorar/alojamiento', {
+        const data = await fetch('/alojamiento/valorar/', {
             method: 'POST',
+            
             body: JSON.stringify({
                 reservaID:  infoAlojamiento.reservaID,
                 alojamientoID: infoAlojamiento.alojamientoID,
