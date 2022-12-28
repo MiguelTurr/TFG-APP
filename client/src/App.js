@@ -27,6 +27,8 @@ import UserValoraciones from './components/User/UserValoraciones';
 import Favoritos from './components/User/Favoritos';
 import Recomendaciones from './components/User/Recomendados';
 
+import Admin from './components/Administracion/Admin';
+
 import useToken from './js/autorizado';
 import './css/App.css';
 
@@ -34,7 +36,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
 
-  var { autorizado, setAutorizado } = useToken();
+  var { isLogged, setAutorizado } = useToken();
 
   //
 
@@ -45,7 +47,7 @@ function App() {
       <div className="App">
 
         <div className="toast-container position-absolute top-50 start-50 translate-middle" id="alertasInfo"></div>
-        <Nav isLogged={autorizado} changeLogged={setAutorizado}/>
+        <Nav isLogged={isLogged} changeLogged={setAutorizado}/>
 
         <Routes>
           <Route path="/" element={ <Home /> }/>
@@ -55,12 +57,12 @@ function App() {
           <Route path="/condiciones" element={ <Condiciones /> }/>
           <Route path="/privacidad" element={ <Privacidad /> }/>
 
-          {autorizado === false && <>
+          {isLogged === false && <>
             <Route path="/validar/:id" element={ <RegistroValidar /> }/>
             <Route path="/nopassword" element={ <RecordarPassword /> }/>
           </>}
 
-          {autorizado === true && <>
+          {isLogged === true && <>
             <Route path="/perfil" element={ <Perfil changeLogged={setAutorizado} /> }/>
             <Route path="/perfil/mis-alojamientos" element={ <UserAlojamientos changeLogged={setAutorizado} /> }/>
             <Route path="/perfil/mis-valoraciones" element={ <UserValoraciones changeLogged={setAutorizado} /> }/>
@@ -68,13 +70,15 @@ function App() {
             <Route path='/perfil/mis-chats' element={ <UserChats changeLogged={setAutorizado} /> }/>
             <Route path="/perfil/favoritos" element={ <Favoritos changeLogged={setAutorizado} /> }/>
             <Route path="/perfil/recomendados" element={ <Recomendaciones changeLogged={setAutorizado} /> }/>
+
+            <Route path="/admin" element={ <Admin /> }/>
           </>}
 
           <Route path="/alojamiento/buscar" element={ <Buscar /> }/>
           <Route path="/alojamiento/ver" element={ <VerAlojamiento /> }/>
           <Route path="/alojamiento/reservar/:id" element={ <ReservarAlojamiento changeLogged={setAutorizado} /> }/>
           <Route path="/alojamiento/comparar/:id" element={ <Comparar /> }/>
-          <Route path="/usuario/ver/:id" element={ <PerfilPublico isLogged={autorizado} /> }/>
+          <Route path="/usuario/ver/:id" element={ <PerfilPublico isLogged={isLogged} /> }/>
 
           <Route path="*" element={ <Navigate to='/home' /> } />
 

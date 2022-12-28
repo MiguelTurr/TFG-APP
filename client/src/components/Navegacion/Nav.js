@@ -14,7 +14,7 @@ import NoProfileImg from '../../img/no-profile-img.png';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faScrewdriverWrench } from '@fortawesome/free-solid-svg-icons';
 
 function Nav({ isLogged, changeLogged }) {
     
@@ -149,6 +149,13 @@ function Nav({ isLogged, changeLogged }) {
                 <div className={isMobile ? "col-sm-4 mt-3" : "col-sm-4 mt-3 user-col"}>
 
                     <Dropdown>
+
+                        <a style={{ backgroundColor: '#ab47f9', padding: '10px', borderRadius: '10px', color: 'white', verticalAlign: 'middle' }} href="/admin">
+                            <FontAwesomeIcon icon={faScrewdriverWrench}/>
+                        </a>
+                        
+                        &nbsp;
+                        &nbsp;
 
                         <Dropdown.Toggle variant="link" bsPrefix className="user-btn-no">
                             <FontAwesomeIcon icon={faBars} className="user-icon" />

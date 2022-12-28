@@ -3,23 +3,23 @@ import { useState } from "react";
 export default function useToken() {
 
     const getAutorizado = () => {
-        const autorizado = localStorage.getItem('autorizado');
+        const autorizado = localStorage.getItem('isLogged');
         return (autorizado === null) ? (false) : (!(autorizado === 'false'));
     };
 
-    const [autorizado, setAutorizado] = useState(getAutorizado());
+    const [isLogged, setAutorizado] = useState(getAutorizado());
 
-    const saveAutorizado = (autorizado) => {
-        localStorage.setItem('autorizado', autorizado);
-        setAutorizado(autorizado);
+    const saveAutorizado = (isLogged) => {
+        localStorage.setItem('isLogged', isLogged);
+        setAutorizado(isLogged);
 
-        if(autorizado === false) {
+        if(isLogged === false) {
             window.location.href = '/';
         }
     };
 
     return {
         setAutorizado: saveAutorizado,
-        autorizado
+        isLogged
     }
 }

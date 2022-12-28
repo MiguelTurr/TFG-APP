@@ -275,13 +275,15 @@ function UserValoraciones({ changeLogged }) {
                                         <FontAwesomeIcon icon={faStar}/> {x.valoracionMedia} <span className="text-muted">({x.vecesValorado})</span>
                                     </td> 
 
-                                    <td>        
-                                        Llegada: {x.valLlegada}<br/>
-                                        Veracidad: {x.valVeracidad}<br/>
-                                        Comunicación: {x.valComunicacion}<br/>
-                                        Ubicación: {x.valUbicacion}<br/>
-                                        Limpieza: {x.valLimpieza}<br/>
-                                        Calidad: {x.valCalidad}<br/>
+                                    <td>  
+                                        <small>    
+                                            Llegada: {x.valLlegada}<br/>
+                                            Veracidad: {x.valVeracidad}<br/>
+                                            Comunicación: {x.valComunicacion}<br/>
+                                            Ubicación: {x.valUbicacion}<br/>
+                                            Limpieza: {x.valLimpieza}<br/>
+                                            Calidad: {x.valCalidad}<br/>
+                                        </small>  
                                     </td>
 
                                     <td>

@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 	`imgPerfil` varchar(50) NOT NULL default 'default.png',
 	`recibirCorreos` tinyint NOT NULL default 1,
 	`ultimaConexion` datetime default NOW(),
+	`rol` tinyint default 0,
 
     PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

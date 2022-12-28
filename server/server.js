@@ -57,15 +57,16 @@ const comprobarToken = (req, _, next) => {
 
 //
 
-server.get('/user/valido', comprobarToken, (req, res) => {
+const comprobarRol = (req, res, next) => {
+    if (req.userId == undefined) return res.status(500).json({ respuesta: 'err_user' });
 
-    if (req.userId == undefined) return res.status(500);
+    mysql.query('SELECT rol FROM usuarios WHERE ID=? AND rol>0 LIMIT 1', req.userId, function(err, result) {
+        if(err) return res.status(500).json({ respuesta: 'err_db' });
 
-    res.status(200).json({
-        login: true,
-        rol: 'usuario'
+        req.userRol = result.length === 0 ? 0 : result[0].rol;
+        next();
     });
-});
+};
 
 //
 
@@ -94,3 +95,5 @@ server.use('/usuario/valorar', require('./routes/usuario-valorar'));
 server.use('/alojamiento', comprobarToken, require('./routes/alojamiento-ver'));
 server.use('/alojamiento/reservar', comprobarToken, require('./routes/alojamiento-reservar'));
 server.use('/alojamiento/valorar', comprobarToken, require('./routes/alojamiento-valorar'));
+
+server.use('/admin', comprobarToken, comprobarRol, require('./routes/admin'));
