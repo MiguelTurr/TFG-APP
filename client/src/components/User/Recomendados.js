@@ -11,7 +11,7 @@ import { faStar, faLocationDot, faHandSparkles, faHeart } from '@fortawesome/fre
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 
-function Recomendaciones() {
+function Recomendaciones({ changeLogged }) {
 
     const [alojamientos, setAlojamientos] = useState([]);
     const [imgAlojamientos, setImgAlojamientos] = useState([]);
@@ -28,7 +28,7 @@ function Recomendaciones() {
         const items = await data.json();
 
         if(items.respuesta === 'err_user') {
-            crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
+            changeLogged(false);
 
         } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');

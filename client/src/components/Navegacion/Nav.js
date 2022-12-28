@@ -7,7 +7,6 @@ import BuscarLugar from "../Maps/buscarLugar.js";
 import LoginModal from '../Sesion/LoginModal';
 import RegistroModal from '../Sesion/RegistroModal';
 import NavFiltros from './NavFiltros';
-import userLogin from '../../js/autorizado';
 
 import Logo from '../../img/logo.png';
 import NoProfileImg from '../../img/no-profile-img.png';
@@ -17,12 +16,8 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 
-function Nav() {
-
-    const { autorizado, setAutorizado } = userLogin();
-
-    //
-
+function Nav({ isLogged, changeLogged }) {
+    
     const [isMobile, setIsMobile] = useState(window.innerWidth < 600);
 
     useEffect(() => {
@@ -59,11 +54,10 @@ function Nav() {
         });
 
         if(data.status === 200) {
-
             crearAlerta('exito', '¡Sesión terminada!');
 
             setTimeout(() => {
-                setAutorizado(false);
+                changeLogged(false);
 
             }, 1000);
         }
@@ -83,11 +77,12 @@ function Nav() {
     };
 
     useEffect(() => {
-        if(autorizado === true) {
+
+        if(isLogged === true) {
             cargarFotoPerfil();
             cargarNovedades();
         }
-    }, [autorizado]);
+    }, [isLogged]);
 
     // MENSAJES NUEVOS
 
@@ -109,7 +104,7 @@ function Nav() {
 
     const irFavoritos = () => {
 
-        if(autorizado === false) {
+        if(isLogged === false) {
             mostrarLogin();
             return;
         }
@@ -119,7 +114,7 @@ function Nav() {
 
     const irRecomendados = () => {
 
-        if(autorizado === false) {
+        if(isLogged === false) {
             mostrarLogin();
             return;
         }
@@ -166,14 +161,14 @@ function Nav() {
 
                         <Dropdown.Menu>
 
-                            <span style={autorizado === false ? {} : { display: 'none' }}>
+                            <span style={isLogged === false ? {} : { display: 'none' }}>
                                 <Dropdown.Item eventKey="1" onClick={mostrarRegistro}>Regístrate</Dropdown.Item>
                                 <Dropdown.Item eventKey="2" onClick={mostrarLogin}>Inicia sesión</Dropdown.Item>
                                 <Dropdown.Divider />
                                 <Dropdown.Item eventKey="3" href="/ayuda">Ayuda</Dropdown.Item>
                             </span>
 
-                            <span style={autorizado === true ? {} : { display: 'none' }}>
+                            <span style={isLogged === true ? {} : { display: 'none' }}>
                                 <Dropdown.Item eventKey="1" href="/perfil">Perfil</Dropdown.Item>
                                 <Dropdown.Item eventKey="2" href="/perfil/mis-alojamientos">Mis alojamientos</Dropdown.Item>
                                 <Dropdown.Item eventKey="4" href="/perfil/mis-reservas">Mis reservas</Dropdown.Item>
@@ -214,7 +209,7 @@ function Nav() {
                 </div>
             </div>
 
-            <LoginModal mostrar={loginModal} funcionCerrar={cerrarLogin}/>
+            <LoginModal mostrar={loginModal} funcionCerrar={cerrarLogin} changeLogged={changeLogged} />
             <RegistroModal mostrar={registroModal} funcionCerrar={cerrarRegistro} />
 
         </div>

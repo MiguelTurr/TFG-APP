@@ -45,7 +45,7 @@ const comprobarToken = (req, _, next) => {
             const decoded = jwt.verify(token, cookie_secret);
             req.userId = decoded.id;
 
-            mysql.query('UPDATE usuarios SET ultimaConexion=NOW() WHERE ID=?', decoded.id);
+            mysql.query('UPDATE usuarios SET ultimaConexion=NOW() WHERE ID=? LIMIT 1', decoded.id);
 
         } catch (err) {
             console.log(err);
@@ -54,6 +54,18 @@ const comprobarToken = (req, _, next) => {
 
     next();
 };
+
+//
+
+server.get('/user/valido', comprobarToken, (req, res) => {
+
+    if (req.userId == undefined) return res.status(500);
+
+    res.status(200).json({
+        login: true,
+        rol: 'usuario'
+    });
+});
 
 //
 

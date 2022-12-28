@@ -22,7 +22,6 @@ router.get('/', (req, res) => {
 
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
-
             console.log(err.message);
             return;
         }

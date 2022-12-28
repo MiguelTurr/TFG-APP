@@ -5,7 +5,6 @@ import ValorarVerModal from './ValorarVerModal';
 import ValorarModalInquilino from './ValorarModalInquilino';
 
 import { crearAlerta } from '../Toast/Toast.js';
-//import userLogin from '../../js/autorizado';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown, faArrowUp, faLocationDot, faPen, faStar, faMagnifyingGlass, faBan, faCheck, faMessage, faCalendar, faDownload } from '@fortawesome/free-solid-svg-icons';
@@ -15,7 +14,7 @@ import Button from 'react-bootstrap/Button';
 var totalGanancias = [];
 const cantidadColumnas = 5;
 
-function UserReservas() {
+function UserReservas({ changeLogged }) {
 
     const [reservasActivas, setReservasActivas] = useState([]);
     const [reservasInactivas, setReservasinActivas] = useState(null);
@@ -39,6 +38,7 @@ function UserReservas() {
         const items = await data.json();
 
         if(items.respuesta === 'err_user') {
+            changeLogged(false);
 
         } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
@@ -53,6 +53,7 @@ function UserReservas() {
         const items = await data.json();
 
         if(items.respuesta === 'err_user') {
+            changeLogged(false);
 
         } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
@@ -67,6 +68,7 @@ function UserReservas() {
         const items = await data.json();
 
         if(items.respuesta === 'err_user') {
+            changeLogged(false);
 
         } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
@@ -84,6 +86,7 @@ function UserReservas() {
         const items = await data.json();
 
         if(items.respuesta === 'err_user') {
+            changeLogged(false);
 
         } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
@@ -98,6 +101,7 @@ function UserReservas() {
         const items = await data.json();
 
         if(items.respuesta === 'err_user') {
+            changeLogged(false);
 
         } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');

@@ -5,7 +5,7 @@ import NoProfileImg from '../../img/no-profile-img.png';
 
 import BuscarLugar from "../Maps/buscarLugar.js";
 import { crearAlerta } from '../Toast/Toast.js';
-import userLogin from '../../js/autorizado';
+
 import phonePrefix from '../../resources/phone-prefix.json';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -20,9 +20,7 @@ const trabajoCaracteres = 70;
 const passwordCaracteres = 70;
 const correoCaracteres = 200;
 
-function Perfil() {
-
-    const { autorizado, setAutorizado } = userLogin();
+function Perfil({ changeLogged }) {
 
     // CARGAR PERFIL INFO
 
@@ -44,21 +42,25 @@ function Perfil() {
         });
 
         const items = await data.json();
-        setUserInfo(items);
-    };
 
-    const cargarImagenPerfil = async () => {
+        if(data.status === 200) {
+            setUserInfo(items);
 
-        const imagen = await fetch('/perfil/foto', { method: 'GET' });
+            const imagen = await fetch('/perfil/foto', { method: 'GET' });
 
-        if(imagen.status === 200) {
-            setUserImg(imagen.url);
+            if(imagen.status === 200) {
+                setUserImg(imagen.url);
+            }
+
+            return;
         }
+
+        if (items.respuesta === 'err_db') crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+        else if(items.respuesta === 'err_user') changeLogged(false);
     };
 
     useEffect(() => {
         perfilInfo();
-        cargarImagenPerfil();
     }, []);
 
     // CAMBIAR VISTAS
@@ -156,7 +158,7 @@ function Perfil() {
         const items = await data.json();
 
         if(items.respuesta === 'err_user') {
-            crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
+            changeLogged(false);
 
         } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
@@ -288,7 +290,7 @@ function Perfil() {
         desactivarBtn.disabled = false;
 
         if(items.respuesta === 'err_user') {
-            crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
+            changeLogged(false);
 
         } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
@@ -355,7 +357,7 @@ function Perfil() {
         const items = await data.json();
 
         if(items.respuesta === 'err_user') {
-            crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
+            changeLogged(false);
 
         } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
@@ -376,7 +378,7 @@ function Perfil() {
 
     const desactivarCuenta = async () => {
 
-        if(window.confirm('¿Estás seguro de ' +modDatos.modId+ ' tu cuenta?') == false) {
+        if(window.confirm('¿Estás seguro de ' +modDatos.modId+ ' tu cuenta?') === false) {
             return;
         }
 
@@ -401,7 +403,7 @@ function Perfil() {
         const items = await data.json();
 
         if(items.respuesta === 'err_user') {
-            crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
+            changeLogged(false);
 
         } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
@@ -414,7 +416,7 @@ function Perfil() {
             crearAlerta('exito', '¡Tu cuenta ha sido ' +modDatos.modId+ '!');
 
             setTimeout(() => {
-                setAutorizado(false);
+                changeLogged(false);
                 window.location.href = '/';
 
             }, 1000);

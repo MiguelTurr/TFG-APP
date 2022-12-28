@@ -14,7 +14,7 @@ import Button from "react-bootstrap/esm/Button";
 const fechaOpc = { year: 'numeric', month: '2-digit', day: '2-digit' };
 const horaOpc = { hour: '2-digit', minute: '2-digit' };
 
-function UserChats() {
+function UserChats({ changeLogged }) {
 
     const location = useLocation();
 
@@ -77,7 +77,13 @@ function UserChats() {
         const data = await fetch('/perfil/mis-chats', { method: 'GET' });
         const items = await data.json();
 
-        if(items.respuesta === 'correcto') {
+        if(items.respuesta === 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if(items.respuesta === 'err_user') {
+            changeLogged(false);
+
+        } else if(items.respuesta === 'correcto') {
             setChats(items.chats);
 
             var len = items.chats.length;

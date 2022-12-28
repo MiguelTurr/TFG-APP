@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 export default function useToken() {
+
     const getAutorizado = () => {
         const autorizado = localStorage.getItem('autorizado');
         return (autorizado === null) ? (false) : (!(autorizado === 'false'));
@@ -8,7 +9,7 @@ export default function useToken() {
 
     const [autorizado, setAutorizado] = useState(getAutorizado());
 
-    const saveAutorizado = autorizado => {
+    const saveAutorizado = (autorizado) => {
         localStorage.setItem('autorizado', autorizado);
         setAutorizado(autorizado);
 

@@ -87,7 +87,7 @@ function NavFiltros({ fav, rec }) {
 
                         <strong>Ordenar por:&nbsp;</strong>
 
-                        <Button className="selected-botones mb-1" size="sm" onClick={() => { ordenarPor('fecha'); }}>
+                        <Button className="filtros-botones mb-1" size="sm" onClick={() => { ordenarPor('fecha'); }}>
                             <FontAwesomeIcon icon={faCalendarDays} /> Fecha
                             <span style={ordenar.orden === 'fecha' ? {} : { display: 'none' }}>
                                 &nbsp;<FontAwesomeIcon icon={flecha} />

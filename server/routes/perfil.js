@@ -25,7 +25,7 @@ router.get('/', (req, res) => {
             return;
         }
 
-        res.status(201).json({
+        res.status(200).json({
             ID: result[0].ID,
             nombre: result[0].nombre,
             apellidos: result[0].apellidos,

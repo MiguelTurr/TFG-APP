@@ -15,7 +15,7 @@ var paginaHechasUsuarios = 0;
 var paginaRecibidasAlojamientos = 0;
 var paginaRecibidasUsuarios = 0;
 
-function UserValoraciones() {
+function UserValoraciones({ changeLogged }) {
 
     var fechaOptions = { year: 'numeric', month: 'long', day: 'numeric' };
 
@@ -69,6 +69,9 @@ function UserValoraciones() {
         if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
+        } else if(items.respuesta === 'err_user') {
+            changeLogged(false);
+
         } else if(items.respuesta === 'correcto') {
             setValoracionesAlo([...valoracionesAlo, ...items.valoracion]);
 
@@ -90,6 +93,9 @@ function UserValoraciones() {
 
         if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if(items.respuesta === 'err_user') {
+            changeLogged(false);
 
         } else if(items.respuesta === 'correcto') {
             setValoracionesUser([...valoracionesUser, ...items.valoracion]);
@@ -132,6 +138,9 @@ function UserValoraciones() {
         if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
+        } else if(items.respuesta === 'err_user') {
+            changeLogged(false);
+
         } else if(items.respuesta === 'correcto') {
             setRecibidasAlo([...recibidasAlo, ...items.valoracion]);
 
@@ -173,6 +182,9 @@ function UserValoraciones() {
 
         if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if(items.respuesta === 'err_user') {
+            changeLogged(false);
 
         } else if(items.respuesta === 'correcto') {
             setRecibidasUser([...recibidasUser, ...items.valoracion]);

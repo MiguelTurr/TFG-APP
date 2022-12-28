@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 
 import { crearAlerta } from '../Toast/Toast.js';
-import userLogin from '../../js/autorizado';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightToBracket } from '@fortawesome/free-solid-svg-icons';
@@ -10,9 +9,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
-const Login = ({ mostrar, funcionCerrar }) => {
-
-    const { setAutorizado } = userLogin();
+const Login = ({ mostrar, funcionCerrar, changeLogged }) => {
 
     const loginEmail = useRef();
     const loginPassword = useRef();
@@ -57,7 +54,7 @@ const Login = ({ mostrar, funcionCerrar }) => {
             crearAlerta('exito', 'Has iniciado sesión como ' +items.nombre);
 
             setTimeout(() => {
-                setAutorizado(true);
+                changeLogged(true);
                 window.location.href = '/';
 
             }, 1000);

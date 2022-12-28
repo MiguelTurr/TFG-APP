@@ -13,7 +13,7 @@ import Button from "react-bootstrap/esm/Button";
 
 const PayPalButton = window.paypal.Buttons.driver("react", { React, ReactDOM });
 
-function ReservarAlojamiento() {
+function ReservarAlojamiento({ changeLogged }) {
 
     var opcFecha = { year: 'numeric', month: 'short', day: '2-digit' };
 
@@ -71,6 +71,9 @@ function ReservarAlojamiento() {
         } else if(items.respuesta === 'err_reserva') {
             window.location.href = '/';
             
+        } else if(items.respuesta === 'err_user') {
+            changeLogged(false);
+
         } else if (items.respuesta === 'correcto') {
             setAlojamiento(items.alojamiento);
 
@@ -125,6 +128,9 @@ function ReservarAlojamiento() {
         } else if (items.respuesta === 'err_paypal') {
             crearAlerta('error', '¡Ha ocurrido un error con paypal!');
 
+        } else if(items.respuesta === 'err_user') {
+            changeLogged(false);
+
         } else if (items.respuesta === 'correcto') {
             return items.orderID;
         }
@@ -160,6 +166,9 @@ function ReservarAlojamiento() {
 
         } else if (items.respuesta === 'err_paypal') {
             crearAlerta('error', '¡Ha ocurrido un error con paypal!');
+
+        } else if(items.respuesta === 'err_user') {
+            changeLogged(false);
 
         } else if (items.respuesta === 'correcto') {
             crearAlerta('exito', '¡Reserva hecha!');

@@ -9,7 +9,7 @@ import { faStar, faLocationDot, faHeart, faComputer, faBan } from '@fortawesome/
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 
-function Favoritos() {
+function Favoritos({ changeLogged }) {
 
     const [alojamientos, setAlojamientos] = useState([]);
     const [imgAlojamientos, setImgAlojamientos] = useState([]);
@@ -25,6 +25,9 @@ function Favoritos() {
 
         if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if(items.respuesta === 'err_user') {
+            changeLogged(false);
 
         } else if(items.respuesta === 'correcto') {
             setAlojamientos(items.alojamientos);
@@ -67,6 +70,9 @@ function Favoritos() {
 
         if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if(items.respuesta === 'err_user') {
+            changeLogged(false);
 
         } else if(items.respuesta === 'correcto') {
             crearAlerta('error', '¡Eliminados todos!');

@@ -8,7 +8,6 @@ import DenunciaModal from './DenunciarModal';
 
 import { crearAlerta } from '../Toast/Toast.js';
 import NoProfileImg from '../../img/no-profile-img.png';
-import userLogin from '../../js/autorizado';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faHouse, faLanguage, faBriefcase, faWarning, faStar, faLocationDot } from '@fortawesome/free-solid-svg-icons';
@@ -16,11 +15,7 @@ import { faCheck, faHouse, faLanguage, faBriefcase, faWarning, faStar, faLocatio
 import Button from "react-bootstrap/esm/Button";
 import Card from 'react-bootstrap/Card';
 
-function PerfilPublico() {
-
-    const { autorizado, setAutorizado } = userLogin();
-
-    //
+function PerfilPublico({ isLogged }) {
 
     var regFecha = { year: 'numeric', month: 'long' };
 
@@ -40,7 +35,6 @@ function PerfilPublico() {
 
     useEffect(() => {
         obtenerInfoPerfil();
-        cargarImagenPerfil();
         cargarAlojamientosPerfil();
         cargarAlojamientosVal();
         cargarUsuarioVal();
@@ -66,15 +60,12 @@ function PerfilPublico() {
 
         } else if (items.respuesta === 'correcto') {
             setInfoPerfil(items.user[0]);
-        }
-    };
+            
+            const imagen = await fetch('/alojamiento/hospedador/foto/' + id, { method: 'GET' });
 
-    const cargarImagenPerfil = async () => {
-
-        const imagen = await fetch('/alojamiento/hospedador/foto/' + id, { method: 'GET' });
-
-        if (imagen.status === 200) {
-            setImgPerfil(imagen.url);
+            if (imagen.status === 200) {
+                setImgPerfil(imagen.url);
+            }
         }
     };
 
@@ -241,7 +232,7 @@ function PerfilPublico() {
     const cerrarDenuncia = () => setShowDenuncia(false);
 
     const denunciarPerfil = () => {
-        if(autorizado === false) {
+        if(isLogged === false) {
             window.scrollTo(0, 0);
             return setShowLogin(true);
         }

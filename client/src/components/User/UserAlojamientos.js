@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import userLogin from '../../js/autorizado.js';
-
 import CrearAlojamiento from './CrearAlojamiento.js';
 import EditarAlojamiento from './EditarAlojamiento.js';
 import { crearAlerta } from '../Toast/Toast.js';
@@ -11,9 +9,7 @@ import { faPlusSquare, faArrowRight, faLocationDot, faStar } from '@fortawesome/
 
 import Button from "react-bootstrap/esm/Button";
 
-function UserAlojamientos() {
-
-    const { setAutorizado } = userLogin();
+function UserAlojamientos({ changeLogged }) {
 
     var crearOptions = { year: 'numeric', month: 'short', day: 'numeric' };
 
@@ -34,8 +30,7 @@ function UserAlojamientos() {
         const items = await data.json();
 
         if(items.respuesta === 'err_user') {
-            crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
-            setAutorizado(false);
+            changeLogged(false);
 
         } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
