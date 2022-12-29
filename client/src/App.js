@@ -38,6 +38,9 @@ function App() {
 
   var { isLogged, setAutorizado } = useToken();
 
+  var isAdmin = window.localStorage.getItem('isAdmin');
+  isAdmin = isAdmin === null || isAdmin == 0 ? false : true;
+
   //
 
   return (
@@ -47,7 +50,7 @@ function App() {
       <div className="App">
 
         <div className="toast-container position-absolute top-50 start-50 translate-middle" id="alertasInfo"></div>
-        <Nav isLogged={isLogged} changeLogged={setAutorizado}/>
+        <Nav isLogged={isLogged} changeLogged={setAutorizado} isAdmin={isAdmin} />
 
         <Routes>
           <Route path="/" element={ <Home /> }/>
@@ -71,7 +74,7 @@ function App() {
             <Route path="/perfil/favoritos" element={ <Favoritos changeLogged={setAutorizado} /> }/>
             <Route path="/perfil/recomendados" element={ <Recomendaciones changeLogged={setAutorizado} /> }/>
 
-            <Route path="/admin" element={ <Admin /> }/>
+            <Route path="/admin" element={ <Admin changeLogged={setAutorizado} /> }/>
           </>}
 
           <Route path="/alojamiento/buscar" element={ <Buscar /> }/>

@@ -152,14 +152,14 @@ function Home() {
 
                                         <div className="col">
 
-                                            <p>
+                                            <p style={{ fontSize: '14px'}}>
                                                 <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green'}} />&nbsp;<strong>{x.ubicacion}</strong>
                                                 <br/>
-                                                <strong>{x.precio}€</strong> por noche
+                                                <strong>{x.precio}€</strong> <small>precio/noche</small>
                                             </p>
                                         </div>
 
-                                        <div className={window.innerWidth < 600 ? "col" : "col-sm-4 derecha-casa"}>
+                                        <div className={window.innerWidth < 600 ? "col derecha-casa" : "col-sm-4 derecha-casa"}>
                                             <FontAwesomeIcon icon={faStar} />&nbsp;{parseFloat(x.valoracionMedia).toFixed(2)}
                                             <br/>
                                             <FontAwesomeIcon icon={faHeart} style={x.favorito === null || x.favorito === undefined ? { display: 'none' } : { color: '#c80000' } } />

@@ -16,7 +16,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faScrewdriverWrench } from '@fortawesome/free-solid-svg-icons';
 
-function Nav({ isLogged, changeLogged }) {
+function Nav({ isLogged, changeLogged, isAdmin }) {
     
     const [isMobile, setIsMobile] = useState(window.innerWidth < 600);
 
@@ -55,6 +55,7 @@ function Nav({ isLogged, changeLogged }) {
 
         if(data.status === 200) {
             crearAlerta('exito', '¡Sesión terminada!');
+            window.localStorage.setItem('isAdmin', 0);
 
             setTimeout(() => {
                 changeLogged(false);
@@ -150,9 +151,11 @@ function Nav({ isLogged, changeLogged }) {
 
                     <Dropdown>
 
-                        <a style={{ backgroundColor: '#ab47f9', padding: '10px', borderRadius: '10px', color: 'white', verticalAlign: 'middle' }} href="/admin">
-                            <FontAwesomeIcon icon={faScrewdriverWrench}/>
-                        </a>
+                        <span style={isAdmin === true ? {} : { display: 'none' }}>
+                            <a style={{ backgroundColor: '#ab47f9', padding: '10px', borderRadius: '10px', color: 'white', verticalAlign: 'middle' }} href="/admin">
+                                <FontAwesomeIcon icon={faScrewdriverWrench} />
+                            </a>
+                        </span>
                         
                         &nbsp;
                         &nbsp;

@@ -225,3 +225,27 @@ CREATE TABLE IF NOT EXISTS `usuarios_chats_mensajes` (
 DELETE FROM `usuarios_chats_mensajes`;
 
 ----------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `buscar_ciudad` (
+    `ID` int NOT NULL AUTO_INCREMENT,
+	`busquedas` int default 1,
+	`nombre` varchar(50) NOT NULL UNIQUE,
+	`ultimoEn` datetime default NOW(),
+
+    PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+DELETE FROM `buscar_ciudad`;
+
+CREATE TABLE IF NOT EXISTS `buscar_pais` (
+    `ID` int NOT NULL AUTO_INCREMENT,
+	`busquedas` int default 1,
+	`nombre` varchar(50) NOT NULL UNIQUE,
+	`ultimoEn` datetime default NOW(),
+
+    PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+DELETE FROM `buscar_pais`;
+
+----------------------------------------------------------------------------------

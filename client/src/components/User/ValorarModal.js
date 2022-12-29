@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { crearAlerta } from "../Toast/Toast";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,6 +9,8 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
 const ValorarModal = ({ infoAlojamiento, funcionCerrar, valoracionCorrecto }) => {
+
+    const valMensaje = useRef('');
 
     const [imgAlojamiento, setImgAlojamiento] = useState();
 
@@ -60,7 +62,7 @@ const ValorarModal = ({ infoAlojamiento, funcionCerrar, valoracionCorrecto }) =>
 
         //
 
-        const mensaje = document.getElementById('mensaje').value;
+        const mensaje = valMensaje.current.value;
 
         if(mensaje.length < 25) {
             return crearAlerta('error', '¡El mensaje es demasiado corto!');
@@ -216,7 +218,7 @@ const ValorarModal = ({ infoAlojamiento, funcionCerrar, valoracionCorrecto }) =>
                                     </Form.Label>
 
                                     <Form.Control
-                                        id="mensaje"
+                                        ref={valMensaje}
                                         as="textarea"
                                         placeholder="Escribe cómo fue tu estancia" />
                                 </Form.Group>

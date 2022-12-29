@@ -53,6 +53,20 @@ router.get('/', async (req, res) => {
         });
     });
 
+    const ciudadesBuscadas = await new Promise((resolve) => {
+        mysql.query('SELECT nombre,busquedas FROM buscar_ciudad ORDER BY busquedas DESC LIMIT 5', function (err, result) {
+            if(err || result.length === 0) return resolve([]);
+            resolve(result);
+        });
+    });
+
+    const paisesBuscados = await new Promise((resolve) => {
+        mysql.query('SELECT nombre,busquedas FROM buscar_pais ORDER BY busquedas DESC LIMIT 5', function (err, result) {
+            if(err || result.length === 0) return resolve([]);
+            resolve(result);
+        });
+    });
+
     res.status(200).json({ respuesta: 'correcta', admin: {
         alojamientos: totalAlojamientos,
         usuarios: totalUsuarios,
@@ -60,6 +74,9 @@ router.get('/', async (req, res) => {
         reportes: totalDenuncias,
         administradores: totalAdmins,
         reservas: totalReservas,
+
+        ciudades: ciudadesBuscadas,
+        paises: paisesBuscados
     }});
 });
 

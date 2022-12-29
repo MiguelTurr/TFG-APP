@@ -52,6 +52,7 @@ const Login = ({ mostrar, funcionCerrar, changeLogged }) => {
         } else {
             
             crearAlerta('exito', 'Has iniciado sesión como ' +items.nombre);
+            window.localStorage.setItem('isAdmin', items.rol);
 
             setTimeout(() => {
                 changeLogged(true);

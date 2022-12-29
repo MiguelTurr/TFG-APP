@@ -28,6 +28,7 @@ router.post('/', (req, res) => {
     // DIRECCIÓN
 
     queryStr += 'AND alo.pais="' +req.body.pais+ '" ';
+    mysql.query('INSERT INTO buscar_pais (nombre) VALUES (?) ON DUPLICATE KEY UPDATE busquedas=busquedas+1,ultimoEn=NOW();', req.body.pais);
 
     if(req.body.comunidad !== undefined) {
         queryStr += 'AND alo.comunidad="' +req.body.comunidad+ '" ';
@@ -39,6 +40,7 @@ router.post('/', (req, res) => {
 
     if(req.body.localidad !== undefined) {
         queryStr += 'AND alo.localidad="' +req.body.localidad+ '" ';
+        mysql.query('INSERT INTO buscar_ciudad (nombre) VALUES (?) ON DUPLICATE KEY UPDATE busquedas=busquedas+1,ultimoEn=NOW();', req.body.localidad);
     }
     
     //

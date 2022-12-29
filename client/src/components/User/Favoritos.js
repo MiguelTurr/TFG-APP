@@ -134,10 +134,10 @@ function Favoritos({ changeLogged }) {
 
                                         <div className="col">
 
-                                            <p>
+                                            <p style={{ fontSize: '14px'}}>
                                                 <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green'}} />&nbsp;<strong>{x.ubicacion}</strong>
                                                 <br/>
-                                                <strong>{x.precio}€</strong> por noche
+                                                <strong>{x.precio}€</strong> <small>precio/noche</small>
                                             </p>
                                         </div>
 

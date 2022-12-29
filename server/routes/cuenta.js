@@ -81,7 +81,7 @@ router.post('/login', (req, res) => {
     const userEmail = req.body.email;
     const userPassword = req.body.password;
 
-    mysql.query("SELECT ID,password,activo,nombre FROM usuarios WHERE email=? LIMIT 1", userEmail, async (err, result) => {
+    mysql.query("SELECT ID,password,activo,nombre,rol FROM usuarios WHERE email=? LIMIT 1", userEmail, async (err, result) => {
 
         if (err) {
             console.log(err);
@@ -124,7 +124,8 @@ router.post('/login', (req, res) => {
             }).json({
                 respuesta: 'correcto',
                 autorizacion: true,
-                nombre: result[0].nombre
+                nombre: result[0].nombre,
+                rol: result[0].rol
             });
     });
 });
