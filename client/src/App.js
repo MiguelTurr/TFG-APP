@@ -49,7 +49,8 @@ function App() {
 
       <div className="App">
 
-        <div className="toast-container position-absolute top-50 start-50 translate-middle" id="alertasInfo"></div>
+        <div style={{ position: 'fixed', top: '20%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1000000000 }} id="alertasInfo"></div>
+
         <Nav isLogged={isLogged} changeLogged={setAutorizado} isAdmin={isAdmin} />
 
         <Routes>

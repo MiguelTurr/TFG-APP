@@ -438,7 +438,7 @@ function UserReservas({ changeLogged }) {
                                                 {x.dias} días x {x.precioBase}€ -&gt;
                                             </small>
                                             &nbsp;
-                                            {x.costeTotal}€
+                                            {x.costeTotal.toLocaleString("de-DE")}€
                                         </td>
                                         <td>
                                             <div className="d-grid gap-2">
@@ -505,7 +505,7 @@ function UserReservas({ changeLogged }) {
                                                     {x.dias} días x {x.precioBase}€ -&gt;
                                                 </small>
                                                 &nbsp;
-                                                {x.costeTotal}€
+                                                {x.costeTotal.toLocaleString("de-DE")}€
                                             </td>
                                             <td>
                                                 <div className="d-grid gap-2">
@@ -565,7 +565,7 @@ function UserReservas({ changeLogged }) {
                                                 {x.dias} días x {x.precioBase}€ -&gt;
                                             </small>
                                             &nbsp;
-                                            {x.costeTotal}€
+                                            {x.costeTotal.toLocaleString("de-DE")}€
                                         </td>
                                         <td>
                                             <div className="d-grid gap-2">
@@ -643,7 +643,7 @@ function UserReservas({ changeLogged }) {
                                                     {x.dias} días x {x.precioBase}€ -&gt;
                                                 </small>
                                                 &nbsp;
-                                                {x.costeTotal}€
+                                                {x.costeTotal.toLocaleString("de-DE")}€
                                             </td>
                                             <td>
                                                 <div className="d-grid gap-2">
@@ -752,7 +752,7 @@ function UserReservas({ changeLogged }) {
                                                 </small>
                                             </td>
                                             <td>
-                                                {x.costeTotal}€
+                                                {x.costeTotal.toLocaleString("de-DE")}€
                                             </td>
                                         </tr>
                                     ))
@@ -771,7 +771,7 @@ function UserReservas({ changeLogged }) {
                                     <td>
                                     </td>
                                     <td>
-                                        {ganancias?.totalGanancias}€
+                                        {ganancias?.totalGanancias?.toLocaleString("de-DE")}€
                                     </td>
                                 </tr>
                             </tbody>

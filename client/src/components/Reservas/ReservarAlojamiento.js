@@ -248,7 +248,7 @@ function ReservarAlojamiento({ changeLogged }) {
                                 </td>
                                 <td style={{ textAlign: 'right' }}>
                                     <strong>
-                                        {reserva.noches * alojamiento.precio}€
+                                        {(reserva.noches * alojamiento.precio).toLocaleString("de-DE")}€
                                     </strong>
                                     &nbsp;
                                     <small className="text-muted">(IVA incluido)</small>

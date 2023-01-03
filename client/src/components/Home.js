@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 
 import { crearAlerta } from './Toast/Toast.js';
 import BotonTop from './Navegacion/BotonTop';
+import casaNueva from '../img/nueva-casa.png';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faLocationDot, faHeart, faArrowDown } from '@fortawesome/free-solid-svg-icons';
@@ -142,7 +143,7 @@ function Home() {
                                     src={imgAlojamientos[index]}/>
 
                                     <div className="nueva-casa" style={ (new Date().getTime() - new Date(x.creadoEn).getTime()) / (1000 * 60 * 60 * 24) < 3 ? { } : { display: 'none' } }>
-                                        NUEVA
+                                        <img className="img-fluid" src={casaNueva}/>
                                     </div>
                                 </div> 
 
