@@ -1,15 +1,16 @@
-import React, {useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import { useLocation } from "react-router-dom";
 
 import { crearAlerta } from '../Toast/Toast.js';
 
 import NoProfileImg from '../../img/no-profile-img.png';
+import './Chats.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faFaceLaughBeam, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
-import Button from "react-bootstrap/esm/Button";
+import Form from 'react-bootstrap/Form';
 
 const fechaOpc = { year: 'numeric', month: '2-digit', day: '2-digit' };
 const horaOpc = { hour: '2-digit', minute: '2-digit' };
@@ -28,6 +29,9 @@ function UserChats({ changeLogged }) {
 
     const [nuevoChat, setNuevoChat] = useState(null);
     const [nuevoMensajes, setNuevoMensajes] = useState([]);
+
+    const primerMensaje = useRef();
+    const escribirMensaje = useRef();
 
     useEffect(() => {
 
@@ -133,16 +137,16 @@ function UserChats({ changeLogged }) {
         setChatMensajes([]);
     };
 
-    const enviarNuevoMensaje = async () => {
+    const enviarNuevoMensaje = async (e) => {
+        e.preventDefault();
 
-        const element = document.getElementById('envia-mensaje-nuevo');
-        const mensaje = element.value;
+        //
 
-        if(mensaje === '') {
-            return;
+        const mensaje = primerMensaje.current.value;
 
-        }
-        element.value = '';
+        if(mensaje === '') return;
+
+        primerMensaje.current.value = '';
 
         const data = await fetch('/perfil/mis-chats/nuevo-mensaje', {
             method: 'POST',
@@ -202,16 +206,16 @@ function UserChats({ changeLogged }) {
         setChatMensajes([]);
     };
 
-    const enviarMensaje = async () => {
+    const enviarMensaje = async (e) => {
+        e.preventDefault();
 
-        const element = document.getElementById('envia-mensaje');
-        const mensaje = element.value;
+        //
 
-        if(mensaje === '') {
-            return;
+        const mensaje = escribirMensaje.current.value;
 
-        }
-        element.value = '';
+        if(mensaje === '') return;
+
+        escribirMensaje.current.value = '';
 
         const data = await fetch('/perfil/mis-chats/nuevo-mensaje', {
             method: 'POST',
@@ -326,40 +330,36 @@ function UserChats({ changeLogged }) {
                             &nbsp;&nbsp;&nbsp;
                         </span>
 
-                        <span style={{ fontWeight: 'bold', textAlign: 'center', fontSize: '1em' }}>
+                        <span className="chat-titulo">
                             {nuevoChat?.nombre.toUpperCase()}
                         </span>
 
                         <hr />
 
-                        <div style={{ height: '250px', overflowY: 'auto', color: 'white' }}>
+                        <div className="chat-mensajes">
 
                             <br/>
 
                             {
                                 nuevoMensajes.map((x, index) => (
+                                    
+                                    <div key={index} className={x.propio === false ? 'mensaje' : 'mensaje mensaje-propio' }>
+                                        {x.mensaje}
 
-                                    <div key={index} style={x.propio === false ? { marginRight: '8px', marginBottom: '18px' } : { textAlign: 'right', marginRight: '8px', marginBottom: '18px' } }>
-                                        <span style={x.propio === false ? { backgroundColor: '#494949', padding: '8px', borderRadius: '25px' } : { backgroundColor: '#6060f8', padding: '8px', borderRadius: '25px' } }>
-                                            
-                                            {x.mensaje} 
-                                            <small  style={{  verticalAlign: 'bottom', fontSize: '11px', fontWeight: 'bold' }}>
-                                                &nbsp; { new Date(x.creadoEn).toLocaleTimeString('es-ES', horaOpc) }&nbsp;
-                                            </small>
-                                        </span>
+                                        <small  style={{ verticalAlign: 'bottom', fontSize: '11px', fontWeight: 'bold' }}>
+                                            &nbsp; { new Date(x.creadoEn).toLocaleTimeString('es-ES', horaOpc) }&nbsp;
+                                        </small>
                                     </div>
                                 ))
                             }
 
                         </div>
-
-                        <div className="input-group mb-3">
-                            <input type="text" className="form-control" placeholder="Escribe un mensaje" id="envia-mensaje-nuevo" />
-                            
-                            <Button className="filtros-botones" size="sm" onClick={enviarNuevoMensaje}>
-                                <FontAwesomeIcon icon={faPaperPlane} /> Enviar
-                            </Button>
-                        </div>
+                        
+                        <Form className="chat-input mt-2" onSubmit={enviarNuevoMensaje}>
+                            <FontAwesomeIcon className="chat-icon" icon={faCamera} />
+                            <FontAwesomeIcon className="chat-icon" icon={faFaceLaughBeam} />
+                            <Form.Control type="text" placeholder="Escribe tu mensaje aquí!" ref={primerMensaje} />
+                        </Form>
 
                     </div>
 
@@ -377,39 +377,36 @@ function UserChats({ changeLogged }) {
                             &nbsp;&nbsp;&nbsp;
                         </span>
 
-                        <span style={{ fontWeight: 'bold', textAlign: 'center', fontSize: '1em' }}>
+                        <span className="chat-titulo">
                             {chats[chatIndex]?.nombre.toUpperCase()} <br/> <small className="text-muted">{chats[chatIndex]?.ultimaConexion}</small>
                         </span>
 
                         <hr/>
 
-                        <div style={{ height: '250px', overflowY: 'auto', color: 'white' }} id="mensajes-chat">
+                        <div className="chat-mensajes" id="mensajes-chat">
 
                             <br/>
 
                             {
                                 chatMensajes.map((x, index) => (
-                                    <div key={index} style={x.propio === false ? { marginRight: '8px', marginBottom: '18px' } : { textAlign: 'right', marginRight: '8px', marginBottom: '18px' } }>
-                                        <span style={x.propio === false ? { backgroundColor: '#494949', padding: '8px', borderRadius: '25px' } : { backgroundColor: '#6060f8', padding: '8px', borderRadius: '25px' } }>
-                                            
-                                            {x.mensaje} 
-                                            <small  style={{  verticalAlign: 'bottom', fontSize: '11px', fontWeight: 'bold' }}>
-                                                &nbsp; { new Date(x.creadoEn).toLocaleTimeString('es-ES', horaOpc) }&nbsp;
-                                            </small>
-                                        </span>
+                                    <div key={index} className={x.propio === false ? 'mensaje' : 'mensaje mensaje-propio' }>
+
+                                        {x.mensaje}
+
+                                        <small  style={{ verticalAlign: 'bottom', fontSize: '11px', fontWeight: 'bold' }}>
+                                            &nbsp; { new Date(x.creadoEn).toLocaleTimeString('es-ES', horaOpc) }&nbsp;
+                                        </small>
                                     </div>
                                 ))
                             }
 
                         </div>
-
-                        <div className="input-group mb-3">
-                            <input type="text" className="form-control" placeholder="Escribe un mensaje" id="envia-mensaje" />
-                            
-                            <Button className="filtros-botones" size="sm" onClick={enviarMensaje}>
-                                <FontAwesomeIcon icon={faPaperPlane} /> Enviar
-                            </Button>
-                        </div>
+                        
+                        <Form className="chat-input mt-2" onSubmit={enviarMensaje}>
+                            <FontAwesomeIcon className="chat-icon" icon={faCamera} />
+                            <FontAwesomeIcon className="chat-icon" icon={faFaceLaughBeam} />
+                            <Form.Control type="text" placeholder="Escribe tu mensaje aquí!" ref={escribirMensaje} />
+                        </Form>
 
                     </div>
 

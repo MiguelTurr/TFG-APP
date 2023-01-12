@@ -70,7 +70,6 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
             body: JSON.stringify({
                 password: cambiarDatos.eliminar,
                 alojamientoID: alojamiento.ID,
-                imgTotal: alojamiento.imgCantidad,
             }),
 
             headers: {
@@ -91,7 +90,7 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
         } else if (items.respuesta === 'correcto') {
             crearAlerta('exito', '¡Alojamiento eliminado!');
             
-            setTimeout(() => { console.log('Correcto'); }, 1000);
+            setTimeout(() => { window.location.reload(); }, 500);
         }
     };
 

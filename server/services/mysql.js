@@ -8,7 +8,8 @@ var connection = mysql.createConnection({
     port     : 3306,
     user     : mysql_user,
     password : mysql_password,
-    database : mysql_database
+    database : mysql_database,
+    charset : 'utf8mb4'
 });
 
 connection.connect(function(err) {

@@ -106,6 +106,11 @@ router.get('/chat/:id', (req, res) => {
 
         for(var i = 0; i < len; i++) {
             result[i].propio = result[i].emisorID === req.userId ? true : false;
+
+            /*if(i==0) {
+                result[i].imagen = true;
+                console.log(result[i])
+            }*/
         }
 
         res.status(200).json({ respuesta: 'correcto', mensajes: result });

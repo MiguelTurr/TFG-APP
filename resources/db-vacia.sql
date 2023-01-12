@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS `alojamientos_img` (
 	`alojamientoID` int NOT NULL,
 	`nombre` varchar(70) NOT NULL,
 
-    CONSTRAINT FK_AlojamientoImagen FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID),
+    CONSTRAINT FK_AlojamientoImagen FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID) ON DELETE CASCADE,
     PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `alojamientos_valoraciones` (
 	`valCalidad` float NOT NULL,
 
     CONSTRAINT FK_UsuarioValoracion FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
-    CONSTRAINT FK_AlojamientoValoracion FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID),
+    CONSTRAINT FK_AlojamientoValoracion FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID) ON DELETE CASCADE,
     PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS `usuarios_favoritos` (
 
 
     CONSTRAINT FK_UsuarioFavorito FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
-    CONSTRAINT FK_AlojamientoFavorito FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID),
+    CONSTRAINT FK_AlojamientoFavorito FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID) ON DELETE CASCADE,
     PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -187,7 +187,7 @@ CREATE TABLE IF NOT EXISTS `usuarios_reservas` (
 	`valoraHospedador` tinyint NOT NULL default -1,
 
     CONSTRAINT FK_UsuarioReserva FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
-    CONSTRAINT FK_AlojamientoReserva FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID),
+    CONSTRAINT FK_AlojamientoReserva FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID) ON DELETE CASCADE,
     PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 

@@ -6,6 +6,7 @@ const router = express.Router();
 const mysql = require('../services/mysql.js');
 const email = require("../services/email.js");
 const utils = require('../services/utils.js');
+const bcrypt = require('bcrypt');
 const fs = require("fs");
 
 const { dev_state } = require('../services/config.js');
@@ -413,10 +414,17 @@ router.post('/borrar', (req, res) => {
             return;
         }
 
-        // HACER
+        // CONTRASEÑA CORRECTA - ELIMINAR
 
-        console.log('BORRAR ALOJAMIENTO');
-        res.status(200).json({ respuesta: 'correcto' });
+        mysql.query("DELETE FROM alojamientos WHERE ID=? LIMIT 1", req.body.alojamientoID, async (err) => {
+            if (err) {
+                res.status(500).json({ respuesta: 'err_db' });
+                console.log(err.message);
+                return;
+            }
+
+            res.status(200).json({ respuesta: 'correcto' });
+        });
     });
 });
 
