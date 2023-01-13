@@ -6,14 +6,19 @@ import { crearAlerta } from '../Toast/Toast.js';
 
 import NoProfileImg from '../../img/no-profile-img.png';
 import './Chats.css';
+import icons from '../../resources/icons.json';
+
+import MensajeImagen from './MensajeImagen';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCamera, faFaceLaughBeam, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faFaceLaughBeam, faArrowLeft, faImage } from '@fortawesome/free-solid-svg-icons';
 
 import Form from 'react-bootstrap/Form';
 
 const fechaOpc = { year: 'numeric', month: '2-digit', day: '2-digit' };
 const horaOpc = { hour: '2-digit', minute: '2-digit' };
+
+var fechaComparar = null;
 
 function UserChats({ changeLogged }) {
 
@@ -32,6 +37,12 @@ function UserChats({ changeLogged }) {
 
     const primerMensaje = useRef();
     const escribirMensaje = useRef();
+
+    const chatImagen = useRef();
+
+    const [showIcon, setShowIcon] = useState(null);
+
+    const [imagenChat, setImagenChat] = useState(null);
 
     useEffect(() => {
 
@@ -108,12 +119,20 @@ function UserChats({ changeLogged }) {
     };
 
     const abrirChat = async (index) => {
+
+        if(chatIndex === index) {
+            return;
+        }
+
         const data = await fetch('/perfil/mis-chats/chat/' +chats[index].chatID, { method: 'GET' });
         const items = await data.json();
 
         if(items.respuesta === 'correcto') {
             setChatMensajes(items.mensajes);
             setChatIndex(index);
+
+            setShowIcon(false);
+            fechaComparar = null;
 
             //
 
@@ -253,6 +272,86 @@ function UserChats({ changeLogged }) {
         }
     };
 
+    const addNewIcon = (icon) => {
+        escribirMensaje.current.value += icon;
+    };
+
+    const comprobarDia = (fecha) => {
+
+        const fechaAsDate = new Date(fecha);
+
+        if(fechaComparar === null || fechaComparar.getDate() !== fechaAsDate.getDate() || (fechaComparar.getDate() === fechaAsDate.getDate() && fechaComparar.getMonth() !== fechaAsDate.getMonth())) {
+            fechaComparar = fechaAsDate;
+            return (<div className="mensaje-fecha">{fechaComparar.toLocaleDateString('es-ES', {day: '2-digit',  month: 'long' })}</div>);
+        }
+        return '';
+    };
+
+    const enviarImagen = async () => {
+
+        const len = chatImagen.current.files.length;
+        if(len === 0) return;
+
+        if (!['image/jpeg', 'image/png'].includes(chatImagen.current.files[0].type)) {
+            return crearAlerta('error', '¡Ese formato de imagen no es válido!');
+        }
+
+        const maxSize = 2 * 1024 * 1024;
+
+        if (chatImagen.current.files[0].size > maxSize) {
+            return crearAlerta('error', '¡El tamaño máximo por imagen es de 2 MB!');
+        }
+
+        var formData = new FormData();
+
+        formData.append('chatID', chats[chatIndex].chatID);
+        formData.append('imagen', chatImagen.current.files[0]);
+
+        const data = await fetch('/perfil/mis-chats/nuevo-foto', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const items = await data.json();
+
+        if(items.respuesta === 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+
+        } else if(items.respuesta === 'correcto') {
+
+            setChatMensajes([...chatMensajes, { 
+                ID: items.imagenId,
+                propio: true,
+                imagen: true,
+                mensaje: 'Foto.' +chatImagen.current.files[0].type.split('/')[1],
+                creadoEn: new Date()}
+            ]);
+
+            //
+            
+            var array = chats;
+            array[chatIndex].propio = true;
+            array[chatIndex].imagen = true;
+            array[chatIndex].mensaje = 'Foto';
+            array[chatIndex].fecha = new Date();
+            setChats(array);
+        }
+    };
+
+    //
+
+    const cerrarImagenChat = () => { setImagenChat(null) };
+    const mostrarImagen = async (index) => {
+        const param = chats[chatIndex].chatID+ '-' +chatMensajes[index].ID+ '-' +chatMensajes[index].mensaje.split('.')[1];
+        const imagen = await fetch('/perfil/mis-chats/chat-foto/' +param, { method: 'GET' });
+    
+        if(imagen.status === 200) {
+            setImagenChat(imagen.url);
+        }
+    };
+
+    //
+
     return (
         <div className="container-fluid mb-3">
             <div className="row">
@@ -337,16 +436,13 @@ function UserChats({ changeLogged }) {
                         <hr />
 
                         <div className="chat-mensajes">
-
-                            <br/>
-
                             {
                                 nuevoMensajes.map((x, index) => (
                                     
-                                    <div key={index} className={x.propio === false ? 'mensaje' : 'mensaje mensaje-propio' }>
+                                    <div key={index} className='mensaje mensaje-propio'>
                                         {x.mensaje}
 
-                                        <small  style={{ verticalAlign: 'bottom', fontSize: '11px', fontWeight: 'bold' }}>
+                                        <small className="mensaje-hora">
                                             &nbsp; { new Date(x.creadoEn).toLocaleTimeString('es-ES', horaOpc) }&nbsp;
                                         </small>
                                     </div>
@@ -354,6 +450,8 @@ function UserChats({ changeLogged }) {
                             }
 
                         </div>
+
+                        <hr/> 
                         
                         <Form className="chat-input mt-2" onSubmit={enviarNuevoMensaje}>
                             <FontAwesomeIcon className="chat-icon" icon={faCamera} />
@@ -385,30 +483,63 @@ function UserChats({ changeLogged }) {
 
                         <div className="chat-mensajes" id="mensajes-chat">
 
-                            <br/>
-
                             {
                                 chatMensajes.map((x, index) => (
-                                    <div key={index} className={x.propio === false ? 'mensaje' : 'mensaje mensaje-propio' }>
+                                    <span key={index}>
+                                        {comprobarDia(x.creadoEn)}
 
-                                        {x.mensaje}
+                                        <div className={x.propio === false ? 'mensaje' : 'mensaje mensaje-propio' }>
 
-                                        <small  style={{ verticalAlign: 'bottom', fontSize: '11px', fontWeight: 'bold' }}>
-                                            &nbsp; { new Date(x.creadoEn).toLocaleTimeString('es-ES', horaOpc) }&nbsp;
-                                        </small>
-                                    </div>
+                                            {x.imagen === true ? <FontAwesomeIcon icon={faImage} className="mensaje-img" onClick={() => mostrarImagen(index) }/> : x.mensaje}
+
+                                            <small className="mensaje-hora">
+                                                &nbsp; { new Date(x.creadoEn).toLocaleTimeString('es-ES', horaOpc) }&nbsp;
+                                            </small>
+                                        </div>
+                                    </span>
                                 ))
                             }
 
                         </div>
-                        
+
+                        <div style={{ position: 'relative' }}>
+    
+                            <div className="icon-list" style={ showIcon === true ? { } : { display: 'none' }}>
+
+                                {
+                                    icons.map((x, index) => (
+                                        <span  key={index}>
+                                            <span className="icon" onClick={() => { addNewIcon(x.icon) }}>
+                                                {x.icon}
+                                            </span>
+                                            {(index+1) % 5 === 0 ? <br/> : ''}
+                                        </span>
+                                    ))
+                                }
+                            </div>
+                        </div>
+
+                        <hr/>
+                                                
                         <Form className="chat-input mt-2" onSubmit={enviarMensaje}>
-                            <FontAwesomeIcon className="chat-icon" icon={faCamera} />
-                            <FontAwesomeIcon className="chat-icon" icon={faFaceLaughBeam} />
+                            <FontAwesomeIcon
+                                className="chat-icon"
+                                icon={faCamera}
+                                onClick={() => { chatImagen.current.click() }}
+                                />
+
+                            <FontAwesomeIcon
+                                className="chat-icon"
+                                icon={faFaceLaughBeam} 
+                                
+                                onClick={() => setShowIcon(!showIcon) }/>
+
                             <Form.Control type="text" placeholder="Escribe tu mensaje aquí!" ref={escribirMensaje} />
                         </Form>
 
                     </div>
+
+                    <input type="file" accept="image/*" ref={chatImagen} onChange={enviarImagen} style={{ display: 'none' }} />
 
                     <div style={ chatIndex === null && nuevoChat === null ? {} : {display: 'none'} }>
 
@@ -420,6 +551,8 @@ function UserChats({ changeLogged }) {
                     </div>
                 </div>
             </div>
+
+            <MensajeImagen imagen={imagenChat} funcionCerrar={cerrarImagenChat} />
         </div>
     );
 }

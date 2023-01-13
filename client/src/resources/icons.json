@@ -1,0 +1,66 @@
+[
+    {
+        "descripcion": "Cara sonriente",
+        "icon": "😀"
+    },
+    {
+        "descripcion": "Risa",
+        "icon": "😆"
+    },
+    {
+        "descripcion": "Llorando de la risa",
+        "icon": "😂"
+    },
+    {
+        "descripcion": "Cara pensante",
+        "icon": "🤔"
+    },
+    {
+        "descripcion": "¡Ups!",
+        "icon": "😅"
+    },
+    {
+        "descripcion": "Guiño",
+        "icon": "😉"
+    },
+    {
+        "descripcion": "Llorando",
+        "icon": "😭"
+    },
+    {
+        "descripcion": "Dormir",
+        "icon": "😴"
+    },
+    {
+        "descripcion": "Beso con corazón",
+        "icon": "😘"
+    },
+    {
+        "descripcion": "Sacando la lengua",
+        "icon": "😛"
+    },
+    {
+        "descripcion": "Cara con máscara/asco",
+        "icon": "😷"
+    },
+    {
+        "descripcion": "Perdón",
+        "icon": "🙏"
+    },
+    {
+        "descripcion": "OK",
+        "icon": "👍"
+    },
+    {
+        "descripcion": "Apretón de manos",
+        "icon": "🤝"
+    },
+    {
+        "descripcion": "Mano saludando",
+        "icon": "👋"
+    },
+    {
+        "descripcion": "Corazón rojo",
+        "icon": "💓"
+    }
+]

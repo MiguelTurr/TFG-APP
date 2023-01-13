@@ -5,6 +5,7 @@ const router = express.Router();
 
 const mysql = require('../services/mysql.js');
 const utils = require('../services/utils.js');
+const fs = require("fs");
 
 //
 
@@ -72,7 +73,7 @@ router.get('/', (req, res) => {
                 // MENSAJE
 
                 propio: mensaje[0].emisorID === req.userId ? true : false,
-                mensaje: mensaje[0].mensaje,
+                mensaje: mensaje[0].mensaje.includes('////imagen////') ? 'Foto' : mensaje[0].mensaje,
             }
 
             arrayFinal.push(objeto);
@@ -91,7 +92,7 @@ router.get('/chat/:id', (req, res) => {
 
     const chatId = req.params.id;
 
-    mysql.query('SELECT emisorID,creadoEn,mensaje FROM usuarios_chats_mensajes WHERE chatID=? LIMIT 50', chatId, function(err, result) {
+    mysql.query('SELECT ID,emisorID,creadoEn,mensaje FROM usuarios_chats_mensajes WHERE chatID=? LIMIT 50', chatId, function(err, result) {
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
             console.log(err.message);
@@ -107,17 +108,16 @@ router.get('/chat/:id', (req, res) => {
         for(var i = 0; i < len; i++) {
             result[i].propio = result[i].emisorID === req.userId ? true : false;
 
-            /*if(i==0) {
+            if(result[i].mensaje.includes('////imagen////')) {
                 result[i].imagen = true;
-                console.log(result[i])
-            }*/
+            }
         }
 
         res.status(200).json({ respuesta: 'correcto', mensajes: result });
     });
 });
 
-router.post('/nuevo-mensaje', (req, res) => {
+router.post('/nuevo-mensaje', async (req, res) => {
 
     if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
@@ -146,14 +146,7 @@ router.post('/nuevo-mensaje', (req, res) => {
 
             //
 
-            mysql.query('INSERT INTO usuarios_chats_mensajes (chatID, emisorID, mensaje) VALUES (?)', 
-            [
-                [
-                    result.insertId,
-                    req.userId,
-                    req.body.mensaje,
-                ]
-            ]);
+            mysql.query('INSERT INTO usuarios_chats_mensajes (chatID, emisorID, mensaje) VALUES (?)', [[ result.insertId, req.userId, req.body.mensaje ]]);
 
             //
             
@@ -181,5 +174,62 @@ router.post('/nuevo-mensaje', (req, res) => {
         res.status(200).json({ respuesta: 'correcto' });
     });
 });
+
+router.post('/nuevo-foto', (req, res) => {
+
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    if(req.userId == req.body.hablarId) {
+        res.status(500).json({ respuesta: 'err_chat' });
+        return;
+    }
+
+    const file = req.files.imagen;
+    const extension = file.mimetype.split('/')[1];
+
+    mysql.query('INSERT INTO usuarios_chats_mensajes (chatID, emisorID, mensaje) VALUES (?)', 
+    [
+        [
+            req.body.chatID,
+            req.userId,
+            '////imagen////.' +extension,
+        ]
+    ], function(err, result) {
+        if (err) {
+            res.status(500).json({ respuesta: 'err_db' });
+            console.log(err.message);
+            return;
+        }
+        const nombreFile = req.body.chatID+ '_' +result.insertId+ '.' +extension;
+
+        file.mv('./imagenes/chats/' +nombreFile);
+
+        //
+
+        mysql.query('UPDATE usuarios_chats SET nuevosMensajes=nuevosMensajes+1,nuevoEn=NOW() WHERE ID=?', req.body.chatID);
+        res.status(200).json({ respuesta: 'correcto', imagenId: result.insertId });
+    });
+});
+
+router.get('/chat-foto/:id', (req, res) => {
+
+    const [chatId, mensajeId, extension] = req.params.id.split('-');
+    const nombreFile = chatId+ '_' +mensajeId+ '.' +extension;
+
+    fs.readFile('./imagenes/chats/' +nombreFile, function (err, file) {
+
+        if (err) {
+            res.status(500).json({ respuesta: 'err_file' });
+            return;
+        }
+
+        res.set({ 'Content-Type': 'image/jpg' });
+        res.end(file);
+    });
+});
+
 
 module.exports = router

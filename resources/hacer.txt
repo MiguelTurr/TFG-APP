@@ -66,3 +66,6 @@ https://stackoverflow.com/questions/48669646/how-to-add-or-remove-a-classname-wh
 
 
 https://www.npmjs.com/package/use-places-autocomplete
+
+LISTA EMOTICONOS PARA HTML
+https://www.saberespractico.com/web/emoticonos-en-html/

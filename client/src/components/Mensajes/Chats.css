@@ -31,6 +31,37 @@
     color: white;
 }
 
+.mensaje-hora {
+    vertical-align: bottom;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.mensaje-fecha {
+    padding: 0.5rem 1rem;
+    margin: 1rem;
+    background: #fb5f5f;
+    border-radius: 1.125rem;
+    min-height: 2.25rem;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+    max-width: 66%;
+    font-weight: bold;
+
+    margin: auto;
+}
+
+.mensaje-img {
+    font-size: 1.5rem;
+    padding: 0.5rem 0.5rem;
+}
+
+.mensaje-img:hover {
+    background-color: rgba(73, 176, 255, 0.452);
+    border-radius: 1.125rem;
+}
+
 .chat-input {
     display: flex;
     box-sizing: border-box;
@@ -59,4 +90,34 @@
 }
 .chat-icon:hover {
     color: #333;
+}
+
+.icon-list {
+    z-index: 1;
+    position: absolute;
+    
+    background-color: rgb(215, 215, 215);
+    /*border-radius: 5px;*/
+    
+    border-radius: 1.125rem 1.125rem 1.125rem 0;
+
+    top: -135px;
+    padding: 10px;
+    margin-left: 45px;
+}
+
+.icon {
+    padding: 2px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.icon:hover {
+    background-color: rgba(73, 176, 255, 0.452);
+    border-radius: 5px;
 }

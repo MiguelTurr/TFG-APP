@@ -150,7 +150,7 @@ router.post('/crear', (req, res) => {
 
                 const file = req.files.imagen;
 
-                const extension = file.name.split('.')[1];
+                const extension = file.mimetype.mimetype('/')[1];
                 const nombreFile = utils.nombreFotoAlojamiento(alojamientoId, 0, extension);
 
                 file.mv('./imagenes/casas/' + nombreFile);
@@ -163,7 +163,7 @@ router.post('/crear', (req, res) => {
 
                     const file = req.files.imagen[i];
 
-                    const extension = file.name.split('.')[1];
+                    const extension = file.mimetype.split('/')[1];
                     const nombreFile = utils.nombreFotoAlojamiento(alojamientoId, i, extension);
 
                     file.mv('./imagenes/casas/' + nombreFile);

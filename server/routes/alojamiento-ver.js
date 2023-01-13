@@ -4,7 +4,6 @@ const router = express.Router();
 //
 
 const mysql = require('../services/mysql.js');
-const email = require('../services/email.js');
 const utils = require('../services/utils.js');
 const fs = require("fs");
 
