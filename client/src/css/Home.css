@@ -24,6 +24,7 @@
 .tag-imagen {
     box-sizing: border-box;
     padding: 0.2rem 1rem;
+    margin-left: 1px;
     background: #3962f7;
     color: white;
     font-weight: bold;

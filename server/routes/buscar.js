@@ -16,8 +16,9 @@ router.post('/', (req, res) => {
         queryStr = 'SELECT * FROM alojamientos as alo WHERE alo.usuarioID!=0 ';
 
     } else {
-        queryStr = 'SELECT alo.*, fav.ID as favorito FROM `alojamientos` as alo ';
+        queryStr = 'SELECT alo.*, fav.ID as favorito, vis.ID as visto FROM `alojamientos` as alo ';
         queryStr += 'LEFT JOIN `usuarios_favoritos` as fav ON fav.alojamientoID=alo.ID AND fav.usuarioID=' + req.userId + ' ';
+        queryStr += 'LEFT JOIN `alojamientos_vistos` as vis ON vis.alojamientoID=alo.ID AND vis.usuarioID=' + req.userId + ' ';
         queryStr += 'WHERE alo.usuarioID!=' + req.userId + ' ';
     }
 

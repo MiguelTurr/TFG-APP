@@ -10,6 +10,8 @@ import { faStar, faLocationDot, faHeart } from '@fortawesome/free-solid-svg-icon
 
 import Card from 'react-bootstrap/Card';
 
+const diaEnSegundos = 1000 * 60 * 60 * 24;
+
 function Buscar() {
 
     const location = useLocation();
@@ -129,6 +131,20 @@ function Buscar() {
 
     //
 
+    const esCasaNueva = (fecha) => {
+        if((new Date().getTime() - new Date(fecha).getTime()) / diaEnSegundos < 3) {
+            return <span className="tag-imagen">novedad</span>
+        }
+        return '';
+    };
+
+    const casaVista = (visto) => {
+        if(visto === null) return '';
+        return <span className="tag-imagen">visto</span>
+    };
+
+    //
+
     return (
         <div className="container-fluid">
             <div className="row">
@@ -150,10 +166,18 @@ function Buscar() {
 
                             <Card className="container-casa h-100" onClick={() => { verAlojamiento(index) }}>
 
-                                 <img
-                                    className="card-img-top"
-                                    height="250px"
-                                    src={alojamientosImg[index]}/>
+                                <div>
+
+                                    <img
+                                        className="card-img-top"
+                                        height="250px"
+                                        src={alojamientosImg[index]}/>
+
+                                    <div className="nueva-casa">
+                                        {esCasaNueva(x.creadoEn)}
+                                        {casaVista(x.visto)}
+                                    </div>  
+                                </div>
 
                                 <Card.Body className="card-body info-casa">
 

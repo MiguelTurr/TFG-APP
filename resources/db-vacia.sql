@@ -116,6 +116,22 @@ CREATE TABLE IF NOT EXISTS `alojamientos_valoraciones` (
 
 DELETE FROM `alojamientos_valoraciones`;
 
+
+CREATE TABLE IF NOT EXISTS `alojamientos_vistos` (
+    `ID` int NOT NULL AUTO_INCREMENT,
+	`usuarioID` int NOT NULL,
+	`alojamientoID` int NOT NULL,
+	`veces` int default 1,
+
+    CONSTRAINT FK_UsuarioVistos FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
+    CONSTRAINT FK_AlojamientoVistos FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID) ON DELETE CASCADE,
+    PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+ALTER TABLE `alojamientos_vistos` ADD CONSTRAINT UQ_Vistos_Usuario_Alojamiento UNIQUE(usuarioID, alojamientoID);
+
+DELETE FROM `alojamientos_vistos`;
+
 ----------------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `usuarios_favoritos` (

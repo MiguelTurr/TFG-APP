@@ -124,6 +124,11 @@ function Home() {
         return '';
     };
 
+    const casaVista = (visto) => {
+        if(visto === null) return '';
+        return <span className="tag-imagen">visto</span>
+    };
+
     //
 
     const mostrarMas = () => {
@@ -154,6 +159,7 @@ function Home() {
 
                                     <div className="nueva-casa">
                                         {esCasaNueva(x.creadoEn)}
+                                        {casaVista(x.visto)}
                                     </div>  
                                 </div> 
 
