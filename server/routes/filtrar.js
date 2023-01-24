@@ -10,6 +10,12 @@ const mysql = require('../services/mysql.js');
 router.post('/resultado', (req, res) => {
 
     var queryStr = 'SELECT * FROM alojamientos WHERE ';
+    
+    //
+    
+    if (req.userId !== undefined) {
+        queryStr += 'usuarioID!=' + req.userId + ' AND ';
+    }
 
     // FILTROS
 
@@ -39,11 +45,14 @@ router.post('/resultado', (req, res) => {
 
     if(filtros.valoracion !== null && filtros.valoracion > 0) {
         queryStr += 'AND valoracionMedia>' +parseInt(filtros.valoracion)+ ' ';
-    }  
+    }
 
     //
 
     mysql.query(queryStr, function(err, result) {
+        if(err) {
+            console.log(err);
+        }
         res.status(200).json({ respuesta: 'correcto', cantidad: result === undefined ? 0 : result.length });
     });
 });

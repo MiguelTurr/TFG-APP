@@ -124,6 +124,8 @@ const FiltrosModal = ({ mostrar, funcionCerrar }) => {
 
         history(url.substring('http://localhost:3000/'.length, url.search('&precio_min')));
         funcionCerrar();
+
+        setNuevosFiltros(defaultFiltros);
     };
 
     //

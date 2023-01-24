@@ -508,7 +508,7 @@ function UserChats({ changeLogged }) {
 
                                 {
                                     icons.map((x, index) => (
-                                        <span  key={index}>
+                                        <span key={index}>
                                             <span className="icon" onClick={() => { addNewIcon(x.icon) }}>
                                                 {x.icon}
                                             </span>

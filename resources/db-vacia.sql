@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 	`idiomas` varchar(70) NOT NULL default 'Español',
 	`imgPerfil` varchar(50) NOT NULL default 'default.png',
 	`recibirCorreos` tinyint NOT NULL default 1,
-	`ultimaConexion` datetime default NOW(),
+	`ultimaConexion` datetime default NULL,
 	`rol` tinyint default 0,
 
     PRIMARY KEY (`ID`)
@@ -159,8 +159,10 @@ CREATE TABLE IF NOT EXISTS `usuarios_denuncias` (
 	`usuarioID` int NOT NULL,
 	`reportadoID` int NOT NULL,
 	`creadoEn` datetime NOT NULL default NOW(),
-	`razones` varchar(200) default '',
 	`mensaje` varchar(150) NOT NULL,
+	`insultos` tinyint default NULL,
+	`estafa` tinyint default NULL,
+	`suplantar` tinyint default NULL,
 
     CONSTRAINT FK_UsuarioReportante FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
     CONSTRAINT FK_UsuarioReportado FOREIGN KEY (reportadoID) REFERENCES usuarios(ID),
@@ -220,7 +222,7 @@ CREATE TABLE IF NOT EXISTS `usuarios_chats_mensajes` (
     CONSTRAINT FK_ChatMensaje FOREIGN KEY (chatID) REFERENCES usuarios_chats(ID),
     CONSTRAINT FK_EmisorMensaje FOREIGN KEY (emisorID) REFERENCES usuarios(ID),
     PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 DELETE FROM `usuarios_chats_mensajes`;
 

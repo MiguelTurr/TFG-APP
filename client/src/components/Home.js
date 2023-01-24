@@ -15,6 +15,7 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 
 var contadorEstado = 0;
+const diaEnSegundos = 1000 * 60 * 60 * 24;
 
 function Home() {
     const location = useLocation();
@@ -116,6 +117,15 @@ function Home() {
 
     //
 
+    const esCasaNueva = (fecha) => {
+        if((new Date().getTime() - new Date(fecha).getTime()) / diaEnSegundos < 3) {
+            return <span className="tag-imagen">novedad</span>
+        }
+        return '';
+    };
+
+    //
+
     const mostrarMas = () => {
         fetchItems(params.get("ordenar"), contadorEstado + 1);
     };
@@ -142,9 +152,9 @@ function Home() {
                                     height="250px"
                                     src={imgAlojamientos[index]}/>
 
-                                    <div className="nueva-casa" style={ (new Date().getTime() - new Date(x.creadoEn).getTime()) / (1000 * 60 * 60 * 24) < 3 ? { } : { display: 'none' } }>
-                                        <img className="img-fluid" src={casaNueva}/>
-                                    </div>
+                                    <div className="nueva-casa">
+                                        {esCasaNueva(x.creadoEn)}
+                                    </div>  
                                 </div> 
 
                                 <Card.Body className="card-body info-casa">

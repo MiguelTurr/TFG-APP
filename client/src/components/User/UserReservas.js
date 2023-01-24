@@ -316,14 +316,14 @@ function UserReservas({ changeLogged }) {
         obtenerGanancias(ganancias.mesSiguienteNumero+ '-' +ganancias.yearSiguienteNumero);
     }
 
-    const descargarFactura = async () => {
+    const descargarFactura = async (tipo) => {
 
         var totalArray = gananciasInfo.concat(totalGanancias);
 
         const desactivarBtn = document.getElementById('descargar-btn');
         desactivarBtn.disabled = true;
 
-        const data = await fetch('/perfil/mis-ganancias/descargar', 
+        const data = await fetch('/perfil/mis-ganancias/descargar/' +tipo, 
         { 
             method: 'POST',
 
@@ -354,7 +354,7 @@ function UserReservas({ changeLogged }) {
 
             var a = document.createElement("a");
             a.href = window.URL.createObjectURL(items);
-            a.download = ganancias?.mes+ '-' +ganancias?.year+ '.pdf';
+            a.download = ganancias?.mes+ '-' +ganancias?.year+ '.' +tipo;
             a.click();
         }
 
@@ -674,9 +674,17 @@ function UserReservas({ changeLogged }) {
                     {ganancias?.primerDia} - {ganancias?.ultimoDia}
                 </small>
 
-                <Button className="borrar-botones" size="sm" style={{ float: 'right', display: ganancias?.reservas === 0 ? 'none' : '' }} onClick={descargarFactura} id="descargar-btn">
-                    <FontAwesomeIcon icon={faDownload} /> Descargar como .pdf
-                </Button>
+                <span style={{ float: 'right', display: ganancias?.reservas === 0 ? 'none' : '' }}>
+                    <Button className="crear-botones" size="sm" onClick={() => { descargarFactura('csv'); }} id="descargar-btn">
+                        <FontAwesomeIcon icon={faDownload} /> Descargar .csv
+                    </Button>
+
+                    &nbsp;
+
+                    <Button className="borrar-botones" size="sm" onClick={() => { descargarFactura('pdf'); }} id="descargar-btn">
+                        <FontAwesomeIcon icon={faDownload} /> Descargar .pdf
+                    </Button>
+                </span>
 
                 <hr />
 

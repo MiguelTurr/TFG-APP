@@ -106,6 +106,10 @@ router.post('/login', (req, res) => {
             res.status(401).json({ respuesta: 'err_validado' });
             return;
 
+        } else if (result[0].activo == 2) {
+            res.status(401).json({ respuesta: 'err_ban' });
+            return;
+
         } else if (result[0].activo == 2) { // QUITAR COMO CUENTA DESACTIVADA
             mysql.query('UPDATE usuarios SET activo=1 WHERE ID=?', result[0].ID);
         }

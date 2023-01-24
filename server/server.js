@@ -97,3 +97,6 @@ server.use('/alojamiento/reservar', comprobarToken, require('./routes/alojamient
 server.use('/alojamiento/valorar', comprobarToken, require('./routes/alojamiento-valorar'));
 
 server.use('/admin', comprobarToken, comprobarRol, require('./routes/admin'));
+server.use('/admin/alojamientos', comprobarToken, comprobarRol, require('./routes/admin-alojamientos'));
+server.use('/admin/usuarios', comprobarToken, comprobarRol, require('./routes/admin-usuarios'));
+server.use('/admin/reportes', comprobarToken, comprobarRol, require('./routes/admin-reportes'));

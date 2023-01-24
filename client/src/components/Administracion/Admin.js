@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from "react";
 
+import { crearAlerta } from '../Toast/Toast.js';
+
+import './Admin.css';
+import AdminUsuarios from './AdminUsuarios';
+import AdminAlojamientos from './AdminAlojamientos';
+import AdminReportes from './AdminReportes';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckDouble, faFlag, faHouse, faRankingStar, faStar, faUser } from '@fortawesome/free-solid-svg-icons';
 
 function Admin({ changeLogged }) {
 
     const [datosAdmin, setDatosAdmin] = useState({});
+    const [vistaAdmin, setVistaAdmin] = useState('general');
 
     useEffect(() => {
         adminPagina();
@@ -23,6 +31,7 @@ function Admin({ changeLogged }) {
             window.location.href = '/';
 
         } else if(items.respuesta === 'err_db') {
+            crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
         } else if(items.respuesta === 'correcta') {
             setDatosAdmin(items.admin);
@@ -34,19 +43,19 @@ function Admin({ changeLogged }) {
     return (
         <div className="container-fluid">
             <h4 style={{ fontWeight: 'bold' }}>
-                ADMINISTRACIÓN
+                ADMINISTRACIÓN &gt; {vistaAdmin.toUpperCase()}
             </h4>
 
             <hr />
 
-            <div className="row">
+            <div className="row" style={ vistaAdmin === 'general' ? {} : { display: 'none' } }>
 
                 <div className="container-fluid" style={{ width: '80%' }}>
 
                     <div className="row">
 
                         <div className={window.innerWidth < 600 ? 'mb-3' : "col mb-3"}>
-                            <div style={{ backgroundColor: '#e7e7e7', border: '3px solid #000', padding: '15px', borderRadius: '10px', fontWeight: 'bold', color: 'black', textAlign: 'center' }}>
+                            <div className="cuadro-seleccionable" onClick={() => { setVistaAdmin('alojamientos'); }}>
 
                                 <FontAwesomeIcon icon={faHouse} style={{ fontSize: '80px' }} />
                                 <br />
@@ -58,7 +67,7 @@ function Admin({ changeLogged }) {
                         </div>
 
                         <div className={window.innerWidth < 600 ? 'mb-3' : "col mb-3"}>
-                            <div style={{ backgroundColor: '#e7e7e7', border: '3px solid #000', padding: '15px', borderRadius: '10px', fontWeight: 'bold', color: 'black', textAlign: 'center' }}>
+                            <div className="cuadro-seleccionable" onClick={() => { setVistaAdmin('usuarios'); }}>
 
                                 <FontAwesomeIcon icon={faUser} style={{ fontSize: '80px' }} />
                                 <br />
@@ -70,22 +79,8 @@ function Admin({ changeLogged }) {
                             </div>
                         </div>
 
-                        <div className={window.innerWidth < 600 ? 'mb-3' : "col mb-3"}>
-                            <div style={{ backgroundColor: '#e7e7e7', border: '3px solid #000', padding: '15px', borderRadius: '10px', fontWeight: 'bold', color: 'black', textAlign: 'center' }}>
-
-                                <FontAwesomeIcon icon={faStar} style={{ fontSize: '80px' }} />
-                                <br />
-
-                                <span style={{ fontSize: '25px' }}>{datosAdmin.alojamientosValorados}</span>
-                                <br />
-                                ALOJAMIENTOS VALORADOS
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
                         <div className={window.innerWidth < 600 ? 'mb-3' : "col"}>
-                            <div style={{ backgroundColor: '#e7e7e7', border: '3px solid #000', padding: '15px', borderRadius: '10px', fontWeight: 'bold', color: 'black', textAlign: 'center' }}>
+                            <div className="cuadro-seleccionable" onClick={() => { setVistaAdmin('reportes'); }}>
 
                                 <FontAwesomeIcon icon={faFlag} style={{ fontSize: '80px' }} />
                                 <br />
@@ -95,8 +90,24 @@ function Admin({ changeLogged }) {
                                 REPORTES
                             </div>
                         </div>
+                    </div>
+
+                    <div className="row">
+
+                        <div className={window.innerWidth < 600 ? 'mb-3' : "col mb-3"}>
+                            <div className="cuadro-normal">
+
+                                <FontAwesomeIcon icon={faStar} style={{ fontSize: '80px' }} />
+                                <br />
+
+                                <span style={{ fontSize: '25px' }}>{datosAdmin.alojamientosValorados}</span>
+                                <br />
+                                ALOJAMIENTOS VALORADOS
+                            </div>
+                        </div>
+
                         <div className={window.innerWidth < 600 ? 'mb-3' : "col"}>
-                            <div style={{ backgroundColor: '#e7e7e7', border: '3px solid #000', padding: '15px', borderRadius: '10px', fontWeight: 'bold', color: 'black', textAlign: 'center' }}>
+                            <div className="cuadro-normal">
 
                                 <FontAwesomeIcon icon={faRankingStar} style={{ fontSize: '80px' }} />
                                 <br />
@@ -107,7 +118,7 @@ function Admin({ changeLogged }) {
                             </div>
                         </div>
                         <div className={window.innerWidth < 600 ? '' : "col"}>
-                            <div style={{ backgroundColor: '#e7e7e7', border: '3px solid #000', padding: '15px', borderRadius: '10px', fontWeight: 'bold', color: 'black', textAlign: 'center' }}>
+                            <div className="cuadro-normal">
 
                                 <FontAwesomeIcon icon={faCheckDouble} style={{ fontSize: '80px' }} />
                                 <br />
@@ -123,7 +134,7 @@ function Admin({ changeLogged }) {
 
                     <div className="row">
                         <div className="col mb-3">
-                            <div style={{ backgroundColor: '#e7e7e7', border: '3px solid #000', padding: '15px', borderRadius: '10px', fontWeight: 'bold', color: 'black' }}>
+                            <div className="cuadro-normal">
 
                                 <h5 style={{ fontWeight: 'bold' }}>
                                     CIUDADES MÁS BUSCADAS...
@@ -141,7 +152,7 @@ function Admin({ changeLogged }) {
 
                     <div className="row">
                         <div className="col mb-3">
-                            <div style={{ backgroundColor: '#e7e7e7', border: '3px solid #000', padding: '15px', borderRadius: '10px', fontWeight: 'bold', color: 'black' }}>
+                            <div className="cuadro-normal">
 
                                 <h5 style={{ fontWeight: 'bold' }}>
                                     PAISES MÁS BUSCADOS...
@@ -159,6 +170,10 @@ function Admin({ changeLogged }) {
 
                 </div>
             </div>
+
+            <AdminUsuarios show={vistaAdmin} cambiarVista={setVistaAdmin} />
+            <AdminAlojamientos show={vistaAdmin} cambiarVista={setVistaAdmin} />
+            <AdminReportes show={vistaAdmin} cambiarVista={setVistaAdmin} />
         </div>
     );
 }

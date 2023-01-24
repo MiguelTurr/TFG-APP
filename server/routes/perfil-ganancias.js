@@ -127,7 +127,7 @@ router.get('/:id', (req, res) => {
     });
 });
 
-router.post('/descargar', (req, res) => {
+router.post('/descargar/pdf', (req, res) => {
     
     if (req.userId == undefined) {
         res.status(500).json({ respuesta: 'err_user' });
@@ -139,7 +139,7 @@ router.post('/descargar', (req, res) => {
     // GENERAR FACTURA
     
     const doc = new PDFDocument();
-    const writeStream = fs.createWriteStream('./facturas/' +nombreFile);
+    const writeStream = fs.createWriteStream('./facturas/pdf/' +nombreFile);
     doc.pipe(writeStream);
 
     doc.image('./imagenes/logo.png', (doc.page.width - 200) / 2, 0);
@@ -192,12 +192,46 @@ router.post('/descargar', (req, res) => {
     //
 
     writeStream.on('finish', function () {
-        var file = fs.readFileSync('./facturas/' +nombreFile, 'binary', function(err) {
+        var file = fs.readFileSync('./facturas/pdf/' +nombreFile, 'binary', function(err) {
             console.log(err);
             return;
         });
     
         res.set({ 'Content-Type': 'application/pdf', 'Content-Length': file.length });
+        res.write(file, 'binary')
+        res.end();
+    });
+});
+
+
+router.post('/descargar/csv', (req, res) => {
+    
+    if (req.userId == undefined) {
+        res.status(500).json({ respuesta: 'err_user' });
+        return;
+    }
+
+    var nombreFile = req.userId+ '_' +req.body.mesNombre+ '_' +req.body.mesYear+ '.csv';
+    const writeStream = fs.createWriteStream('./facturas/csv/' +nombreFile);
+
+    writeStream.write('ID,Info,Coste\n');
+
+    req.body.reservas.forEach(e => {
+        writeStream.write(e.ID+ ',' +e.dias+ ' días x ' +e.precioBase+ '€'+ ',' +e.costeTotal+ '€\n');
+    });
+    
+    writeStream.write('Total,,' +req.body.totalGanancias+ '€');
+    writeStream.end();
+
+    //
+
+    writeStream.on('finish', function () {
+        var file = fs.readFileSync('./facturas/csv/' +nombreFile, 'binary', function(err) {
+            console.log(err);
+            return;
+        });
+    
+        res.set({ 'Content-Type': 'application/csv', 'Content-Length': file.length });
         res.write(file, 'binary')
         res.end();
     });

@@ -14,12 +14,15 @@ router.post('/', (req, res) => {
         return;
     }
 
-    mysql.query('INSERT INTO usuarios_denuncias (usuarioID, reportadoID, mensaje) VALUES (?)',
+    mysql.query('INSERT INTO usuarios_denuncias (usuarioID, reportadoID, mensaje, insultos, estafa, suplantar) VALUES (?)',
         [
             [
                 req.userId,
                 req.body.denunciadoId,
                 req.body.mensaje,
+                req.body.insultar == false ? null : 1,
+                req.body.estafar == false ? null : 1,
+                req.body.suplantar == false ? null : 1,
             ]
         ], function (err) {
 

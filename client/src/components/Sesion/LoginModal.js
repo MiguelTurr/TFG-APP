@@ -49,6 +49,9 @@ const Login = ({ mostrar, funcionCerrar, changeLogged }) => {
         } else if(items.respuesta === 'err_validado') {
             crearAlerta('error', '¡Mira tu correo para validar la cuenta!');
 
+        } else if(items.respuesta === 'err_ban') {
+            crearAlerta('error', '¡Parece que esta cuenta está bloqueda!');
+
         } else {
             
             crearAlerta('exito', 'Has iniciado sesión como ' +items.nombre);

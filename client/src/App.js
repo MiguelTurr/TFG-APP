@@ -12,7 +12,6 @@ import Cookies from './components/General/Cookies';
 
 import Buscar from './components/Buscar/Buscar';
 import VerAlojamiento from './components/Alojamiento/VerAlojamiento';
-import Comparar from './components/Comparar/Comparar';
 import PerfilPublico from './components/Usuario/PerfilPublico';
 
 import ReservarAlojamiento from './components/Reservas/ReservarAlojamiento';
@@ -81,7 +80,6 @@ function App() {
           <Route path="/alojamiento/buscar" element={ <Buscar /> }/>
           <Route path="/alojamiento/ver" element={ <VerAlojamiento /> }/>
           <Route path="/alojamiento/reservar/:id" element={ <ReservarAlojamiento changeLogged={setAutorizado} /> }/>
-          <Route path="/alojamiento/comparar/:id" element={ <Comparar /> }/>
           <Route path="/usuario/ver/:id" element={ <PerfilPublico isLogged={isLogged} /> }/>
 
           <Route path="*" element={ <Navigate to='/home' /> } />

@@ -17,7 +17,16 @@
 
 .nueva-casa {
     position: absolute;
-    top: 3%; 
-    left: 3%;
-    width: 20%;
+    top: 2%; 
+    right: 1%;
+}
+
+.tag-imagen {
+    box-sizing: border-box;
+    padding: 0.2rem 1rem;
+    background: #3962f7;
+    color: white;
+    font-weight: bold;
+    font-size: 13px;
+    border-radius: 20px;
 }
