@@ -17,6 +17,8 @@ const defaultFiltros = {
     camas: 0,
     aseos: 0,
     valoracion: 0,
+
+    visto: false,
 }
 
 const FiltrosModal = ({ mostrar, funcionCerrar }) => {
@@ -37,6 +39,8 @@ const FiltrosModal = ({ mostrar, funcionCerrar }) => {
         aseos: params.get('aseos') === null ? defaultFiltros.aseos : parseInt(params.get('aseos')),
 
         valoracion: params.get('valoracion') === null ? defaultFiltros.valoracion : parseInt(params.get('valoracion')),
+
+        visto: params.get('visto') === null ? defaultFiltros.visto : parseInt(params.get('visto')),
     });
 
     useEffect(() => {
@@ -68,6 +72,12 @@ const FiltrosModal = ({ mostrar, funcionCerrar }) => {
         const [ boton, index ] = element.split('-');
 
         setNuevosFiltros({ ...nuevosFiltros, [boton]: parseInt(index), });
+    };
+
+    const controlCheck = (e) => {
+        const element = e.target.id;
+
+        setNuevosFiltros({ ...nuevosFiltros, [element]: e.target.checked, });
     };
 
     //
@@ -111,6 +121,10 @@ const FiltrosModal = ({ mostrar, funcionCerrar }) => {
 
         if(nuevosFiltros.valoracion > 0) {
             urlFinal += '&valoracion=' + nuevosFiltros.valoracion;
+        }
+
+        if(nuevosFiltros.visto !== false) {
+            urlFinal += '&visto=' + nuevosFiltros.visto;
         }
 
         //
@@ -173,7 +187,7 @@ const FiltrosModal = ({ mostrar, funcionCerrar }) => {
             <Modal.Body>
 
                 <Form>
-                    <div className="container-fluid" style={{ height: '400px', overflowX: 'auto' }}>
+                    <div className="container-fluid" style={{ overflowX: 'auto' }}>
                         <div className="row">
 
                             <h4 style={{ fontWeight: 'bold' }}>
@@ -431,7 +445,26 @@ const FiltrosModal = ({ mostrar, funcionCerrar }) => {
 
                         <hr />
 
+                        <div className="row">
 
+                            <h4 style={{ fontWeight: 'bold' }}>
+                                Visto ya
+                            </h4>
+
+                            <div className="col">
+                             
+                                <Form.Group className="mb-3">       
+                                    <br />
+                                    <Form.Check 
+                                        type="switch"
+                                        id="visto"
+                                        defaultChecked={nuevosFiltros.visto}
+                                        onClick={controlCheck}
+                                        label="Eliminar ya vistos"
+                                    />
+                                </Form.Group> 
+                            </div>
+                        </div>
                     </div>
 
                 </Form>

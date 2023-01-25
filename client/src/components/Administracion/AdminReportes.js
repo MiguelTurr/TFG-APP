@@ -142,7 +142,7 @@ function AdminReportes({ show, cambiarVista }) {
                     &nbsp;
 
                     <span style={{ fontWeight: 'bold' }}>
-                        {paginacion}
+                        {paginacion} / {maxPagina}
                     </span>
 
                     &nbsp;

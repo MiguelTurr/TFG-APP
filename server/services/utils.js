@@ -173,6 +173,12 @@ function queryFiltros(filtros) {
 
     //
 
+    if(filtros.visto !== null) {
+        str_final += 'AND vis.ID IS NULL ';
+    }
+
+    //
+
     return str_final;
 }
 
