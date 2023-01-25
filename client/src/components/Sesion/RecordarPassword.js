@@ -72,7 +72,7 @@ function RecordarPassword() {
 
                         <Form.Group className="mb-3" controlId="recordar-email">
                             <Form.Label>Escribe el correo de tu cuenta:</Form.Label>
-                            <Form.Control type="email" placeholder="Correo" ref={correoElectronico} required/>
+                            <Form.Control type="email" placeholder="Correo" maxlength="200" ref={correoElectronico} required/>
                         </Form.Group>
 
                         <hr/>

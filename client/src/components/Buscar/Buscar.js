@@ -85,6 +85,7 @@ function Buscar() {
                     aseos: params.get('aseos'),
 
                     valoracion: params.get('valoracion'),
+                    visto: params.get('visto'),
                 }
             }),
 

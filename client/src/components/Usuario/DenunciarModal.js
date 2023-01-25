@@ -106,7 +106,7 @@ const DenunciaModal = ({ mostrar, funcionCerrar }) => {
 
                                 <Form.Group className="mb-3">
                                     <Form.Label>Mensaje</Form.Label>
-                                    <Form.Control as="textarea" placeholder="Describe el problema" ref={denunciaMensaje} required />
+                                    <Form.Control as="textarea" placeholder="Describe el problema" maxlength="150" ref={denunciaMensaje} required />
                                 </Form.Group>
                             
                                 <div className="d-grid gap-2">

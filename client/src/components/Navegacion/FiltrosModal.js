@@ -160,6 +160,7 @@ const FiltrosModal = ({ mostrar, funcionCerrar }) => {
                     aseos: nuevosFiltros.aseos,
 
                     valoracion: nuevosFiltros.valoracion,
+                    visto: nuevosFiltros.visto,
                 }
             }),
 

@@ -456,7 +456,7 @@ function UserChats({ changeLogged }) {
                         <Form className="chat-input mt-2" onSubmit={enviarNuevoMensaje}>
                             <FontAwesomeIcon className="chat-icon" icon={faCamera} />
                             <FontAwesomeIcon className="chat-icon" icon={faFaceLaughBeam} />
-                            <Form.Control type="text" placeholder="Escribe tu mensaje aquí!" ref={primerMensaje} />
+                            <Form.Control type="text" placeholder="Escribe tu mensaje aquí!" maxlength="150" ref={primerMensaje} />
                         </Form>
 
                     </div>
@@ -534,7 +534,7 @@ function UserChats({ changeLogged }) {
                                 
                                 onClick={() => setShowIcon(!showIcon) }/>
 
-                            <Form.Control type="text" placeholder="Escribe tu mensaje aquí!" ref={escribirMensaje} />
+                            <Form.Control type="text" placeholder="Escribe tu mensaje aquí!" maxlength="150" ref={escribirMensaje} />
                         </Form>
 
                     </div>

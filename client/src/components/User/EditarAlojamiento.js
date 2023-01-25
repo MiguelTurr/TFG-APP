@@ -547,14 +547,14 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                                 <Form.Label>
                                     <small className="text-muted">Quedan {tituloCaracteres - cambiarDatos?.titulo?.length} caracteres</small>
                                 </Form.Label>
-                                <Form.Control type="text" placeholder="Nuevo título" id="titulo" value={cambiarDatos?.titulo} onChange={controlDato} />
+                                <Form.Control type="text" placeholder="Nuevo título" id="titulo" maxlength="70" value={cambiarDatos?.titulo} onChange={controlDato} />
                             </Form.Group>
 
                             <Form.Group className="mb-3" style={cambiarDatos?.dato === 'descripcion' ? {} : { display: 'none' }} >
                                 <Form.Label>
                                     <small className="text-muted">Quedan {descripcionCaracteres - cambiarDatos?.descripcion?.length} caracteres</small>
                                 </Form.Label>
-                                <Form.Control as="textarea" rows="8" placeholder="Nueva descripción" id="descripcion" value={cambiarDatos?.descripcion} onChange={controlDato} />
+                                <Form.Control as="textarea" rows="8" placeholder="Nueva descripción" maxlength="2500" id="descripcion" value={cambiarDatos?.descripcion} onChange={controlDato} />
                             </Form.Group>
 
                             <Form.Group className="mb-3" style={cambiarDatos?.dato === 'alojamiento' ? {} : { display: 'none' }} >
@@ -797,7 +797,7 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                                 <Form.Label>
                                     <small className="text-muted">Escribe tu contraseña para confirmar.</small>
                                 </Form.Label>
-                                <Form.Control type="password" placeholder="Contraseña" id="eliminar" value={cambiarDatos?.eliminar} onChange={controlDato} />
+                                <Form.Control type="password" placeholder="Contraseña" id="eliminar" maxlength="80" value={cambiarDatos?.eliminar} onChange={controlDato} />
                             </Form.Group>
 
                             <Form.Group className="mb-3" style={cambiarDatos?.dato === 'fuente' ? {} : { display: 'none' }} >

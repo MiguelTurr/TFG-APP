@@ -123,12 +123,12 @@ const Registro = ({ mostrar, funcionCerrar }) => {
 
                                     <Form.Group className="mb-3">
                                         <Form.Label>Nombre</Form.Label>
-                                        <Form.Control type="text" placeholder="Escribe nombre" ref={regNombre} required />
+                                        <Form.Control type="text" placeholder="Escribe nombre" maxlength="30" ref={regNombre} required />
                                     </Form.Group>
 
                                     <Form.Group className="mb-3">
                                         <Form.Label>Apellidos</Form.Label>
-                                        <Form.Control type="text" placeholder="Escribe apellidos" ref={regApellidos} required/>
+                                        <Form.Control type="text" placeholder="Escribe apellidos" maxlength="60" ref={regApellidos} required/>
                                     </Form.Group>
 
                                     <Form.Group className="mb-3">
@@ -141,7 +141,7 @@ const Registro = ({ mostrar, funcionCerrar }) => {
 
                                     <Form.Group className="mb-3">
                                         <Form.Label>Correo electrónico</Form.Label>
-                                        <Form.Control type="email" placeholder="Escribe correo" ref={regEmail} required/>
+                                        <Form.Control type="email" placeholder="Escribe correo" maxlength="200" ref={regEmail} required/>
                                     </Form.Group>
 
                                     <Form.Group className="mb-3">
@@ -155,12 +155,12 @@ const Registro = ({ mostrar, funcionCerrar }) => {
                                     
                                     <Form.Group className="mb-3">
                                         <Form.Label>Contraseña</Form.Label>
-                                        <Form.Control type="password" placeholder="Escribe contraseña" ref={regPassword1} required/>
+                                        <Form.Control type="password" placeholder="Escribe contraseña" maxlength="80" ref={regPassword1} required/>
                                     </Form.Group>
                                 
                                     <Form.Group className="mb-3">
                                         <Form.Label>Repite contraseña</Form.Label>
-                                        <Form.Control type="password" placeholder="Escribe contraseña" ref={regPassword2} required/>
+                                        <Form.Control type="password" placeholder="Escribe contraseña" maxlength="80" ref={regPassword2} required/>
                                     </Form.Group>
                                 
                                     <Form.Group className="mb-3">
@@ -177,7 +177,7 @@ const Registro = ({ mostrar, funcionCerrar }) => {
                                                     })
                                                 }
                                             </Form.Select>
-                                            <Form.Control type="number" placeholder="Escribe número" ref={regNumero} required/>
+                                            <Form.Control type="number" placeholder="Escribe número" maxlength="20" ref={regNumero} required/>
                                         </div>
                                         
                                     </Form.Group>

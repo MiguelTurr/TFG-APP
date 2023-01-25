@@ -82,12 +82,12 @@ const Login = ({ mostrar, funcionCerrar, changeLogged }) => {
 
                                 <Form.Group className="mb-3">
                                     <Form.Label>Correo electrónico</Form.Label>
-                                    <Form.Control type="email" placeholder="Escribe correo" ref={loginEmail} required />
+                                    <Form.Control type="email" placeholder="Escribe correo" maxlength="200" ref={loginEmail} required />
                                 </Form.Group>
 
                                 <Form.Group className="mb-3">
                                     <Form.Label>Contraseña</Form.Label>
-                                    <Form.Control type="password" placeholder="Escribe contraseña" ref={loginPassword} required />
+                                    <Form.Control type="password" placeholder="Escribe contraseña" maxlength="80" ref={loginPassword} required />
                                 </Form.Group>
                             
                                 <div className="d-grid gap-2">
