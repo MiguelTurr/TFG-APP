@@ -69,3 +69,17 @@ https://www.npmjs.com/package/use-places-autocomplete
 
 LISTA EMOTICONOS PARA HTML
 https://www.saberespractico.com/web/emoticonos-en-html/
+
+
+
+-------------------------------------------------------------------------------------------------------------------------
+
+mapa ave españa
+https://www.enterat.com/servicios/mapa-ave-espana.php
+
+popularidad react vs angular vs vue
+https://npmtrends.com/angular-vs-react-vs-vue
+
+evolución viajes grafica
+https://www.epdata.es/datos/turismo-espana-mundo-datos-graficos/272
+

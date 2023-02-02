@@ -5,17 +5,15 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useState } from 'react';
 
 import { crearAlerta } from './Toast/Toast.js';
+import CasaCard from '../items/CasaCard';
 import BotonTop from './Navegacion/BotonTop';
-import casaNueva from '../img/nueva-casa.png';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar, faLocationDot, faHeart, faArrowDown } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
 
-import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 
 var contadorEstado = 0;
-const diaEnSegundos = 1000 * 60 * 60 * 24;
 
 function Home() {
     const location = useLocation();
@@ -112,24 +110,6 @@ function Home() {
         }
     }
 
-    const verAlojamiento = (e, index) => {
-        window.location.href = '/alojamiento/ver?casa=' +alojamientos[index].ID;
-    };
-
-    //
-
-    const esCasaNueva = (fecha) => {
-        if((new Date().getTime() - new Date(fecha).getTime()) / diaEnSegundos < 3) {
-            return <span className="tag-imagen">novedad</span>
-        }
-        return '';
-    };
-
-    const casaVista = (visto) => {
-        if(visto === null) return '';
-        return <span className="tag-imagen">visto</span>
-    };
-
     //
 
     const mostrarMas = () => {
@@ -140,54 +120,7 @@ function Home() {
         <div className="container-fluid">
 
             <div className="row">
-
-                <h4 style={ alojamientos.length === 0 ? {} : { display: 'none' }}>
-                    No se puede mostrar ningún alojamiento.
-                </h4>
-
-                {
-                    alojamientos.map((x, index) => (
-
-                        <div className="col-sm-3 mb-3" key={index}>
-
-                            <Card className="container-casa h-100" onClick={e => { verAlojamiento(e, index) }}>
-
-                                <div>
-                                    <img
-                                    className="card-img-top"
-                                    height="250px"
-                                    src={imgAlojamientos[index]}/>
-
-                                    <div className="nueva-casa">
-                                        {esCasaNueva(x.creadoEn)}
-                                        {casaVista(x.visto)}
-                                    </div>  
-                                </div> 
-
-                                <Card.Body className="card-body info-casa">
-
-                                    <div className="row">
-
-                                        <div className="col">
-
-                                            <p style={{ fontSize: '14px'}}>
-                                                <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green'}} />&nbsp;<strong>{x.ubicacion}</strong>
-                                                <br/>
-                                                <strong>{x.precio}€</strong> <small>precio/noche</small>
-                                            </p>
-                                        </div>
-
-                                        <div className={window.innerWidth < 600 ? "col derecha-casa" : "col-sm-4 derecha-casa"}>
-                                            <FontAwesomeIcon icon={faStar} />&nbsp;{parseFloat(x.valoracionMedia).toFixed(2)}
-                                            <br/>
-                                            <FontAwesomeIcon icon={faHeart} style={x.favorito === null || x.favorito === undefined ? { display: 'none' } : { color: '#c80000' } } />
-                                        </div>
-                                    </div>
-                                </Card.Body>
-                            </Card>
-                        </div>
-                    ))
-                }
+                <CasaCard alojamientos={alojamientos} alojamientosImg={imgAlojamientos} />
 
                 <hr/>
 

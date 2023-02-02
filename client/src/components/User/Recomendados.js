@@ -3,12 +3,12 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 
 import { crearAlerta } from '../Toast/Toast.js';
+import CasaCard from '../../items/CasaCard';
 import ToolTipRec from './ToolTipRec';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar, faLocationDot, faHandSparkles, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { faHandSparkles, faHeart } from '@fortawesome/free-solid-svg-icons';
 
-import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 
 function Recomendaciones({ changeLogged }) {
@@ -76,10 +76,6 @@ function Recomendaciones({ changeLogged }) {
 
     //
 
-    const verAlojamiento = (index) => {
-        window.location.href = '/alojamiento/ver?casa=' +alojamientos[index].ID;
-    };
-
     return (
         <div className="container-fluid mb-5">
 
@@ -98,48 +94,7 @@ function Recomendaciones({ changeLogged }) {
             <hr />
 
             <div className="row">
-
-                <h4 style={alojamientos.length === 0 ? {} : { display: 'none' } }>
-                    Debes explorar más lugares para que podamos hacer alguna recomendación.
-                </h4>
-
-                {
-                    alojamientos.map((x, index) => (
-
-                        <div className="col-sm-3 mb-3" key={index}>
-
-                            <Card className="container-casa h-100" onClick={() => { verAlojamiento(index) }}>
-
-                                 <img
-                                    className="card-img-top"
-                                    height="250px"
-                                    key={imgAlojamientos[index]}
-                                    src={imgAlojamientos[index]}
-                                    alt="Imagen del alojamiento"/>
-
-                                <Card.Body className="card-body info-casa">
-
-                                    <div className="row">
-
-                                        <div className="col">
-
-                                            <p style={{ fontSize: '14px'}}>
-                                                <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green'}} />&nbsp;<strong>{x.ubicacion}</strong>
-                                                <br/>
-                                                <strong>{x.precio}€</strong> <small>precio/noche</small>
-                                            </p>
-                                        </div>
-
-                                        <div className="col derecha-casa">
-                                            <FontAwesomeIcon icon={faStar} />&nbsp;{parseFloat(x.valoracionMedia).toFixed(2)}
-                                        </div>
-                                    </div>
-                                </Card.Body>
-                            </Card>
-                        </div>
-
-                    ))
-                }
+                <CasaCard alojamientos={alojamientos} alojamientosImg={imgAlojamientos} />
             </div>
 
             <hr />
@@ -151,49 +106,7 @@ function Recomendaciones({ changeLogged }) {
             <hr />
             
             <div className="row">
-
-                <h4 style={nuevasExperiencias.length === 0 ? {} : { display: 'none' } }>
-                    Debes explorar más lugares para que podamos hacer alguna recomendación.
-                </h4>
-
-                {
-                    nuevasExperiencias.map((x, index) => (
-
-                        <div className="col-sm-3 mb-3" key={index}>
-
-                            <Card className="container-casa h-100" onClick={() => { verAlojamiento(index) }}>
-
-                                 <img
-                                    className="card-img-top"
-                                    height="250px"
-                                    key={imgNuevas[index]}
-                                    src={imgNuevas[index]}
-                                    alt="Imagen del alojamiento"/>
-
-                                <Card.Body className="card-body info-casa">
-
-                                    <div className="row">
-
-                                        <div className="col">
-
-                                            <p style={{ fontSize: '14px'}}>
-                                                <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green'}} />&nbsp;<strong>{x.ubicacion}</strong>
-                                                <br/>
-                                                <strong>{x.precio}€</strong> <small>precio/noche</small>
-                                            </p>
-                                        </div>
-
-                                        <div className="col derecha-casa">
-                                            <FontAwesomeIcon icon={faStar} />&nbsp;{parseFloat(x.valoracionMedia).toFixed(2)}
-                                        </div>
-                                    </div>
-                                </Card.Body>
-                            </Card>
-                        </div>
-
-                    ))
-                }
-
+                <CasaCard alojamientos={nuevasExperiencias} alojamientosImg={imgNuevas} />
             </div>
         </div>
     )

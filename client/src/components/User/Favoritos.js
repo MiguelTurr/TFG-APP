@@ -1,12 +1,12 @@
 import React, { useEffect, useState }  from 'react';
 
 import { crearAlerta } from '../Toast/Toast.js';
+import CasaCard from '../../items/CasaCard';
 import ToolTipFav from './ToolTipFav.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar, faLocationDot, faHeart, faComputer, faBan } from '@fortawesome/free-solid-svg-icons';
+import { faComputer, faBan } from '@fortawesome/free-solid-svg-icons';
 
-import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 
 function Favoritos({ changeLogged }) {
@@ -51,10 +51,6 @@ function Favoritos({ changeLogged }) {
             }
             setImgAlojamientos(arrayImg);
         }
-    };
-
-    const verAlojamiento = (e, index) => {
-        window.location.href = '/alojamiento/ver?casa=' +alojamientos[index].ID;
     };
 
     //
@@ -110,49 +106,7 @@ function Favoritos({ changeLogged }) {
             <hr/>
 
             <div className="row">
-
-                <h4 style={alojamientos.length === 0 ? {} : { display: 'none' } }>
-                    No has añadido ningún alojamiento a favoritos.
-                </h4>
-
-                {
-                    alojamientos.map((x, index) => (
-
-                        <div className="col-sm-3 mb-3" key={index}>
-
-                            <Card className="container-casa h-100" onClick={e => { verAlojamiento(e, index) }}>
-
-                                 <img
-                                    className="card-img-top"
-                                    height="250px"
-                                    src={imgAlojamientos[index]}
-                                    alt="Imagen del alojamiento"/>
-
-                                <Card.Body className="card-body info-casa">
-
-                                    <div className="row">
-
-                                        <div className="col">
-
-                                            <p style={{ fontSize: '14px'}}>
-                                                <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green'}} />&nbsp;<strong>{x.ubicacion}</strong>
-                                                <br/>
-                                                <strong>{x.precio}€</strong> <small>precio/noche</small>
-                                            </p>
-                                        </div>
-
-                                        <div className="col derecha-casa">
-                                            <FontAwesomeIcon icon={faStar} />&nbsp;{parseFloat(x.valoracionMedia).toFixed(2)}
-                                            <br/>
-                                            <FontAwesomeIcon icon={faHeart} style={{ color: '#c80000' }} />
-                                        </div>
-                                    </div>
-                                </Card.Body>
-                            </Card>
-                        </div>
-
-                    ))
-                }
+                <CasaCard alojamientos={alojamientos} alojamientosImg={imgAlojamientos} />
             </div>
         </div>
     )

@@ -2,15 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 import { crearAlerta } from '../Toast/Toast.js';
+import CasaCard from '../../items/CasaCard';
 
 import { getGeocode, getLatLng } from 'use-places-autocomplete';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar, faLocationDot, faHeart } from '@fortawesome/free-solid-svg-icons';
-
-import Card from 'react-bootstrap/Card';
-
-const diaEnSegundos = 1000 * 60 * 60 * 24;
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 
 function Buscar() {
 
@@ -126,26 +123,6 @@ function Buscar() {
 
     //
 
-    const verAlojamiento = (index) => {
-        window.location.href = '/alojamiento/ver?casa=' +alojamientos[index].ID;
-    };
-
-    //
-
-    const esCasaNueva = (fecha) => {
-        if((new Date().getTime() - new Date(fecha).getTime()) / diaEnSegundos < 3) {
-            return <span className="tag-imagen">novedad</span>
-        }
-        return '';
-    };
-
-    const casaVista = (visto) => {
-        if(visto === null) return '';
-        return <span className="tag-imagen">visto</span>
-    };
-
-    //
-
     return (
         <div className="container-fluid">
             <div className="row">
@@ -160,51 +137,8 @@ function Buscar() {
 
                 <hr />
 
-                {
-                    alojamientos.map((x, index) => (
+                <CasaCard alojamientos={alojamientos} alojamientosImg={alojamientosImg} />
 
-                        <div className="col-sm-3 mb-3" key={index}>
-
-                            <Card className="container-casa h-100" onClick={() => { verAlojamiento(index) }}>
-
-                                <div>
-
-                                    <img
-                                        className="card-img-top"
-                                        height="250px"
-                                        src={alojamientosImg[index]}/>
-
-                                    <div className="nueva-casa">
-                                        {esCasaNueva(x.creadoEn)}
-                                        {casaVista(x.visto)}
-                                    </div>  
-                                </div>
-
-                                <Card.Body className="card-body info-casa">
-
-                                    <div className="row">
-
-                                        <div className="col">
-
-                                            <p style={{ fontSize: '14px'}}>
-                                                <FontAwesomeIcon icon={faLocationDot} style={{ color: 'green'}} />&nbsp;<strong>{x.ubicacion}</strong>
-                                                <br/>
-                                                <strong>{x.precio}€</strong> <small>precio/noche</small>
-                                            </p>
-                                        </div>
-
-                                        <div className="col derecha-casa">
-                                            <FontAwesomeIcon icon={faStar} />&nbsp;{parseFloat(x.valoracionMedia).toFixed(2)}
-                                            <br/>
-                                            <FontAwesomeIcon icon={faHeart} style={x.favorito === null || x.favorito === undefined ? { display: 'none' } : { color: '#c80000' } } />
-                                        </div>
-                                    </div>
-                                </Card.Body>
-                            </Card>
-                        </div>
-
-                    ))
-                }
             </div>
         </div>
     );
