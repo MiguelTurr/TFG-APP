@@ -6,7 +6,7 @@
 
 .chat-mensajes {
     height: 250px;
-    overflow-y: auto;
+    overflow: scroll;
     color: white;
 }
 

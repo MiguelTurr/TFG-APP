@@ -51,6 +51,14 @@
     float: right;
 }
 
+.elements-user-mobile {
+    display: flex;
+    box-sizing: border-box;
+    flex-basis: 4rem;
+    flex-shrink: 0;
+    align-items: center;
+}
+
 .buscar-user-input {
     all: unset;
 

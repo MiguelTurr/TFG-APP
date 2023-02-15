@@ -316,7 +316,7 @@ function VerAlojamiento() {
             <hr/>
 
             <div className="row">
-                <div className="col">
+                <div className={window.innerWidth < 600 ? "mb-2" : "col"}>
                     <Carousel interval={null}>
                         {
                             alojamientoImagenes.map((x, index) => (
@@ -333,7 +333,7 @@ function VerAlojamiento() {
                         }
                     </Carousel>
                 </div>
-                <div className="col">
+                <div className={window.innerWidth < 600 ? "mb-2" : "col"}>
 
                     <hr style={window.innerWidth < 600 ? {} : {display: 'none'}}/>
 

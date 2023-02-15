@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import '../../css/NavFiltros.css';
 import FiltrosModal from './FiltrosModal';
@@ -19,12 +19,12 @@ function NavFiltros({ fav, rec }) {
 
     const history = useNavigate();
 
-    const location = window.location.href;
-    const finalLocation = location.substring('http://localhost:3000/'.length);
+    const location = useLocation();
+    const finalLocation = location.pathname;
 
-    if (finalLocation !== ''
-        && finalLocation.includes('home') === false
-        && finalLocation.includes('buscar') === false) {
+    if (finalLocation !== '/'
+        && finalLocation !== '/home'
+        && finalLocation !== '/home') {
 
         return (<></>);
     }
@@ -51,10 +51,10 @@ function NavFiltros({ fav, rec }) {
 
         var urlFinal = '';
 
-        if (finalLocation === '' || finalLocation.includes('home') === true) {
+        if (finalLocation === '/' || finalLocation === '/home') {
             urlFinal = '/home?ordenar=' + cambiarOrden + '-' + cambiarTipo;
 
-        } else if (finalLocation.includes('buscar') === true) {
+        } else if (finalLocation === '/buscar') {
             var nuevaURL = finalLocation;
             urlFinal = nuevaURL.substring(0, finalLocation.search('&ordenar')) + '&ordenar=' + cambiarOrden + '-' + cambiarTipo;
         }

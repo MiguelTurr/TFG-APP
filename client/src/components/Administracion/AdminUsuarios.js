@@ -210,7 +210,7 @@ function Adminusuarios({ show, cambiarVista }) {
 
         if(e.target.value === '') return setDefaultElements();
 
-        var buscarArray = totalUsuarios.filter((element) => element.nombre.toLowerCase().includes(e.target.value) === true);
+        var buscarArray = totalUsuarios.filter((element) => element.nombre.toLowerCase().includes(e.target.value.toLowerCase()) === true);
 
         setUserList(buscarArray.slice(0, totalPagina));
         setPaginacion(0);
@@ -249,7 +249,7 @@ function Adminusuarios({ show, cambiarVista }) {
                     <FontAwesomeIcon icon={faArrowLeft} /> Volver
                 </Button>
 
-                <span className="elements-user">
+                <span className={window.innerWidth < 600 ? "elements-user-mobile" : "elements-user"}>
                     <Button className="borrar-botones" onClick={borrarBusqueda}>
                         <FontAwesomeIcon icon={faClose} />
                     </Button>

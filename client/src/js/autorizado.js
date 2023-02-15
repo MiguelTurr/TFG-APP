@@ -14,6 +14,7 @@ export default function useToken() {
         setAutorizado(isLogged);
 
         if(isLogged === false) {
+            window.localStorage.setItem('isAdmin', 0);
             window.location.href = '/';
         }
     };

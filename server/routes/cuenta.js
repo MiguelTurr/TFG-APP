@@ -119,11 +119,13 @@ router.post('/login', (req, res) => {
         const id = result[0].ID;
         const token = jwt.sign({ id }, cookie_secret);
 
+        console.log(token);
+
         res.status(201)
             .cookie('token', token, {
                 httpOnly: true,
                 expires: new Date(Date.now() + 31536000000),
-                secure: true
+                secure: false,
 
             }).json({
                 respuesta: 'correcto',

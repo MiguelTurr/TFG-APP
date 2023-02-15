@@ -55,7 +55,6 @@ function Nav({ isLogged, changeLogged, isAdmin }) {
 
         if(data.status === 200) {
             crearAlerta('exito', '¡Sesión terminada!');
-            window.localStorage.setItem('isAdmin', 0);
 
             setTimeout(() => {
                 changeLogged(false);
