@@ -66,7 +66,7 @@ router.get('/ver/:id', (req, res) => {
         res.status(200).json({ respuesta: 'correcto', alojamiento: result });
 
         mysql.query('UPDATE alojamientos SET visitas=? WHERE ID=? LIMIT 1', [result[0].visitas + 1, result[0].ID]);
-        mysql.query('INSERT INTO alojamientos_vistos (usuarioID,alojamientoID) VALUES (?) ON DUPLICATE KEY UPDATE veces=veces+1;', [[ req.userId, result[0].ID ]]);
+        if (req.userId != undefined) mysql.query('INSERT INTO alojamientos_vistos (usuarioID,alojamientoID) VALUES (?) ON DUPLICATE KEY UPDATE veces=veces+1;', [[ req.userId, result[0].ID ]]);
     });
 });
 

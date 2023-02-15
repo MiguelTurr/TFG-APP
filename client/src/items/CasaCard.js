@@ -20,10 +20,8 @@ function CasaCard({ alojamientos, alojamientosImg }) {
     };
     
     const esCasaNueva = (fecha) => {
-        if((new Date().getTime() - new Date(fecha).getTime()) / diaEnSegundos < 3) {
-            return <span className="tag-imagen">novedad</span>
-        }
-        return '';
+        if((new Date().getTime() - new Date(fecha).getTime()) / diaEnSegundos >= 3) return '';
+        return <span className="tag-imagen">novedad</span>
     };
     
     const casaVista = (visto) => {
@@ -73,11 +71,10 @@ function CasaCard({ alojamientos, alojamientosImg }) {
                                 </div>
                             </div>
 
-                            <a href={ '/alojamiento/ver?casa=' +x.ID} class="stretched-link"></a>
+                            <a href={ '/alojamiento/ver?casa=' +x.ID} className="stretched-link"></a>
                         </Card.Body>
                     </Card>
                 </div>
-
             ))
         }
     </>);

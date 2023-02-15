@@ -11,6 +11,7 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
 import phonePrefix from '../../resources/phone-prefix.json';
+import { sinNumero } from '../../resources/regex.js';
 
 const Registro = ({ mostrar, funcionCerrar }) => {
 
@@ -31,14 +32,16 @@ const Registro = ({ mostrar, funcionCerrar }) => {
 
     //
 
-    /*const comprobarErrores = () => {
-
-    };*/
-
     const enviarRegistro = async (event) => {
         event.preventDefault();
 
         //
+
+        const nombre = regNombre.current.value;
+        if(sinNumero.test(nombre) === true) return crearAlerta('error', '¡El nombre no puede contener números!');
+
+        const apellidos = regApellidos.current.value;
+        if(sinNumero.test(apellidos) === true) return crearAlerta('error', '¡Los apellidos no pueden contener números!');
 
         const fecha = new Date(fechaNac.current.value).getTime();
         const fechaHoy = new Date().getTime();
@@ -74,8 +77,8 @@ const Registro = ({ mostrar, funcionCerrar }) => {
             method: 'POST',
 
             body: JSON.stringify({ 
-                nombre: regNombre.current.value,
-                apellidos: regApellidos.current.value,
+                nombre: nombre,
+                apellidos: apellidos,
                 email: regEmail.current.value,
                 password: password,
                 telefono: regPrefijo.current.value+ ' ' +regNumero.current.value,
@@ -123,12 +126,12 @@ const Registro = ({ mostrar, funcionCerrar }) => {
 
                                     <Form.Group className="mb-3">
                                         <Form.Label>Nombre</Form.Label>
-                                        <Form.Control type="text" placeholder="Escribe nombre" maxlength="30" ref={regNombre} required />
+                                        <Form.Control type="text" placeholder="Escribe nombre" maxLength="30" ref={regNombre} required/>
                                     </Form.Group>
 
                                     <Form.Group className="mb-3">
                                         <Form.Label>Apellidos</Form.Label>
-                                        <Form.Control type="text" placeholder="Escribe apellidos" maxlength="60" ref={regApellidos} required/>
+                                        <Form.Control type="text" placeholder="Escribe apellidos" maxLength="60" ref={regApellidos} pattern="[a-zA-Z]*" required/>
                                     </Form.Group>
 
                                     <Form.Group className="mb-3">
@@ -141,7 +144,7 @@ const Registro = ({ mostrar, funcionCerrar }) => {
 
                                     <Form.Group className="mb-3">
                                         <Form.Label>Correo electrónico</Form.Label>
-                                        <Form.Control type="email" placeholder="Escribe correo" maxlength="200" ref={regEmail} required/>
+                                        <Form.Control type="email" placeholder="Escribe correo" maxLength="200" ref={regEmail} required/>
                                     </Form.Group>
 
                                     <Form.Group className="mb-3">
@@ -155,12 +158,12 @@ const Registro = ({ mostrar, funcionCerrar }) => {
                                     
                                     <Form.Group className="mb-3">
                                         <Form.Label>Contraseña</Form.Label>
-                                        <Form.Control type="password" placeholder="Escribe contraseña" maxlength="80" ref={regPassword1} required/>
+                                        <Form.Control type="password" placeholder="Escribe contraseña" maxLength="80" ref={regPassword1} required/>
                                     </Form.Group>
                                 
                                     <Form.Group className="mb-3">
                                         <Form.Label>Repite contraseña</Form.Label>
-                                        <Form.Control type="password" placeholder="Escribe contraseña" maxlength="80" ref={regPassword2} required/>
+                                        <Form.Control type="password" placeholder="Escribe contraseña" maxLength="80" ref={regPassword2} required/>
                                     </Form.Group>
                                 
                                     <Form.Group className="mb-3">
@@ -177,7 +180,7 @@ const Registro = ({ mostrar, funcionCerrar }) => {
                                                     })
                                                 }
                                             </Form.Select>
-                                            <Form.Control type="number" placeholder="Escribe número" maxlength="20" ref={regNumero} required/>
+                                            <Form.Control type="number" placeholder="Escribe número" maxLength="20" ref={regNumero} required/>
                                         </div>
                                         
                                     </Form.Group>
