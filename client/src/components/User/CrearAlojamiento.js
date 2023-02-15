@@ -217,10 +217,10 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
         const erroresEncontrados = {};
 
         if (!form.titulo || form.titulo === '') erroresEncontrados.titulo = '¡Debe tener un título!';
-        else if (form.titulo > 70) erroresEncontrados.titulo = '¡El título es demasiado largo!';
+        else if (form.titulo.length < 20) erroresEncontrados.titulo = '¡El título es demasiado corto!';
 
         if (!form.descripcion || form.descripcion === '') erroresEncontrados.descripcion = '¡Debe tener una descripción!';
-        else if (form.descripcion > 800) erroresEncontrados.descripcion = '¡La descripción es demasiada larga!';
+        else if (form.descripcion.length < 100) erroresEncontrados.descripcion = '¡La descripción es demasiada corta!';
 
         const inputImagenes = document.getElementById('imagenes');
         const len = inputImagenes.files.length;
@@ -377,6 +377,7 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
                                 placeholder="Ejemplo: Casa grande con buenas vistas"
                                 value={form.titulo}
                                 onChange={cambiosForm}
+                                maxLength="70"
                                 isInvalid={!!formErrors.titulo} />
 
                             <Form.Control.Feedback type="invalid">
@@ -393,6 +394,7 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
                                 placeholder="Ejemplo: La casa está situada cerca de un rio con muy buenas vistas..."
                                 value={form.descripcion}
                                 onChange={cambiosForm}
+                                maxLength="2500"
                                 isInvalid={!!formErrors.descripcion} />
 
                             <Form.Control.Feedback type="invalid">

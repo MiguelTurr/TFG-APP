@@ -78,9 +78,9 @@ function App() {
           </>}
 
           <Route path="/alojamiento/buscar" element={ <Buscar /> }/>
-          <Route path="/alojamiento/ver" element={ <VerAlojamiento /> }/>
+          <Route path="/alojamiento/ver" element={ <VerAlojamiento isLogged={isLogged} changeLogged={setAutorizado} /> }/>
           <Route path="/alojamiento/reservar/:id" element={ <ReservarAlojamiento changeLogged={setAutorizado} /> }/>
-          <Route path="/usuario/ver/:id" element={ <PerfilPublico isLogged={isLogged} /> }/>
+          <Route path="/usuario/ver/:id" element={ <PerfilPublico isLogged={isLogged} changeLogged={setAutorizado} /> }/>
 
           <Route path="*" element={ <Navigate to='/home' /> } />
 

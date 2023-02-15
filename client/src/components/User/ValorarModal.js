@@ -220,7 +220,7 @@ const ValorarModal = ({ infoAlojamiento, funcionCerrar, valoracionCorrecto }) =>
                                     <Form.Control
                                         ref={valMensaje}
                                         as="textarea"
-                                        maxlength="300"
+                                        maxLength="300"
                                         placeholder="Escribe cómo fue tu estancia" />
                                 </Form.Group>
 

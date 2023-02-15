@@ -15,7 +15,7 @@ import { faCheck, faHouse, faLanguage, faBriefcase, faWarning, faStar, faLocatio
 import Button from "react-bootstrap/esm/Button";
 import Card from 'react-bootstrap/Card';
 
-function PerfilPublico({ isLogged }) {
+function PerfilPublico({ isLogged, changeLogged }) {
 
     var regFecha = { year: 'numeric', month: 'long' };
 
@@ -490,7 +490,7 @@ function PerfilPublico({ isLogged }) {
                 </div>
             </div>
             
-            <LoginModal mostrar={loginModal} funcionCerrar={cerrarLogin} />
+            <LoginModal mostrar={loginModal} funcionCerrar={cerrarLogin} changeLogged={changeLogged} />
             <DenunciaModal mostrar={denunciaModal} funcionCerrar={cerrarDenuncia} />
 
         </div>

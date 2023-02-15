@@ -1,0 +1,109 @@
+// If schema name is omitted, it will default to "public" schema.
+Table usuarios {
+  ID int [pk, increment] // auto-increment
+  email varchar
+  password varchar [unique]
+  nombre varchar
+}
+
+Table usuarios_chats {
+  ID int [pk, increment] // auto-increment
+  usuario1 int
+  usuario2 int
+  nuevosMensajes int
+}
+
+Ref: usuarios.ID < usuarios_chats.usuario1  
+Ref: usuarios.ID < usuarios_chats.usuario2  
+
+Table usuarios_chats_mensajes {
+  ID int [pk, increment] // auto-increment
+  chatID int
+  emisorID int
+  creadoEn datetime
+  mensaje varchar
+}
+
+Ref: usuarios.ID < usuarios_chats_mensajes.emisorID  
+Ref: usuarios_chats.ID < usuarios_chats_mensajes.chatID  
+
+Table usuarios_denuncias {
+  ID int [pk, increment] // auto-increment
+  usuarioID int
+  reportadoID int
+  mensaje varchar
+}
+
+Ref: usuarios.ID < usuarios_denuncias.usuarioID  
+Ref: usuarios.ID < usuarios_denuncias.reportadoID  
+
+Table alojamientos {
+  ID int [pk, increment]
+  usuarioID int
+  titulo varchar
+  descripcion varchar
+  precio int
+  ubicacion varchar
+ }
+
+Ref: usuarios.ID < alojamientos.usuarioID  
+Ref: alojamientos.ID < alojamientos_img.alojamientoID  
+ 
+Table alojamientos_img {
+  ID int [pk, increment]
+  alojamientoID int
+  nombre varchar
+ }
+ 
+Table alojamientos_valoraciones {
+  ID int [pk, increment]
+  usuarioID int
+  alojamientoID int
+  mensaje varchar
+ }
+ 
+Ref: usuarios.ID < alojamientos_valoraciones.usuarioID  
+Ref: alojamientos.ID < alojamientos_valoraciones.alojamientoID  
+ 
+Table alojamientos_vistos {
+  ID int [pk, increment]
+  usuarioID int
+  alojamientoID int
+  veces int
+ }
+ 
+Ref: usuarios.ID < alojamientos_vistos.usuarioID  
+Ref: alojamientos.ID < alojamientos_vistos.alojamientoID  
+
+Table usuarios_favoritos {
+  ID int [pk, increment] // auto-increment
+  usuarioID int
+  alojamientoID int
+  addEn varchar
+}
+
+Ref: usuarios.ID < usuarios_favoritos.usuarioID  
+Ref: alojamientos.ID < usuarios_favoritos.alojamientoID  
+
+Table usuarios_reservas {
+  ID int [pk, increment] // auto-increment
+  usuarioID int
+  alojamientoID int
+  estado int
+  creadoEn varchar
+}
+
+Ref: usuarios.ID < usuarios_reservas.usuarioID  
+Ref: alojamientos.ID < usuarios_reservas.alojamientoID  
+
+Table usuarios_valoraciones {
+  ID int [pk, increment] // auto-increment
+  usuarioID int
+  userValoradoID int
+  creadoEn datettime
+  tipo int
+  mensaje varchar
+}
+
+Ref: usuarios.ID < usuarios_valoraciones.usuarioID  
+Ref: usuarios.ID < usuarios_valoraciones.userValoradoID  

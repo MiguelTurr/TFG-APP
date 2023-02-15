@@ -8,7 +8,6 @@ import ValoracionesModal from './ValoracionesModal';
 import LoginModal from '../Sesion/LoginModal';
 
 import { crearAlerta } from '../Toast/Toast.js';
-import userLogin from '../../js/autorizado';
 
 import NoProfileImg from '../../img/no-profile-img.png';
 
@@ -19,9 +18,7 @@ import Button from "react-bootstrap/esm/Button";
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import Carousel from 'react-bootstrap/Carousel';
 
-function VerAlojamiento() {
-
-    const { autorizado } = userLogin();
+function VerAlojamiento({ isLogged, changeLogged }) {
 
     //
 
@@ -167,7 +164,7 @@ function VerAlojamiento() {
 
     const addFavorito = async () => {
 
-        if(autorizado === false) {
+        if(isLogged === false) {
             return setShowLogin(true);
         }
 
@@ -213,7 +210,7 @@ function VerAlojamiento() {
 
     const enviarMensaje = () => {
 
-        if(autorizado === false) {
+        if(isLogged === false) {
             return setShowLogin(true);
         }
         window.location.href = '/perfil/mis-chats?user=' +alojamientoUsuario.ID+ '&nombre=' +alojamientoUsuario.nombre;
@@ -240,7 +237,7 @@ function VerAlojamiento() {
 
     const reservarAlojamiento = () => {
 
-        if(autorizado === false) {
+        if(isLogged === false) {
             return setShowLogin(true);
         }
 
@@ -688,7 +685,7 @@ function VerAlojamiento() {
             </div>
             
 
-            <LoginModal mostrar={loginModal} funcionCerrar={cerrarLogin} />
+            <LoginModal mostrar={loginModal} funcionCerrar={cerrarLogin} changeLogged={changeLogged} />
             <ValoracionesModal mostrar={valoracionesModal} funcionCerrar={cerrarValoraciones} />
         </div>
     );

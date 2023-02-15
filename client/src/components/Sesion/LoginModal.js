@@ -59,7 +59,7 @@ const Login = ({ mostrar, funcionCerrar, changeLogged }) => {
 
             setTimeout(() => {
                 changeLogged(true);
-                window.location.href = '/';
+                window.location.reload();
 
             }, 1000);
         }

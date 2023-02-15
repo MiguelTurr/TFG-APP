@@ -674,7 +674,10 @@ function UserReservas({ changeLogged }) {
                     {ganancias?.primerDia} - {ganancias?.ultimoDia}
                 </small>
 
-                <span style={{ float: 'right', display: ganancias?.reservas === 0 ? 'none' : '' }}>
+                <span style={window.innerWidth < 600 ? { display: ganancias?.reservas === 0 ? 'none' : '' } : { float: 'right', display: ganancias?.reservas === 0 ? 'none' : '' }}>
+
+                    <br style={window.innerWidth < 600 ? {} : {display: 'none'} }/>
+                    
                     <Button className="crear-botones" size="sm" onClick={() => { descargarFactura('csv'); }} id="descargar-btn">
                         <FontAwesomeIcon icon={faDownload} /> Descargar .csv
                     </Button>

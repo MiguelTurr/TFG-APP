@@ -83,9 +83,7 @@ function NavFiltros({ fav, rec }) {
 
                 <div className="row mb-2">
 
-                    <div className="col">
-
-                        <strong>Ordenar por:&nbsp;</strong>
+                    <div className={window.innerWidth < 600 ? "mb-2 text-center" : "col"}>
 
                         <Button className="filtros-botones mb-1" size="sm" onClick={() => { ordenarPor('fecha'); }}>
                             <FontAwesomeIcon icon={faCalendarDays} /> Fecha
@@ -114,15 +112,14 @@ function NavFiltros({ fav, rec }) {
 
                     </div>
 
-                    <div className="col text-center">
+                    <div className={window.innerWidth < 600 ? "mb-2 text-center" : "col text-center"}>
 
                         <Button className="filtros-botones" size="sm" onClick={abrirFiltros}>
                             <FontAwesomeIcon icon={faSliders} /> Otros filtros
                         </Button>
                     </div>
 
-                    <div className="col filtros-derecha">
-                        <strong>Ir a:&nbsp;</strong>
+                    <div className={window.innerWidth < 600 ? "text-center" : "col filtros-derecha"}>
 
                         <Button className="filtros-botones mb-1" size="sm" onClick={fav}>
                             <FontAwesomeIcon icon={faHeart} /> Favoritos

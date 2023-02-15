@@ -219,7 +219,7 @@ function ValorarModalInquilino({ infoHuesped, funcionCerrar, valoracionCorrecto 
                                     <Form.Control
                                         id="huesped-mensaje"
                                         as="textarea"
-                                        maxlength="300"
+                                        maxLength="300"
                                         placeholder="Escribe cómo dejó el alojamiento" />
                                 </Form.Group>
 
