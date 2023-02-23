@@ -13,12 +13,6 @@ https://developers.google.com/maps/documentation/javascript/geocoding
 https://developers.google.com/maps/documentation/javascript/place-autocomplete
 https://www.npmjs.com/package/@react-google-maps/api
 
-DATEPICKER
-https://kiarash-z.github.io/react-modern-calendar-datepicker/docs/disabled-days
-
-SELENIUM
-https://www.npmjs.com/package/selenium-webdriver
-
 https://react-bootstrap.netlify.app/components/dropdowns/#rb-docs-content
 
 FONT AWESOME
@@ -27,28 +21,11 @@ https://fontawesome.com/v5/docs/web/use-with/react
 EMAIL
 https://www.w3schools.com/nodejs/nodejs_email.asp
 
-ENCRIPTAR PASSWORD
-https://www.npmjs.com/package/bcrypt
-
-RANDOM STRING
-https://www.npmjs.com/package/randomstring
-
-TEXTO DE TERMINOS Y CONDICIONES
-https://terminosycondicionesdeusoejemplo.com/
-
-TEXTO PRIVACIDAD
-https://www.g2k.es/sobre-ecommerce/97-ejemplo-texto-protecci%C3%B3n-de-datos.html
-
 
 PAGOS / PAYPAL
 https://www.npmjs.com/package/@paypal/checkout-server-sdk
 https://www.npmjs.com/package/react-paypal-button-v2
 https://developer.paypal.com/home
-
-PDF GENERADOR
-https://www.npmjs.com/package/pdfkit
-http://pdfkit.org/docs/text.html
-http://pdfkit.org/demo/browser.html
 
 
 https://stackoverflow.com/questions/48669646/how-to-add-or-remove-a-classname-when-screen-size-change-in-react
@@ -58,3 +35,14 @@ https://www.npmjs.com/package/use-places-autocomplete
 
 LISTA EMOTICONOS PARA HTML
 https://www.saberespractico.com/web/emoticonos-en-html/
+
+
+--------------------------------------------------
+
+
+
+TEXTO DE TERMINOS Y CONDICIONES
+https://terminosycondicionesdeusoejemplo.com/
+
+TEXTO PRIVACIDAD
+https://www.g2k.es/sobre-ecommerce/97-ejemplo-texto-protecci%C3%B3n-de-datos.html

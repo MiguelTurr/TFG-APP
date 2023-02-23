@@ -9,6 +9,7 @@ const mysql = require('../services/mysql.js');
 
 router.get('/', (req, res) => {
 
+    if (req.userId == undefined) return res.status(500).json({ respuesta: 'err_user' });
     if (req.userRol == undefined || req.userRol <= 0) return res.status(500).json({ respuesta: 'err_rol' });
 
     mysql.query(

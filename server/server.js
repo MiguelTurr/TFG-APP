@@ -44,6 +44,7 @@ const comprobarToken = (req, _, next) => {
         try {
             const decoded = jwt.verify(token, cookie_secret);
             req.userId = decoded.id;
+            req.userRol = decoded.isAdmin;
 
             mysql.query('UPDATE usuarios SET ultimaConexion=NOW() WHERE ID=? LIMIT 1', decoded.id);
 
@@ -53,19 +54,6 @@ const comprobarToken = (req, _, next) => {
     }
 
     next();
-};
-
-//
-
-const comprobarRol = (req, res, next) => {
-    if (req.userId == undefined) return res.status(500).json({ respuesta: 'err_user' });
-
-    mysql.query('SELECT rol FROM usuarios WHERE ID=? AND rol>0 LIMIT 1', req.userId, function(err, result) {
-        if(err) return res.status(500).json({ respuesta: 'err_db' });
-
-        req.userRol = result.length === 0 ? 0 : result[0].rol;
-        next();
-    });
 };
 
 //
@@ -96,7 +84,7 @@ server.use('/alojamiento', comprobarToken, require('./routes/alojamiento-ver'));
 server.use('/alojamiento/reservar', comprobarToken, require('./routes/alojamiento-reservar'));
 server.use('/alojamiento/valorar', comprobarToken, require('./routes/alojamiento-valorar'));
 
-server.use('/admin', comprobarToken, comprobarRol, require('./routes/admin'));
-server.use('/admin/alojamientos', comprobarToken, comprobarRol, require('./routes/admin-alojamientos'));
-server.use('/admin/usuarios', comprobarToken, comprobarRol, require('./routes/admin-usuarios'));
-server.use('/admin/reportes', comprobarToken, comprobarRol, require('./routes/admin-reportes'));
+server.use('/admin', comprobarToken, require('./routes/admin'));
+server.use('/admin/alojamientos', comprobarToken, require('./routes/admin-alojamientos'));
+server.use('/admin/usuarios', comprobarToken, require('./routes/admin-usuarios'));
+server.use('/admin/reportes', comprobarToken, require('./routes/admin-reportes'));

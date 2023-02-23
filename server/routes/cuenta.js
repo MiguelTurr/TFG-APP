@@ -117,7 +117,8 @@ router.post('/login', (req, res) => {
         //
 
         const id = result[0].ID;
-        const token = jwt.sign({ id }, cookie_secret);
+        const adminLvl = result[0].rol;
+        const token = jwt.sign({ id: id, isAdmin: adminLvl }, cookie_secret);
 
         res.status(201)
             .cookie('token', token, {
@@ -129,7 +130,7 @@ router.post('/login', (req, res) => {
                 respuesta: 'correcto',
                 autorizacion: true,
                 nombre: result[0].nombre,
-                rol: result[0].rol
+                rol: adminLvl
             });
     });
 });

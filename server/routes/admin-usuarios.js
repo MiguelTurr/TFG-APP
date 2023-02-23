@@ -9,6 +9,7 @@ const mysql = require('../services/mysql.js');
 
 router.get('/', (req, res) => {
 
+    if (req.userId == undefined) return res.status(500).json({ respuesta: 'err_user' });
     if (req.userRol == undefined || req.userRol <= 0) return res.status(500).json({ respuesta: 'err_rol' });
 
     mysql.query('SELECT ID,activo,email,ultimaConexion,rol,CONCAT(nombre," ",apellidos) as nombre FROM usuarios WHERE ID!=? ORDER BY fechaReg DESC', req.userId, (err, result) => {
@@ -24,6 +25,7 @@ router.get('/', (req, res) => {
 
 router.post('/editar', (req, res) => {
 
+    if (req.userId == undefined) return res.status(500).json({ respuesta: 'err_user' });
     if (req.userRol == undefined || req.userRol <= 0) return res.status(500).json({ respuesta: 'err_rol' });
 
     var queryStr = 'UPDATE usuarios SET ';
