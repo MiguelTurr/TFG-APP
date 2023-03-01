@@ -111,7 +111,7 @@ function UserValoraciones({ changeLogged }) {
 
                 for(var i = 0; i < len; i++) {
                     
-                    const perfil = await fetch('/alojamiento/hospedador/foto/' +items.valoracion[i].userValoradoID, { method: 'GET' });
+                    const perfil = await fetch('/alojamiento/imagen/hospedador/' +items.valoracion[i].userValoradoID, { method: 'GET' });
 
                     if(perfil.status === 200) {
                         arrayImg.push(perfil.url);
@@ -156,7 +156,7 @@ function UserValoraciones({ changeLogged }) {
 
                 for(var i = 0; i < len; i++) {
                     
-                    const perfil = await fetch('/alojamiento/hospedador/foto/' +items.valoracion[i].usuarioID, { method: 'GET' });
+                    const perfil = await fetch('/alojamiento/imagen/hospedador/' +items.valoracion[i].usuarioID, { method: 'GET' });
 
                     if(perfil.status === 200) {
                         arrayImg.push(perfil.url);
@@ -201,7 +201,7 @@ function UserValoraciones({ changeLogged }) {
 
                 for(var i = 0; i < len; i++) {
                     
-                    const perfil = await fetch('/alojamiento/hospedador/foto/' +items.valoracion[i].usuarioID, { method: 'GET' });
+                    const perfil = await fetch('/alojamiento/imagen/hospedador/' +items.valoracion[i].usuarioID, { method: 'GET' });
 
                     if(perfil.status === 200) {
                         arrayImg.push(perfil.url);

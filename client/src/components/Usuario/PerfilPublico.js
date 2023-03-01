@@ -61,7 +61,7 @@ function PerfilPublico({ isLogged, changeLogged }) {
         } else if (items.respuesta === 'correcto') {
             setInfoPerfil(items.user[0]);
             
-            const imagen = await fetch('/alojamiento/hospedador/foto/' + id, { method: 'GET' });
+            const imagen = await fetch('/alojamiento/imagen/hospedador/' + id, { method: 'GET' });
 
             if (imagen.status === 200) {
                 setImgPerfil(imagen.url);
@@ -136,7 +136,7 @@ function PerfilPublico({ isLogged, changeLogged }) {
 
                 // IMÁGENES PERFIL
 
-                const perfil = await fetch('/alojamiento/hospedador/foto/' +items.valoraciones[i].usuarioId, { method: 'GET' });
+                const perfil = await fetch('/alojamiento/imagen/hospedador/' +items.valoraciones[i].usuarioId, { method: 'GET' });
 
                 if(perfil.status === 200) {
                     arrayPerfiles.push(perfil.url);
@@ -191,7 +191,7 @@ function PerfilPublico({ isLogged, changeLogged }) {
 
                 // IMÁGENES PERFIL
 
-                const perfil = await fetch('/alojamiento/hospedador/foto/' +items.valoraciones[i].usuarioId, { method: 'GET' });
+                const perfil = await fetch('/alojamiento/imagen/hospedador/' +items.valoraciones[i].usuarioId, { method: 'GET' });
 
                 if(perfil.status === 200) {
                     arrayPerfiles.push(perfil.url);

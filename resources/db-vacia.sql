@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 	`fechaNac` date NOT NULL,
 	`fechaReg` datetime NOT NULL DEFAULT NOW(),
 	`telefono` varchar(20) NOT NULL,
-	`residencia` text NOT NULL default '',
+	`residencia` text NOT NULL default 'Desconocida',
 	`trabajo` varchar(70) NOT NULL default '',
 	`idiomas` varchar(70) NOT NULL default 'Español',
 	`imgPerfil` varchar(50) NOT NULL default 'default.png',

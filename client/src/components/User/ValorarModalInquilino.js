@@ -38,7 +38,7 @@ function ValorarModalInquilino({ infoHuesped, funcionCerrar, valoracionCorrecto 
             return;
         }
 
-        const imagen = await fetch('/alojamiento/hospedador/foto/' +infoHuesped.usuarioID, { method: 'GET' });
+        const imagen = await fetch('/alojamiento/imagen/hospedador/' +infoHuesped.usuarioID, { method: 'GET' });
 
         if(imagen.status === 200) {
             setImgHuesped(imagen.url);

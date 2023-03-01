@@ -49,7 +49,7 @@ function ValoracionesModal({ mostrar, funcionCerrar }) {
 
             for(var i = 0; i < len; i++) {
 
-                const perfil = await fetch('/alojamiento/hospedador/foto/' +items.valoraciones[i].usuarioId, { method: 'GET' });
+                const perfil = await fetch('/alojamiento/imagen/hospedador/' +items.valoraciones[i].usuarioId, { method: 'GET' });
 
                 if(perfil.status === 200) {
                     arrayPerfiles.push(perfil.url);

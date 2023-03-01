@@ -1,4 +1,7 @@
 
 server/services/config.js
-server/imagenes/
+server/imagenes/casas/
+server/imagenes/chats/
+server/imagenes/perfil/
 web_scraper/imagenes/
+web_test/

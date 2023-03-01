@@ -105,7 +105,7 @@ function UserChats({ changeLogged }) {
             var arrayPerfiles = [];
             for(var i = 0; i < len; i++) {
 
-                const perfil = await fetch('/alojamiento/hospedador/foto/' +items.chats[i].hablarID, { method: 'GET' });
+                const perfil = await fetch('/alojamiento/imagen/hospedador/' +items.chats[i].hablarID, { method: 'GET' });
     
                 if(perfil.status === 200) {
                     arrayPerfiles.push(perfil.url);
@@ -209,7 +209,7 @@ function UserChats({ changeLogged }) {
                 propio: true,
             }, ...chats]);
 
-            const perfil = await fetch('/alojamiento/hospedador/foto/' +nuevoChat.userId, { method: 'GET' });
+            const perfil = await fetch('/alojamiento/imagen/hospedador/' +nuevoChat.userId, { method: 'GET' });
     
             if(perfil.status === 200) {
                 setUserImg([perfil.url, ...userImg]);

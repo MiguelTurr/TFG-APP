@@ -105,7 +105,7 @@ function VerAlojamiento({ isLogged, changeLogged }) {
 
     const cargarImagenHospedador = async (userId) => {
 
-        const imagen = await fetch('/alojamiento/hospedador/foto/' +userId, { method: 'GET' });
+        const imagen = await fetch('/alojamiento/imagen/hospedador/' +userId, { method: 'GET' });
 
         if(imagen.status === 200) {
             setusuarioImg(imagen.url);

@@ -22,7 +22,7 @@ router.post('/registrar', async (req, res) => {
         charset: 'alphanumeric',
     });
 
-    mysql.query("INSERT INTO usuarios (verificacion, email, password, nombre, apellidos, genero, fechaNac, telefono, residencia) VALUES (?)",
+    mysql.query("INSERT INTO usuarios (verificacion, email, password, nombre, apellidos, genero, fechaNac, telefono) VALUES (?)",
         [
             [
                 validarEmail,
@@ -32,8 +32,7 @@ router.post('/registrar', async (req, res) => {
                 req.body.apellidos,
                 req.body.genero,
                 req.body.fechaNac,
-                req.body.telefono,
-                req.body.residencia
+                req.body.telefono
             ]
         ], (err) => {
 

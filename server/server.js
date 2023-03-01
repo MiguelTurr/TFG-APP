@@ -81,6 +81,7 @@ server.use('/usuario/denunciar', comprobarToken, require('./routes/usuario-denun
 server.use('/usuario/valorar', require('./routes/usuario-valorar'));
 
 server.use('/alojamiento', comprobarToken, require('./routes/alojamiento-ver'));
+server.use('/alojamiento/imagen', require('./routes/alojamiento-imagen'));
 server.use('/alojamiento/reservar', comprobarToken, require('./routes/alojamiento-reservar'));
 server.use('/alojamiento/valorar', comprobarToken, require('./routes/alojamiento-valorar'));
 

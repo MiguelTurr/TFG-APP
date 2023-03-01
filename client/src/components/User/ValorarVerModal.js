@@ -53,7 +53,7 @@ const ValorarModal = ({ valoraciones, funcionCerrar }) => {
         if (items.respuesta === 'correcto') {
             setValoracionUser(items.valoracion[0]);
 
-            const perfil = await fetch('/alojamiento/hospedador/foto/' + items.valoracion[0].ID, { method: 'GET' });
+            const perfil = await fetch('/alojamiento/imagen/hospedador/' + items.valoracion[0].ID, { method: 'GET' });
 
             if (perfil.status === 200) {
                 setImgUser(perfil.url);
@@ -74,7 +74,7 @@ const ValorarModal = ({ valoraciones, funcionCerrar }) => {
         if (items.respuesta === 'correcto') {
             setValoracionHospedador(items.valoracion[0]);
 
-            const perfil = await fetch('/alojamiento/hospedador/foto/' + items.valoracion[0].ID, { method: 'GET' });
+            const perfil = await fetch('/alojamiento/imagen/hospedador/' + items.valoracion[0].ID, { method: 'GET' });
 
             if (perfil.status === 200) {
                 setImgHospedador(perfil.url);

@@ -131,7 +131,7 @@ const Registro = ({ mostrar, funcionCerrar }) => {
 
                                     <Form.Group className="mb-3">
                                         <Form.Label>Apellidos</Form.Label>
-                                        <Form.Control type="text" placeholder="Escribe apellidos" maxLength="60" ref={regApellidos} pattern="[a-zA-Z]*" required/>
+                                        <Form.Control type="text" placeholder="Escribe apellidos" maxLength="60" ref={regApellidos} required/>
                                     </Form.Group>
 
                                     <Form.Group className="mb-3">
