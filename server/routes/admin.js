@@ -10,7 +10,7 @@ const mysql = require('../services/mysql.js');
 router.get('/', async (req, res) => {
 
     if (req.userId == undefined) return res.status(500).json({ respuesta: 'err_user' });
-    if (req.userRol == undefined || req.userRol <= 0) return res.status(500).json({ respuesta: 'err_rol' });
+    if (req.userRol == undefined || req.userRol == 'Usuario') return res.status(500).json({ respuesta: 'err_rol' });
 
     const totalAlojamientos = await new Promise((resolve) => {
         mysql.query('SELECT COUNT(*) as count FROM alojamientos', function (err, result) {

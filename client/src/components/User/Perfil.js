@@ -674,7 +674,7 @@ function Perfil({ changeLogged }) {
                                         })
                                     }
                                 </Form.Select>
-                                <Form.Control type="number" placeholder="Escribe número" id="mod-telefono" maxlength="20" value={modDatos?.telefono} onChange={controlDato}/>
+                                <Form.Control type="number" placeholder="Escribe número" id="mod-telefono" maxLength="20" value={modDatos?.telefono} onChange={controlDato}/>
                             </div>
                         </Form.Group>
 
@@ -686,14 +686,14 @@ function Perfil({ changeLogged }) {
                             <Form.Label>
                                 <small className="text-muted">Quedan {presentacionCaracteres - modDatos?.presentacion?.length} caracteres</small>
                             </Form.Label>
-                            <Form.Control as="textarea" placeholder="Escribe aquí algo sobre ti" id="mod-presentacion" maxlength="300" value={modDatos?.presentacion} onChange={controlDato}/>
+                            <Form.Control as="textarea" placeholder="Escribe aquí algo sobre ti" id="mod-presentacion" maxLength="300" value={modDatos?.presentacion} onChange={controlDato}/>
                         </Form.Group>
 
                         <Form.Group className="mb-3" style={modDatos.modId === 'trabajo' ? {} : { display: 'none' }} >
                             <Form.Label>
                                 <small className="text-muted">Quedan {trabajoCaracteres - modDatos?.trabajo?.length} caracteres</small>
                             </Form.Label>
-                            <Form.Control type="text" placeholder="¿A qué te dedicas?" id="mod-trabajo" maxlength="70" value={modDatos?.trabajo} onChange={controlDato}/>
+                            <Form.Control type="text" placeholder="¿A qué te dedicas?" id="mod-trabajo" maxLength="70" value={modDatos?.trabajo} onChange={controlDato}/>
                         </Form.Group>
 
                         <Form.Group className="mb-3" style={modDatos.modId === 'idiomas' ? {} : { display: 'none' }} >
@@ -762,14 +762,14 @@ function Perfil({ changeLogged }) {
                             <Form.Label>
                                 <small className="text-muted">Quedan {correoCaracteres - modDatos?.email?.length} caracteres</small>
                             </Form.Label>
-                            <Form.Control type="email" placeholder="Nuevo correo" id="mod-email" maxlength="200" value={modDatos?.email} onChange={controlDato}/>
+                            <Form.Control type="email" placeholder="Nuevo correo" id="mod-email" maxLength="200" value={modDatos?.email} onChange={controlDato}/>
                         </Form.Group>
 
                         <Form.Group className="mb-3" style={modDatos.modId === 'password' ? {} : { display: 'none' }} >
                             <Form.Label>
                                 <small className="text-muted">Quedan {passwordCaracteres - modDatos?.password?.length} caracteres</small>
                             </Form.Label>
-                            <Form.Control type="password" placeholder="Nueva contraseña" id="mod-password" maxlength="80" value={modDatos?.password} onChange={controlDato}/>
+                            <Form.Control type="password" placeholder="Nueva contraseña" id="mod-password" maxLength="80" value={modDatos?.password} onChange={controlDato}/>
                         </Form.Group>
 
                         <Form.Group className="mb-3" style={modDatos.modId === 'imagen' ? {} : { display: 'none' }} >
@@ -816,7 +816,7 @@ function Perfil({ changeLogged }) {
 
                         <Form.Group className="mb-3" style={modDatos.modificado === true ? {} : { display: 'none' }}>
                             <Form.Label htmlFor="mod-password-2">Contraseña:</Form.Label>
-                            <Form.Control type="password" placeholder="Escribe contraseña" maxlength="80" id="mod-password-2" />
+                            <Form.Control type="password" placeholder="Escribe contraseña" maxLength="80" id="mod-password-2" />
 
                             <br />
 

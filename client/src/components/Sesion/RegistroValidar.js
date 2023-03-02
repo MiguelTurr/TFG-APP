@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 
+import Button from "react-bootstrap/esm/Button";
+
 function RegistroValidar() {
     const { id } = useParams();
 
@@ -10,7 +12,7 @@ function RegistroValidar() {
 
     useEffect(() => {
         fetchValidar();
-    });
+    }, []);
 
     const fetchValidar = async () => {
 
@@ -25,10 +27,6 @@ function RegistroValidar() {
 
         } else if(items.respuesta === 'correcto') {
             setResultadoTexto('Su correo ha sido validado correctamente. Ya puede iniciar sesión en su cuenta.');
-
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 5000);
         }
     };
 
@@ -37,7 +35,7 @@ function RegistroValidar() {
         <div className="container-fluid">
 
             <h4 style={{ fontWeight: 'bold' }}>
-                Valida tu cuenta
+                Validación de cuenta
             </h4>
 
             <hr/>
@@ -47,6 +45,10 @@ function RegistroValidar() {
                     <h5>
                         {resultadoTexto}
                     </h5>
+
+                    <Button className="filtros-botones mt-3" size="sm" href='/'>
+                        Volver al inicio
+                    </Button>
                 </div>
             </div>
         </div>

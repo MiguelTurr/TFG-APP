@@ -18,6 +18,10 @@ connection.connect(function(err) {
       console.log(err.message);
       return;
     }
+
+    /*connection.query('SHOW TABLES', function(err, result) {
+      console.log(result);
+    });*/
    
     console.log('[OK] MYSQL');
 });

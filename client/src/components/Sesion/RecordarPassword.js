@@ -39,7 +39,7 @@ function RecordarPassword() {
             crearAlerta('error', '¡Ha ocurrido un error en la base de datos!');
 
         } else if(items.respuesta === 'err_datos') {
-            crearAlerta('error', '¡Los datos intruducidos son incorrectos!');
+            crearAlerta('error', '¡Los datos introducidos son incorrectos!');
 
         } else if(items.respuesta === 'err_reset') {
             crearAlerta('error', '¡Ya se ha usado el sistema recientemente!');

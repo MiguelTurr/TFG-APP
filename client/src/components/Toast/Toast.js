@@ -3,7 +3,15 @@ import { faTriangleExclamation, faSquareCheck } from '@fortawesome/free-solid-sv
 
 library.add(faTriangleExclamation, faSquareCheck);
 
+var alertaActiva = null;
+var alertaTimer = null;
+
 export async function crearAlerta(tipo, mensaje, tiempo=2000) {
+
+    if(alertaActiva != null) {
+        alertaActiva.remove();
+        clearTimeout(alertaTimer);
+    }
 
     var toastPrincipal = document.createElement("div");
     toastPrincipal.classList.add('toast');
@@ -34,7 +42,9 @@ export async function crearAlerta(tipo, mensaje, tiempo=2000) {
     document.getElementById('alertasInfo').append(toastPrincipal);
     toastPrincipal.style.display = 'block';
 
-    setTimeout(() => {
+    alertaActiva = toastPrincipal;
+
+    alertaTimer = setTimeout(() => {
         toastPrincipal.remove();
     }, tiempo);
 }

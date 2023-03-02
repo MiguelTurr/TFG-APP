@@ -69,45 +69,20 @@ function Adminusuarios({ show, cambiarVista }) {
 
     const comprobarEstado = (estado) => {
 
-        if(estado === 0) {
-        
-           return (
-                <span className="estado-cuenta" style={{backgroundColor: '#476cff' }}>
-                    Sin verificar
-                </span>
-           );
+        const estado_color = {
+            'Sin verificar': '#476cff',
+            Activa: '#50d932',
+            Bloqueada: '#ff2c2c',
+            Inactiva: '#c8c8c8',
+            Desactivada: '#c8c8c8',
+        };
 
-        } else if(estado === 1) {
-        
-            return (
-                <span className="estado-cuenta" style={{backgroundColor: '#50d932' }}>
-                    Activa
-                </span>
-            );
-
-        } else if(estado === 2) {
-        
-            return (
-                <span className="estado-cuenta" style={{backgroundColor: '#ff2c2c' }}>
-                    Baneada
-                </span>
-            );
-
-        } else if(estado === -1) {
-        
-            return (
-                <span className="estado-cuenta" style={{backgroundColor: '#c8c8c8' }}>
-                    Desactivada
-                </span>
-            );
-        }
+        return estado_color[estado];
     };
 
     const mostrarOpciones = (estado, rol, index) => {
 
-        if(rol === 1) return <FontAwesomeIcon className="admin-icon" icon={faArrowDown} style={{ color: 'purple' }} onClick={() => modificarDato('quitar_admin', index) }/>;
-
-        if(estado === 0) {
+        if(estado === 'Sin verificar') {
             return (
                 <>
                     <FontAwesomeIcon className="admin-icon" icon={faCheckDouble} style={{ color: 'green' }} onClick={() => modificarDato('verificar', index) }/>
@@ -116,7 +91,10 @@ function Adminusuarios({ show, cambiarVista }) {
                 </>
             );
  
-        } else if(estado === 1) {
+        } else if(estado === 'Activa') {
+
+            if(rol === 'Admin') return <FontAwesomeIcon className="admin-icon" icon={faArrowDown} style={{ color: 'purple' }} onClick={() => modificarDato('quitar_admin', index) }/>;
+
             return (
                 <>
                     <FontAwesomeIcon className="admin-icon" icon={faBan} style={{ color: 'red' }} onClick={() => modificarDato('ban', index) }/>
@@ -125,7 +103,7 @@ function Adminusuarios({ show, cambiarVista }) {
                 </>
             );
  
-        } else if(estado === 2) {
+        } else if(estado === 'Bloqueada') {
             return <FontAwesomeIcon className="admin-icon" icon={faUnlock} style={{ color: 'orange' }}  onClick={() => modificarDato('desban', index) }/>;
         } 
     };
@@ -165,20 +143,17 @@ function Adminusuarios({ show, cambiarVista }) {
         } else if(items.respuesta === 'correcta') {
             const array = [...userList];
 
-            if(tipo === 'verificar') {
-                array[index].activo = 1;
+            if(tipo === 'verificar' || tipo === 'desban') {
+                array[index].estado = 'Activa';
         
             } else if(tipo === 'ban') {
-                array[index].activo = 2;
-        
-            } else if(tipo === 'desban') {
-                array[index].activo = 1;
+                array[index].estado = 'Bloqueada';
         
             } else if(tipo === 'dar_admin') {
-                array[index].rol = 1;
+                array[index].rol = 'Admin';
 
             } else if(tipo === 'quitar_admin') {
-                array[index].rol = 0;
+                array[index].rol = 'Usuario';
             }
 
             setUserList(array);
@@ -298,7 +273,9 @@ function Adminusuarios({ show, cambiarVista }) {
                                             {e.ID}
                                         </td>
                                         <td>
-                                            {comprobarEstado(e.activo)}
+                                            <span className="estado-cuenta" style={{backgroundColor: comprobarEstado(e.estado) }}>
+                                                {e.estado}
+                                            </span>
                                         </td>
                                         <td>
                                             {e.nombre}
@@ -310,10 +287,10 @@ function Adminusuarios({ show, cambiarVista }) {
                                             {comprobarConexion(e.ultimaConexion)}
                                         </td>
                                         <td>
-                                            { e.rol === 0 ? 'Usuario' : 'Admin' }
+                                            {e.rol}
                                         </td>
                                         <td>
-                                            { mostrarOpciones(e.activo, e.rol, index) }
+                                            { mostrarOpciones(e.estado, e.rol, index) }
                                         </td>
                                     </tr>
                                 ))

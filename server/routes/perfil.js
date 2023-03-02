@@ -221,7 +221,7 @@ router.post('/borrar/cuenta', (req, res) => {
             return;
         }
 
-        mysql.query('UPDATE usuarios SET activo=? WHERE ID=?', [req.body.tipo === 'desactivar' ? 1 : -1, req.userId], function (err) {
+        mysql.query('UPDATE usuarios SET estado=? WHERE ID=?', [req.body.tipo === 'desactivar' ? 'Inactiva' : 'Desactivada', req.userId], function (err) {
             if (err) {
                 res.status(500).json({ respuesta: 'err_db' });
                 console.log(err.message);

@@ -5,8 +5,9 @@ USE app;
 
 CREATE TABLE IF NOT EXISTS `usuarios` (
     `ID` int NOT NULL AUTO_INCREMENT,
-	`activo` tinyint NOT NULL default 0,
+	`estado` ENUM('Sin verificar', 'Activa', 'Bloqueada', 'Inactiva', 'Desactivada') default 'Sin verificar',
 	`verificacion` char(50) NOT NULL,
+	`rol` ENUM('Usuario', 'Admin', 'Dueño') default 'Usuario',
 	`email` varchar(200) NOT NULL UNIQUE,
 	`password` varchar(70) NOT NULL,
 	`passReset` int NOT NULL default 0,
@@ -23,7 +24,6 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 	`imgPerfil` varchar(50) NOT NULL default 'default.png',
 	`recibirCorreos` tinyint NOT NULL default 1,
 	`ultimaConexion` datetime default NULL,
-	`rol` tinyint default 0,
 
     PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -31,11 +31,11 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 DELETE FROM `usuarios`;
 
 INSERT INTO `usuarios` (`ID`, `activo`, `verificacion`, `email`, `password`, `nombre`, `apellidos`, `fechaNac`, `telefono`) VALUES
-	(1, 1, '', 'manolo@app-tfg.com', '$2a$10$xUG5DUhMOIVXbI1wCT5nKuM0Ua73msM2AxUXyX.YNUH.4IlquSca6', 'Manolo', 'Garcia Sanchez', '1990-05-10', '+34 4707529'),	
-	(2, 1, '', 'sara@app-tfg.com', '$2a$10$xUG5DUhMOIVXbI1wCT5nKuM0Ua73msM2AxUXyX.YNUH.4IlquSca6', 'Sara', 'Lopez', '1997-07-20', '+35 0449749'),
-	(3, 1, '', 'pepe@app-tfg.com', '$2a$10$xUG5DUhMOIVXbI1wCT5nKuM0Ua73msM2AxUXyX.YNUH.4IlquSca6', 'Pepe', 'González', '1992-07-20', '+35 3133896'),
-	(4, 1, '', 'jose@app-tfg.com', '$2a$10$xUG5DUhMOIVXbI1wCT5nKuM0Ua73msM2AxUXyX.YNUH.4IlquSca6', 'Jose', 'Martínez Pérez', '1991-07-22', '+35 8623507'),
-	(5, 1, '', 'federico@app-tfg.com', '$2a$10$xUG5DUhMOIVXbI1wCT5nKuM0Ua73msM2AxUXyX.YNUH.4IlquSca6', 'Fede', 'Muñoz Álvarez', '1980-07-15', '+35 9175917');
+	(3, 'Activa', '', 'manolo@app-tfg.com', '$2a$10$xUG5DUhMOIVXbI1wCT5nKuM0Ua73msM2AxUXyX.YNUH.4IlquSca6', 'Manolo', 'Garcia Sanchez', '1990-05-10', '+34 4707529'),	
+	(4, 'Activa', '', 'sara@app-tfg.com', '$2a$10$xUG5DUhMOIVXbI1wCT5nKuM0Ua73msM2AxUXyX.YNUH.4IlquSca6', 'Sara', 'Lopez', '1997-07-20', '+35 0449749'),
+	(5, 'Activa', '', 'pepe@app-tfg.com', '$2a$10$xUG5DUhMOIVXbI1wCT5nKuM0Ua73msM2AxUXyX.YNUH.4IlquSca6', 'Pepe', 'González', '1992-07-20', '+35 3133896'),
+	(6, 'Activa', '', 'jose@app-tfg.com', '$2a$10$xUG5DUhMOIVXbI1wCT5nKuM0Ua73msM2AxUXyX.YNUH.4IlquSca6', 'Jose', 'Martínez Pérez', '1991-07-22', '+35 8623507'),
+	(7, 'Activa', '', 'federico@app-tfg.com', '$2a$10$xUG5DUhMOIVXbI1wCT5nKuM0Ua73msM2AxUXyX.YNUH.4IlquSca6', 'Fede', 'Muñoz Álvarez', '1980-07-15', '+35 9175917');
 
 ----------------------------------------------------------------------------------
 
@@ -49,8 +49,6 @@ CREATE TABLE IF NOT EXISTS `alojamientos` (
 	`precioAnterior` smallint default NULL,
 
 	`defaultFont` varchar(50) default 'Segoe UI',
-
-	--`oculto` tinyint NOT NULL default 0,
 
 	`ubicacion` varchar(200) NOT NULL,
 	`localidad` varchar(70) NOT NULL,
@@ -140,7 +138,6 @@ CREATE TABLE IF NOT EXISTS `usuarios_favoritos` (
 	`alojamientoID` int NOT NULL,
 	`addEn` datetime NOT NULL default NOW(),
 
-
     CONSTRAINT FK_UsuarioFavorito FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
     CONSTRAINT FK_AlojamientoFavorito FOREIGN KEY (alojamientoID) REFERENCES alojamientos(ID) ON DELETE CASCADE,
     PRIMARY KEY (`ID`)
@@ -160,7 +157,6 @@ CREATE TABLE IF NOT EXISTS `usuarios_valoraciones` (
 	`creadoEn` datetime NOT NULL default NOW(),
 	`tipo` int NOT NULL,
 	`mensaje` varchar(300) NOT NULL,
-
 
     CONSTRAINT FK_UsuarioValora FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
     CONSTRAINT FK_UsuarioValorado FOREIGN KEY (userValoradoID) REFERENCES usuarios(ID),
@@ -233,7 +229,6 @@ CREATE TABLE IF NOT EXISTS `usuarios_chats_mensajes` (
 	`emisorID` int NOT NULL,
 	`creadoEn` datetime NOT NULL default NOW(),
 	`mensaje` varchar(150) NOT NULL,
-
 
     CONSTRAINT FK_ChatMensaje FOREIGN KEY (chatID) REFERENCES usuarios_chats(ID),
     CONSTRAINT FK_EmisorMensaje FOREIGN KEY (emisorID) REFERENCES usuarios(ID),

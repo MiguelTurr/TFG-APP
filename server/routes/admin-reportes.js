@@ -10,7 +10,7 @@ const mysql = require('../services/mysql.js');
 router.get('/', (req, res) => {
 
     if (req.userId == undefined) return res.status(500).json({ respuesta: 'err_user' });
-    if (req.userRol == undefined || req.userRol <= 0) return res.status(500).json({ respuesta: 'err_rol' });
+    if (req.userRol == undefined || req.userRol == 'Usuario') return res.status(500).json({ respuesta: 'err_rol' });
 
     mysql.query(
         `SELECT rep.*,CONCAT(usu.nombre," ",usu.apellidos) AS userNombre,CONCAT(usure.nombre," ",usure.apellidos) AS reportedNombre FROM usuarios_denuncias as rep

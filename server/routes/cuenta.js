@@ -80,7 +80,7 @@ router.post('/login', (req, res) => {
     const userEmail = req.body.email;
     const userPassword = req.body.password;
 
-    mysql.query("SELECT ID,password,activo,nombre,rol FROM usuarios WHERE email=? LIMIT 1", userEmail, async (err, result) => {
+    mysql.query("SELECT ID,password,estado,nombre,rol FROM usuarios WHERE email=? LIMIT 1", userEmail, async (err, result) => {
 
         if (err) {
             console.log(err);
@@ -101,16 +101,16 @@ router.post('/login', (req, res) => {
             return;
         }
 
-        if (result[0].activo == 0) {
+        if (result[0].estado == 'Sin verificar') {
             res.status(401).json({ respuesta: 'err_validado' });
             return;
 
-        } else if (result[0].activo == 2) {
+        } else if (result[0].estado == 'Bloqueada') {
             res.status(401).json({ respuesta: 'err_ban' });
             return;
 
-        } else if (result[0].activo == 2) { // QUITAR COMO CUENTA DESACTIVADA
-            mysql.query('UPDATE usuarios SET activo=1 WHERE ID=?', result[0].ID);
+        } else if (result[0].estado == 'Inactiva') { // QUITAR COMO CUENTA DESACTIVADA
+            mysql.query('UPDATE usuarios SET estado="Activa" WHERE ID=?', result[0].ID);
         }
 
         //
@@ -129,7 +129,7 @@ router.post('/login', (req, res) => {
                 respuesta: 'correcto',
                 autorizacion: true,
                 nombre: result[0].nombre,
-                rol: adminLvl
+                rol: adminLvl == 'Usuario' ? 0 : 1
             });
     });
 });
@@ -143,7 +143,7 @@ router.post('/recordar-password', (req, res) => {
 
     const emailRequest = req.body.email;
 
-    mysql.query("SELECT passReset,nombre FROM usuarios WHERE email=? AND activo=1 LIMIT 1", emailRequest, async (err, result) => {
+    mysql.query("SELECT passReset,nombre FROM usuarios WHERE email=? AND estado='Activa' LIMIT 1", emailRequest, async (err, result) => {
 
         if (err) {
             console.log(err.message);
@@ -209,7 +209,7 @@ router.get('/validar/:id', (req, res) => {
 
     const verificacion = req.params.id;
 
-    mysql.query("SELECT * FROM usuarios WHERE activo=0 AND verificacion=? LIMIT 1", verificacion, async (err, result) => {
+    mysql.query("SELECT * FROM usuarios WHERE estado='Sin verificar' AND verificacion=? LIMIT 1", verificacion, async (err, result) => {
 
         if (err) {
             console.log(err.message);
@@ -222,7 +222,7 @@ router.get('/validar/:id', (req, res) => {
             return;
         }
 
-        mysql.query("UPDATE usuarios SET activo=1 WHERE activo=0 AND verificacion=? LIMIT 1", verificacion, async (err) => {
+        mysql.query("UPDATE usuarios SET estado='Activa' WHERE estado='Sin verificar' AND verificacion=? LIMIT 1", verificacion, async (err) => {
 
             if (err) {
                 console.log(err.message);
