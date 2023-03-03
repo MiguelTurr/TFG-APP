@@ -21,7 +21,11 @@ import UserChats from './components/Mensajes/UserChats';
 import RegistroValidar from './components/Sesion/RegistroValidar';
 import RecordarPassword from './components/Sesion/RecordarPassword';
 import Perfil from './components/User/Perfil';
+
 import UserAlojamientos from './components/User/UserAlojamientos';
+import EditarAlojamiento from './components/User/EditarAlojamiento';
+import CrearAlojamiento from './components/User/CrearAlojamiento';
+
 import UserValoraciones from './components/User/UserValoraciones';
 import Favoritos from './components/User/Favoritos';
 import Recomendaciones from './components/User/Recomendados';
@@ -68,6 +72,9 @@ function App() {
           {isLogged === true && <>
             <Route path="/perfil" element={ <Perfil changeLogged={setAutorizado} /> }/>
             <Route path="/perfil/mis-alojamientos" element={ <UserAlojamientos changeLogged={setAutorizado} /> }/>
+            <Route path="/perfil/mis-alojamientos/editar/:id" element={ <EditarAlojamiento changeLogged={setAutorizado} /> }/>
+            <Route path="/perfil/mis-alojamientos/crear" element={ <CrearAlojamiento changeLogged={setAutorizado} /> }/>
+
             <Route path="/perfil/mis-valoraciones" element={ <UserValoraciones changeLogged={setAutorizado} /> }/>
             <Route path='/perfil/mis-reservas' element={ <UserReservas changeLogged={setAutorizado} /> }/>
             <Route path='/perfil/mis-chats' element={ <UserChats changeLogged={setAutorizado} /> }/>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { crearAlerta } from '../Toast/Toast.js';
 
@@ -49,7 +50,9 @@ const formDefault = {
     imgTotal: 0,
 }
   
-function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
+function CrearAlojamiento({ changeLogged }) {
+
+    const navigate = useNavigate();
 
     //
 
@@ -324,40 +327,15 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
 
         } else if (items.respuesta === 'correcto') {
             crearAlerta('exito', '¡Has creado un nuevo alojamiento!');
-            vistaAlojamientos('principal');
 
-            // ESTADO POR DEFECTO
-            
-            document.getElementById('imagenes').value = '';
-
-            setForm(formDefault);
-            setImagenPreview([]);
-            setDireccion('');
-            setPosicion({ lat: 40.46, lng: -3.74922 });
-            setUbicacion({ ubicacion: 'Sin definir...' });
-
-            // AÑADIR A LA LISTA
-
-            nuevoAlojamiento({
-                ID: items.alojamientoId,
-                precio: form.precio,
-                creadoEn: new Date(),
-                valoracionMedia: 0,
-                vecesValorado: 0,
-                visitas: 0,
-                valoracionesNuevas: 0,
-
-                // UBICACIÓN
-
-                ubicacion: ubicacion.ubicacion,
-            });
+            setTimeout(() => { navigate("/perfil/mis-alojamientos"); }, 1000);
         }
     };
 
     return (
-        <div className="container-fluid mb-5" style={show === 'crear' ? {} : { display: 'none' }}>
+        <div className="container-fluid mb-5">
 
-            <Button className="filtros-botones" size="sm" onClick={() => { vistaAlojamientos('principal') }}>
+            <Button className="filtros-botones" size="sm" onClick={() => { navigate("/perfil/mis-alojamientos"); }}>
                 <FontAwesomeIcon icon={faArrowLeft} /> Volver
             </Button>
 
@@ -746,7 +724,7 @@ function CrearAlojamiento({ show, vistaAlojamientos, nuevoAlojamiento }) {
 
                 <hr />
 
-                <Button className="filtros-botones" size="sm" onClick={() => { vistaAlojamientos('principal') }}>
+                <Button className="filtros-botones" size="sm" onClick={() => { navigate("/perfil/mis-alojamientos"); }}>
                     <FontAwesomeIcon icon={faArrowLeft} /> Volver
                 </Button>
                 &nbsp;&nbsp;

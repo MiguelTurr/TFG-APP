@@ -4,6 +4,7 @@ const router = express.Router();
 //
 
 const mysql = require('../services/mysql.js');
+const { boolToInt } = require('../services/utils.js');
 
 //
 
@@ -19,7 +20,7 @@ router.post('/', (req, res) => {
         [
             req.userId,
             req.body.usuarioID,
-            utils.boolToInt(req.body.tipo),
+            boolToInt(req.body.tipo),
             req.body.mensaje,
         ]
     ], function(err, result) {

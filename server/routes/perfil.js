@@ -8,6 +8,7 @@ const bcrypt = require('bcrypt');
 const fs = require("fs");
 
 const { bcrypt_salt } = require('../services/config.js');
+const { nombreFotoPerfil } = require('../services/utils.js');
 
 //
 
@@ -81,7 +82,7 @@ router.post('/editar', (req, res) => {
 
         } else if (req.body.tipo == 'imagen') {
             const extension = req.body.editado.split('.')[1];
-            datoEditado = utils.nombreFotoPerfil(req.userId, extension);
+            datoEditado = nombreFotoPerfil(req.userId, extension);
 
             req.body.tipo = 'imgPerfil';
         }
@@ -122,7 +123,7 @@ router.post('/editar', (req, res) => {
                 avatar.mv('./imagenes/perfil/' + datoEditado);
             }
 
-            res.status(200).json({ respuesta: 'correcto' });
+            res.status(200).json({ respuesta: 'correcto', devolverDato: datoEditado });
         });
     });
 });

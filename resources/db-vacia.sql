@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `alojamientos` (
 	
 	`servicios` int NOT NULL,
 
-    CONSTRAINT FK_UsuarioAlojamiento FOREIGN KEY (usuarioID) REFERENCES usuarios(ID),
+    CONSTRAINT FK_UsuarioAlojamiento FOREIGN KEY (usuarioID) REFERENCES usuarios(ID) ON DELETE CASCADE,
     PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 

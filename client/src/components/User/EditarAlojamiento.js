@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 import { crearAlerta } from '../Toast/Toast.js';
 
@@ -14,10 +15,12 @@ const tituloCaracteres = 70;
 const descripcionCaracteres = 2500;
 
 const fontsDisponibles = ['Segoe UI', 'Arial', 'Times New Roman', 'Helvetica', 'Calibri', 'Georgia', 'Cambria', 'Veranda'];
+const crearOptions = { year: 'numeric', month: 'long', day: 'numeric' };
 
-function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
+function EditarAlojamiento({ changeLogged }) {
 
-    var crearOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    const { id } = useParams();
+    const navigate = useNavigate();
 
     //
 
@@ -25,18 +28,18 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
     const [alojamiento, setAlojamiento] = useState({});
     const [previewImg, setPreviewImg] = useState([]);
 
-    const [cambiarDatos, setCambiarDatos] = useState(null);
+    const [cambiarDatos, setCambiarDatos] = useState({ });
 
     useEffect(() => {
         obtenerInfoAlojamiento();
-    }, [alojamientoId]);
+    }, [id]);
 
     const obtenerInfoAlojamiento = async () => {
-        if (alojamientoId === null) {
+        if (id === null) {
             return;
         }
 
-        const data = await fetch('/perfil/mis-alojamientos/' + alojamientoId, { method: 'GET' });
+        const data = await fetch('/perfil/mis-alojamientos/' + id, { method: 'GET' });
         const items = await data.json();
 
         if (items.respuesta === 'err_user') {
@@ -44,13 +47,14 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
 
         } else if (items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+            window.location.href = '/perfil/mis-alojamientos';
 
         } else if (items.respuesta === 'correcto') {
             setAlojamiento(items.alojamiento);
         }
     };
 
-    if (alojamientoId === null) {
+    if (id === null) {
         return <></>;
     }
 
@@ -217,12 +221,11 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
     //
 
     const volverEditar = () => {
-        setCambiarDatos(null);
-        vistaAlojamientos('principal');
+        navigate("/perfil/mis-alojamientos");
     };
 
     const cancelarEditar = () => {
-        setCambiarDatos(null);
+        setCambiarDatos({});
     };
 
     const enviarDatoModificado = async (e) => {
@@ -371,8 +374,7 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                 setAlojamiento({ ...alojamiento, fontIndex: cambiarDatos.fontIndex, defaultFont: fontsDisponibles[cambiarDatos.fontIndex] });
             }
 
-
-            setCambiarDatos(null);
+            setCambiarDatos({});
         }
     };
 
@@ -397,14 +399,14 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
     //
 
     const verAlojamiento = () => {
-        window.open('/alojamiento/ver?casa=' + alojamientoId, '_blank');
+        window.open('/alojamiento/ver?casa=' + id, '_blank');
     };
 
     //
 
     return (
 
-        <div className="container-fluid mb-5" style={show === 'editar' ? {} : { display: 'none' }}>
+        <div className="container-fluid mb-5">
 
             <Button className="filtros-botones" size="sm" onClick={volverEditar}>
                 <FontAwesomeIcon icon={faArrowLeft} /> Volver
@@ -423,7 +425,7 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
 
             <div className="row">
 
-                <div className="col" style={window.innerWidth < 600 && cambiarDatos !== null ? { display: 'none' } : {}}>
+                <div className="col" style={window.innerWidth < 600 && Object.keys(cambiarDatos).length !== 0 ? { display: 'none' } : {}}>
 
                     <table className="table">
                         <tbody>
@@ -529,9 +531,9 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
                     </table>
                 </div>
 
-                <div className="col" style={window.innerWidth < 600 && cambiarDatos === null ? { display: 'none' } : {}}>
+                <div className="col" style={window.innerWidth < 600 && Object.keys(cambiarDatos).length === 0 ? { display: 'none' } : {}}>
 
-                    <div style={cambiarDatos !== null ? {} : { display: 'none' }}>
+                    <div style={Object.keys(cambiarDatos).length !== 0 ? {} : { display: 'none' }}>
 
                         <h4 className="text-center" style={{ fontWeight: 'bold' }}>
                             <FontAwesomeIcon icon={faXmark} style={{ float: 'left', marginTop: '5px', cursor: 'pointer' }} onClick={cancelarEditar} />
@@ -543,23 +545,22 @@ function EditarAlojamiento({ show, vistaAlojamientos, alojamientoId }) {
 
                         <Form onSubmit={enviarDatoModificado}>
 
-                            <Form.Group className="mb-3" style={cambiarDatos?.dato === 'titulo' ? {} : { display: 'none' }} >
+                            <Form.Group className="mb-3" style={cambiarDatos.dato === 'titulo' ? {} : { display: 'none' }} >
                                 <Form.Label>
-                                    <small className="text-muted">Quedan {tituloCaracteres - cambiarDatos?.titulo?.length} caracteres</small>
+                                    <small className="text-muted">Quedan {tituloCaracteres - cambiarDatos.titulo?.length} caracteres</small>
                                 </Form.Label>
-                                <Form.Control type="text" placeholder="Nuevo título" id="titulo" maxLength="70" value={cambiarDatos?.titulo} onChange={controlDato} />
+                                <Form.Control type="text" placeholder="Nuevo título" id="titulo" maxLength="70" value={cambiarDatos.titulo} onChange={controlDato} />
                             </Form.Group>
 
                             <Form.Group className="mb-3" style={cambiarDatos?.dato === 'descripcion' ? {} : { display: 'none' }} >
                                 <Form.Label>
                                     <small className="text-muted">Quedan {descripcionCaracteres - cambiarDatos?.descripcion?.length} caracteres</small>
                                 </Form.Label>
-                                <Form.Control as="textarea" rows="8" placeholder="Nueva descripción" maxLength="2500" id="descripcion" value={cambiarDatos?.descripcion} onChange={controlDato} />
+                                <Form.Control as="textarea" rows="8" placeholder="Nueva descripción" maxLength="2500" id="descripcion" value={cambiarDatos.descripcion} onChange={controlDato} />
                             </Form.Group>
 
                             <Form.Group className="mb-3" style={cambiarDatos?.dato === 'alojamiento' ? {} : { display: 'none' }} >
-
-                                
+ 
                             <Form.Label className="mb-3">
                                     <small className="text-muted">Cambia los elementos de tu casa.</small>
                                 </Form.Label>

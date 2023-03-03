@@ -320,7 +320,12 @@ function Perfil({ changeLogged }) {
                 setUserInfo({ ...userInfo, idiomas: datoEditado });
 
             } else if(modDatos.modId === 'imagen') {
-                window.location.reload();
+                setUserInfo({ ...userInfo, imagenPerfil: items.devolverDato });
+
+                setUserImg(URL.createObjectURL(imagenAvatar));
+                setFotoCargada(null);
+
+                document.getElementById('mod-' +modDatos.modId).value = null;
             }
 
             setCambiarDatos(false);
@@ -373,6 +378,7 @@ function Perfil({ changeLogged }) {
 
             setUserImg(NoProfileImg);
             setCambiarDatos(false);
+            setModDatos({});
         }
     };
 

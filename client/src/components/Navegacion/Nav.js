@@ -161,11 +161,8 @@ function Nav({ isLogged, changeLogged, isAdmin }) {
 
                         <Dropdown.Toggle variant="link" bsPrefix className="user-btn-no">
                             <FontAwesomeIcon icon={faBars} className="user-icon" />
-                            
-                            <img 
-                                className="img-fluid rounded-pill user-img" 
-                                src={fotoPerfil}
-                                alt="Imagen de perfil del usuario"/>
+
+                            <img className="img-fluid rounded-pill user-img" src={fotoPerfil} alt="Imagen de perfil del usuario"/>
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
