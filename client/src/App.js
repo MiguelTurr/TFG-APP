@@ -31,6 +31,9 @@ import Favoritos from './components/User/Favoritos';
 import Recomendaciones from './components/User/Recomendados';
 
 import Admin from './components/Administracion/Admin';
+import AdminAlojamientos from './components/Administracion/AdminAlojamientos';
+import AdminReportes from './components/Administracion/AdminReportes';
+import AdminUsuarios from './components/Administracion/AdminUsuarios';
 
 import useToken from './js/autorizado';
 import './css/App.css';
@@ -42,7 +45,7 @@ function App() {
   var { isLogged, setAutorizado } = useToken();
 
   var isAdmin = window.localStorage.getItem('isAdmin');
-  isAdmin = isAdmin === null || isAdmin == 0 ? false : true;
+  isAdmin = isAdmin === null || isAdmin === 0 ? false : true;
 
   //
 
@@ -82,6 +85,10 @@ function App() {
             <Route path="/perfil/recomendados" element={ <Recomendaciones changeLogged={setAutorizado} /> }/>
 
             <Route path="/admin" element={ <Admin changeLogged={setAutorizado} /> }/>
+            <Route path="/admin/alojamientos" element={ <AdminAlojamientos changeLogged={setAutorizado} /> }/>
+            <Route path="/admin/usuarios" element={ <AdminUsuarios changeLogged={setAutorizado} /> }/>
+            <Route path="/admin/reportes" element={ <AdminReportes changeLogged={setAutorizado} /> }/>
+
           </>}
 
           <Route path="/alojamiento/buscar" element={ <Buscar /> }/>

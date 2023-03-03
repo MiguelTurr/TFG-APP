@@ -241,11 +241,17 @@ router.get('/foto', (req, res) => {
         return;
     }
 
+
     mysql.query("SELECT imgPerfil FROM usuarios WHERE ID=? LIMIT 1", req.userId, (err, result) => {
 
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
             console.log(err.message);
+            return;
+        }
+
+        if(result.length == 0) {
+            res.status(500).json({ respuesta: 'err_db' });
             return;
         }
 

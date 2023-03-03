@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { crearAlerta } from '../Toast/Toast.js';
 
@@ -11,7 +12,13 @@ var totalUsuarios = [];
 const conexionOptions = { year: 'numeric', month: 'short', day: 'numeric' };
 const totalPagina = 3;
 
-function Adminusuarios({ show, cambiarVista }) {
+const fechaHoy = new Date();
+
+function Adminusuarios({ changeLogged }) {
+
+    const navigate = useNavigate();
+
+    //
 
     const [userList, setUserList] = useState([]);
     const [paginacion, setPaginacion] = useState(0);
@@ -20,20 +27,17 @@ function Adminusuarios({ show, cambiarVista }) {
 
     useEffect(() => {
         obtenerUsuarios();
-    }, [show]);
+    }, []);
 
     const obtenerUsuarios = async () => {
-        if(show !== 'usuarios') return;
 
         const data = await fetch('/admin/usuarios', { method: 'GET' });
         const items = await data.json();
 
-        /*if(items.respuesta === 'err_user') {
+        if(items.respuesta === 'err_user') {
             changeLogged(false);
 
-        } else */
-
-        if(items.respuesta === 'err_db') {
+        } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
         } else if(items.respuesta === 'err_rol') {
@@ -45,10 +49,6 @@ function Adminusuarios({ show, cambiarVista }) {
             setDefaultElements();
         }
     };
-
-    if(show !== 'usuarios') return(<> </>);
-
-    const fechaHoy = new Date();
 
     const comprobarConexion = (fecha) => {
 
@@ -125,12 +125,10 @@ function Adminusuarios({ show, cambiarVista }) {
 
         const items = await data.json();
 
-        /*if(items.respuesta === 'err_user') {
+        if(items.respuesta === 'err_user') {
             changeLogged(false);
 
-        } else */
-
-        if(items.respuesta === 'err_db') {
+        } else if(items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
         } else if(items.respuesta === 'err_rol') {
@@ -217,107 +215,115 @@ function Adminusuarios({ show, cambiarVista }) {
     //
 
     return (
-        <div className="row">
-            <div className="col">
+        <div className="container-fluid">
+            <h4 style={{ fontWeight: 'bold' }}>
+                ADMINISTRACIÓN &gt; USUARIOS
+            </h4>
 
-                <Button className="filtros-botones" size="sm" onClick={() => { cambiarVista('general') }}>
-                    <FontAwesomeIcon icon={faArrowLeft} /> Volver
-                </Button>
+            <hr />
 
-                <span className={window.innerWidth < 600 ? "elements-user-mobile" : "elements-user"}>
-                    <Button className="borrar-botones" onClick={borrarBusqueda}>
-                        <FontAwesomeIcon icon={faClose} />
+            <div className="row">
+                <div className="col">
+
+                    <Button className="filtros-botones" size="sm" onClick={() => { navigate('/admin'); }}>
+                        <FontAwesomeIcon icon={faArrowLeft} /> Volver
                     </Button>
 
-                    &nbsp;
+                    <span className={window.innerWidth < 600 ? "elements-user-mobile" : "elements-user"}>
+                        <Button className="borrar-botones" onClick={borrarBusqueda}>
+                            <FontAwesomeIcon icon={faClose} />
+                        </Button>
 
-                    <input className="buscar-user-input" type="text" placeholder="Busca aquí el usuario!" ref={buscarMensaje} onChange={buscarUsuario} />
-                </span>
+                        &nbsp;
 
-                <hr/>
-
-                <div className="table-responsive">
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    ID
-                                </th>
-                                <th>
-                                    Estado
-                                </th>
-                                <th>
-                                    Nombre
-                                </th>
-                                <th>
-                                    Email
-                                </th>
-                                <th>
-                                    Conexión
-                                </th>
-                                <th>
-                                    Rol
-                                </th>
-                                <th>
-                                    Opciones
-                                </th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-
-                            {
-                                userList.map((e, index) => (
-                                    <tr key={index}>
-                                        <td>
-                                            {e.ID}
-                                        </td>
-                                        <td>
-                                            <span className="estado-cuenta" style={{backgroundColor: comprobarEstado(e.estado) }}>
-                                                {e.estado}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            {e.nombre}
-                                        </td>
-                                        <td>
-                                            {e.email}
-                                        </td>
-                                        <td>
-                                            {comprobarConexion(e.ultimaConexion)}
-                                        </td>
-                                        <td>
-                                            {e.rol}
-                                        </td>
-                                        <td>
-                                            { mostrarOpciones(e.estado, e.rol, index) }
-                                        </td>
-                                    </tr>
-                                ))
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-                <div className="col" style={maxPagina > 0 ? {} : { display: 'none' }}>
-
-                    <Button className="filtros-botones" size="sm" disabled={paginacion === 0} onClick={restarPagina}>
-                        <FontAwesomeIcon icon={faArrowLeft} />
-                    </Button>
-
-                    &nbsp;
-
-                    <span style={{ fontWeight: 'bold' }}>
-                        {paginacion} / {maxPagina}
+                        <input className="buscar-user-input" type="text" placeholder="Busca aquí el usuario!" ref={buscarMensaje} onChange={buscarUsuario} />
                     </span>
 
-                    &nbsp;
+                    <hr/>
 
-                    <Button className="filtros-botones" size="sm" disabled={paginacion === maxPagina} onClick={sumarPagina}>
-                        <FontAwesomeIcon icon={faArrowRight} />
-                    </Button>
+                    <div className="table-responsive">
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        ID
+                                    </th>
+                                    <th>
+                                        Estado
+                                    </th>
+                                    <th>
+                                        Nombre
+                                    </th>
+                                    <th>
+                                        Email
+                                    </th>
+                                    <th>
+                                        Conexión
+                                    </th>
+                                    <th>
+                                        Rol
+                                    </th>
+                                    <th>
+                                        Opciones
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {
+                                    userList.map((e, index) => (
+                                        <tr key={index}>
+                                            <td>
+                                                {e.ID}
+                                            </td>
+                                            <td>
+                                                <span className="estado-cuenta" style={{backgroundColor: comprobarEstado(e.estado) }}>
+                                                    {e.estado}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {e.nombre}
+                                            </td>
+                                            <td>
+                                                {e.email}
+                                            </td>
+                                            <td>
+                                                {comprobarConexion(e.ultimaConexion)}
+                                            </td>
+                                            <td>
+                                                {e.rol}
+                                            </td>
+                                            <td>
+                                                { mostrarOpciones(e.estado, e.rol, index) }
+                                            </td>
+                                        </tr>
+                                    ))
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div className="col" style={maxPagina > 0 ? {} : { display: 'none' }}>
+
+                        <Button className="filtros-botones" size="sm" disabled={paginacion === 0} onClick={restarPagina}>
+                            <FontAwesomeIcon icon={faArrowLeft} />
+                        </Button>
+
+                        &nbsp;
+
+                        <span style={{ fontWeight: 'bold' }}>
+                            {paginacion} / {maxPagina}
+                        </span>
+
+                        &nbsp;
+
+                        <Button className="filtros-botones" size="sm" disabled={paginacion === maxPagina} onClick={sumarPagina}>
+                            <FontAwesomeIcon icon={faArrowRight} />
+                        </Button>
+                    </div>
+
                 </div>
-
             </div>
         </div>
     );

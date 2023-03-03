@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { crearAlerta } from '../Toast/Toast.js';
 
 import './Admin.css';
-import AdminUsuarios from './AdminUsuarios';
-import AdminAlojamientos from './AdminAlojamientos';
-import AdminReportes from './AdminReportes';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckDouble, faFlag, faHouse, faRankingStar, faStar, faUser } from '@fortawesome/free-solid-svg-icons';
 
 function Admin({ changeLogged }) {
 
+    const navigate = useNavigate();
+
+    //
+
     const [datosAdmin, setDatosAdmin] = useState({});
-    const [vistaAdmin, setVistaAdmin] = useState('general');
 
     useEffect(() => {
         adminPagina();
@@ -43,19 +44,19 @@ function Admin({ changeLogged }) {
     return (
         <div className="container-fluid">
             <h4 style={{ fontWeight: 'bold' }}>
-                ADMINISTRACIÓN &gt; {vistaAdmin.toUpperCase()}
+                ADMINISTRACIÓN
             </h4>
 
             <hr />
 
-            <div className="row" style={ vistaAdmin === 'general' ? {} : { display: 'none' } }>
+            <div className="row">
 
                 <div className="container-fluid" style={{ width: '80%' }}>
 
                     <div className="row">
 
                         <div className={window.innerWidth < 600 ? 'mb-3' : "col mb-3"}>
-                            <div className="cuadro-seleccionable" onClick={() => { setVistaAdmin('alojamientos'); }}>
+                            <div className="cuadro-seleccionable" onClick={() => { navigate('/admin/alojamientos'); }}>
 
                                 <FontAwesomeIcon icon={faHouse} style={{ fontSize: '80px' }} />
                                 <br />
@@ -67,7 +68,7 @@ function Admin({ changeLogged }) {
                         </div>
 
                         <div className={window.innerWidth < 600 ? 'mb-3' : "col mb-3"}>
-                            <div className="cuadro-seleccionable" onClick={() => { setVistaAdmin('usuarios'); }}>
+                            <div className="cuadro-seleccionable" onClick={() => { navigate('/admin/usuarios'); }}>
 
                                 <FontAwesomeIcon icon={faUser} style={{ fontSize: '80px' }} />
                                 <br />
@@ -80,7 +81,7 @@ function Admin({ changeLogged }) {
                         </div>
 
                         <div className={window.innerWidth < 600 ? 'mb-3' : "col"}>
-                            <div className="cuadro-seleccionable" onClick={() => { setVistaAdmin('reportes'); }}>
+                            <div className="cuadro-seleccionable" onClick={() => { navigate('/admin/reportes'); }}>
 
                                 <FontAwesomeIcon icon={faFlag} style={{ fontSize: '80px' }} />
                                 <br />
@@ -167,13 +168,8 @@ function Admin({ changeLogged }) {
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
-
-            <AdminUsuarios show={vistaAdmin} cambiarVista={setVistaAdmin} />
-            <AdminAlojamientos show={vistaAdmin} cambiarVista={setVistaAdmin} />
-            <AdminReportes show={vistaAdmin} cambiarVista={setVistaAdmin} />
         </div>
     );
 }

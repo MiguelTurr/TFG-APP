@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { crearAlerta } from '../Toast/Toast.js';
 
@@ -11,7 +12,11 @@ const creacionOptions = { year: 'numeric', month: 'short', day: 'numeric' };
 var totalAlojamientos = [];
 const totalPagina = 6;
 
-function AdminAlojamientos({ show, cambiarVista }) {
+function AdminAlojamientos({ changeLogged }) {
+
+    const navigate = useNavigate();
+
+    //
 
     const [alojamientosList, setAlojamientosList] = useState([]);
     const [paginacion, setPaginacion] = useState(0);
@@ -19,10 +24,9 @@ function AdminAlojamientos({ show, cambiarVista }) {
 
     useEffect(() => {
         obtenerAlojamientos();
-    }, [show]);
+    }, []);
 
     const obtenerAlojamientos = async () => {
-        if(show !== 'alojamientos') return;
 
         const data = await fetch('/admin/alojamientos', { method: 'GET' });
         const items = await data.json();
@@ -48,8 +52,6 @@ function AdminAlojamientos({ show, cambiarVista }) {
         }
     };
 
-    if(show !== 'alojamientos') return(<> </>);
-
     const restarPagina = () => {
 
         const primeraPagina = (paginacion - 1) * totalPagina;
@@ -71,93 +73,101 @@ function AdminAlojamientos({ show, cambiarVista }) {
     //
 
     return (
-        <div className="row">
-            <div className="col">
+        <div className="container-fluid">
+            <h4 style={{ fontWeight: 'bold' }}>
+                ADMINISTRACIÓN &gt; ALOJAMIENTOS
+            </h4>
 
-                <Button className="filtros-botones" size="sm" onClick={() => { cambiarVista('general') }}>
-                    <FontAwesomeIcon icon={faArrowLeft} /> Volver
-                </Button>
+            <hr />
 
-                <hr/>
+            <div className="row">
+                <div className="col">
 
-                <div className="table-responsive">
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    ID
-                                </th>
-                                <th>
-                                    Creado
-                                </th>
-                                <th>
-                                    Dueño
-                                </th>
-                                <th>
-                                    Ubicación
-                                </th>
-                                <th>
-                                    Precio
-                                </th>
-                                <th>
-                                    Valoración
-                                </th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-
-                            {
-                                alojamientosList.map((e, index) => (
-                                    <tr key={index}>
-                                        <td>
-                                            {e.ID}
-                                        </td>
-                                        <td>
-                                            {new Date(e.creadoEn).toLocaleDateString('es-ES', creacionOptions)}
-                                        </td>
-                                        <td>
-                                            <a href={'/usuario/ver/' +e.userId} target="_blank">
-                                                {e.userNombre}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <a href={'/alojamiento/ver/' +e.ID} target="_blank">
-                                                {e.ubicacion}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            {e.precio}€
-                                        </td>
-                                        <td>
-                                            {e.valoracionMedia} ({e.vecesValorado})
-                                        </td>
-                                    </tr>
-                                ))
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-                <div className="col" style={maxPagina > 0 ? {} : { display: 'none' }}>
-
-                    <Button className="filtros-botones" size="sm" disabled={paginacion === 0} onClick={restarPagina}>
-                        <FontAwesomeIcon icon={faArrowLeft} />
+                    <Button className="filtros-botones" size="sm" onClick={() => { navigate('/admin'); }}>
+                        <FontAwesomeIcon icon={faArrowLeft} /> Volver
                     </Button>
 
-                    &nbsp;
+                    <hr/>
 
-                    <span style={{ fontWeight: 'bold' }}>
-                        {paginacion} / {maxPagina}
-                    </span>
+                    <div className="table-responsive">
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        ID
+                                    </th>
+                                    <th>
+                                        Creado
+                                    </th>
+                                    <th>
+                                        Dueño
+                                    </th>
+                                    <th>
+                                        Ubicación
+                                    </th>
+                                    <th>
+                                        Precio
+                                    </th>
+                                    <th>
+                                        Valoración
+                                    </th>
+                                </tr>
+                            </thead>
 
-                    &nbsp;
+                            <tbody>
 
-                    <Button className="filtros-botones" size="sm" disabled={paginacion === maxPagina} onClick={sumarPagina}>
-                        <FontAwesomeIcon icon={faArrowRight} />
-                    </Button>
+                                {
+                                    alojamientosList.map((e, index) => (
+                                        <tr key={index}>
+                                            <td>
+                                                {e.ID}
+                                            </td>
+                                            <td>
+                                                {new Date(e.creadoEn).toLocaleDateString('es-ES', creacionOptions)}
+                                            </td>
+                                            <td>
+                                                <a href={'/usuario/ver/' +e.userId} target="_blank" rel="noreferrer">
+                                                    {e.userNombre}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a href={'/alojamiento/ver/' +e.ID} target="_blank" rel="noreferrer">
+                                                    {e.ubicacion}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                {e.precio}€
+                                            </td>
+                                            <td>
+                                                {e.valoracionMedia} ({e.vecesValorado})
+                                            </td>
+                                        </tr>
+                                    ))
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div className="col" style={maxPagina > 0 ? {} : { display: 'none' }}>
+
+                        <Button className="filtros-botones" size="sm" disabled={paginacion === 0} onClick={restarPagina}>
+                            <FontAwesomeIcon icon={faArrowLeft} />
+                        </Button>
+
+                        &nbsp;
+
+                        <span style={{ fontWeight: 'bold' }}>
+                            {paginacion} / {maxPagina}
+                        </span>
+
+                        &nbsp;
+
+                        <Button className="filtros-botones" size="sm" disabled={paginacion === maxPagina} onClick={sumarPagina}>
+                            <FontAwesomeIcon icon={faArrowRight} />
+                        </Button>
+                    </div>
+
                 </div>
-
             </div>
         </div>
     );

@@ -279,7 +279,8 @@ function EditarAlojamiento({ changeLogged }) {
 
         } else if(cambiarDatos.dato === 'imagenes') {
 
-            if(cambiarDatos.contadorEliminadas === alojamiento.imgCantidad) {
+            if(alojamiento.imgCantidad !== 0 && cambiarDatos.contadorEliminadas === alojamiento.imgCantidad) {
+                btnModificar.disabled = false;
                 return crearAlerta('error', '¡No puedes eliminar todas las imágenes!');
             }
 
@@ -287,17 +288,20 @@ function EditarAlojamiento({ changeLogged }) {
             const len = inputImagenes.files.length;
      
             if (len+alojamiento.imgCantidad > 10) {
-                 return crearAlerta('error', '¡El máximo son 10 imágenes!')
+                resetImagenesInput(btnModificar);
+                return crearAlerta('error', '¡El máximo son 10 imágenes!')
              }
 
             const maxSize = 2 * 1024 * 1024;
     
             for (var i = 0; i < len; i++) {
                 if (!['image/jpeg', 'image/png'].includes(inputImagenes.files[i].type)) {
-                    return crearAlerta('error', '¡Una imagen no tiene el formato correct!');
+                    resetImagenesInput(btnModificar);
+                    return crearAlerta('error', '¡Una imagen no tiene el formato correcto!');
                 }
 
                 if (inputImagenes.files[i].size > maxSize) {
+                    resetImagenesInput(btnModificar);
                     return crearAlerta('error', '¡El tamaño máximo por imagen es de 2 MB!');
                 }
                 formData.append('imagen', inputImagenes.files[i]);
@@ -395,6 +399,15 @@ function EditarAlojamiento({ changeLogged }) {
 
         setCambiarDatos({ ...cambiarDatos, imagenesEliminadas: array, contadorEliminadas: contador, modificado: true });
     };
+
+    const resetImagenesInput = (btn) => {
+        setCambiarDatos({ ...cambiarDatos, nuevasImagenes: 0, modificado: false });
+        setPreviewImg([]);
+
+        document.getElementById('imagenes-edit').value = '';
+
+        btn.disabled = false;
+    }
 
     //
 

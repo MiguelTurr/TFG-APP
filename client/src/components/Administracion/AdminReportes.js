@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { crearAlerta } from '../Toast/Toast.js';
 
@@ -13,7 +14,11 @@ const horaOptions = { hour: '2-digit', minute: '2-digit' };
 var totalReportes = [];
 const totalPagina = 5;
 
-function AdminReportes({ show, cambiarVista }) {
+function AdminReportes({ changeLogged }) {
+
+    const navigate = useNavigate();
+
+    //
 
     const [reportesList, setReportesList] = useState([]);
     const [paginacion, setPaginacion] = useState(0);
@@ -21,11 +26,9 @@ function AdminReportes({ show, cambiarVista }) {
 
     useEffect(() => {
         obtenerReportes();
-    }, [show]);
+    }, []);
 
     const obtenerReportes = async () => {
-        if(show !== 'reportes') return;
-
         const data = await fetch('/admin/reportes', { method: 'GET' });
         const items = await data.json();
 
@@ -50,8 +53,6 @@ function AdminReportes({ show, cambiarVista }) {
         }
     };
 
-    if(show !== 'reportes') return(<> </>);
-
     const restarPagina = () => {
 
         const primeraPagina = (paginacion - 1) * totalPagina;
@@ -71,85 +72,93 @@ function AdminReportes({ show, cambiarVista }) {
     }; 
 
     return (
-        <div className="row">
-            <div className="col">
+        <div className="container-fluid">
+            <h4 style={{ fontWeight: 'bold' }}>
+                ADMINISTRACIÓN &gt; REPORTES
+            </h4>
 
-                <Button className="filtros-botones" size="sm" onClick={() => { cambiarVista('general') }}>
-                    <FontAwesomeIcon icon={faArrowLeft} /> Volver
-                </Button>
-                
-                <hr/>
+            <hr />
 
-                <div className="table-responsive">
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    ID
-                                </th>
-                                <th>
-                                    Fecha
-                                </th>
-                                <th>
-                                    Usuario
-                                </th>
-                                <th>
-                                    Reportado
-                                </th>
-                                <th>
-                                    Mensaje
-                                </th>
-                            </tr>
-                        </thead>
+            <div className="row">
+                <div className="col">
 
-                        <tbody>
-
-                            {
-                                reportesList.map((e, index) => (
-                                    <tr key={index}>
-                                        <td>
-                                            {e.ID}
-                                        </td>
-                                        <td>
-                                            {new Date(e.creadoEn).toLocaleDateString('es-ES', fechaOptions)} a las {new Date(e.creadoEn).toLocaleTimeString('es-ES', horaOptions)}
-                                        </td>
-                                        <td>
-                                            <a href={'/usuario/ver/' +e.usuarioID} target="_blank">
-                                                {e.userNombre}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <a href={'/usuario/ver/' +e.reportadoID} target="_blank">
-                                                {e.reportedNombre}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            {e.mensaje}
-                                        </td>
-                                    </tr>
-                                ))
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-                <div className="col" style={maxPagina > 0 ? {} : { display: 'none' }}>
-
-                    <Button className="filtros-botones" size="sm" disabled={paginacion === 0} onClick={restarPagina}>
-                        <FontAwesomeIcon icon={faArrowLeft} />
+                    <Button className="filtros-botones" size="sm" onClick={() => { navigate('/admin'); }}>
+                        <FontAwesomeIcon icon={faArrowLeft} /> Volver
                     </Button>
+                    
+                    <hr/>
 
-                    &nbsp;
+                    <div className="table-responsive">
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        ID
+                                    </th>
+                                    <th>
+                                        Fecha
+                                    </th>
+                                    <th>
+                                        Usuario
+                                    </th>
+                                    <th>
+                                        Reportado
+                                    </th>
+                                    <th>
+                                        Mensaje
+                                    </th>
+                                </tr>
+                            </thead>
 
-                    <span style={{ fontWeight: 'bold' }}>
-                        {paginacion} / {maxPagina}
-                    </span>
+                            <tbody>
 
-                    &nbsp;
+                                {
+                                    reportesList.map((e, index) => (
+                                        <tr key={index}>
+                                            <td>
+                                                {e.ID}
+                                            </td>
+                                            <td>
+                                                {new Date(e.creadoEn).toLocaleDateString('es-ES', fechaOptions)} a las {new Date(e.creadoEn).toLocaleTimeString('es-ES', horaOptions)}
+                                            </td>
+                                            <td>
+                                                <a href={'/usuario/ver/' +e.usuarioID} target="_blank" rel="noopener">
+                                                    {e.userNombre}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a href={'/usuario/ver/' +e.reportadoID} target="_blank" rel="noopener">
+                                                    {e.reportedNombre}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                {e.mensaje}
+                                            </td>
+                                        </tr>
+                                    ))
+                                }
+                            </tbody>
+                        </table>
+                    </div>
 
-                    <Button className="filtros-botones" size="sm" disabled={paginacion === maxPagina} onClick={sumarPagina}>
-                        <FontAwesomeIcon icon={faArrowRight} />
-                    </Button>
+                    <div className="col" style={maxPagina > 0 ? {} : { display: 'none' }}>
+
+                        <Button className="filtros-botones" size="sm" disabled={paginacion === 0} onClick={restarPagina}>
+                            <FontAwesomeIcon icon={faArrowLeft} />
+                        </Button>
+
+                        &nbsp;
+
+                        <span style={{ fontWeight: 'bold' }}>
+                            {paginacion} / {maxPagina}
+                        </span>
+
+                        &nbsp;
+
+                        <Button className="filtros-botones" size="sm" disabled={paginacion === maxPagina} onClick={sumarPagina}>
+                            <FontAwesomeIcon icon={faArrowRight} />
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
