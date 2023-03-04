@@ -315,15 +315,18 @@ function CrearAlojamiento({ changeLogged }) {
         });
 
         const items = await data.json();
-        btnDesactivar.disabled = false;
 
         if (items.respuesta === 'err_user') {
             window.scrollTo(0, 0);
             crearAlerta('error', '¡Ha ocurrido un error con el usuario!');
 
+            btnDesactivar.disabled = false;
+
         } else if (items.respuesta === 'err_db') {
             window.scrollTo(0, 0);
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
+            
+            btnDesactivar.disabled = false;
 
         } else if (items.respuesta === 'correcto') {
             crearAlerta('exito', '¡Has creado un nuevo alojamiento!');
