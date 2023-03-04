@@ -111,7 +111,7 @@ function ValorarModalInquilino({ infoHuesped, funcionCerrar, valoracionCorrecto 
         const element = e.target.id;
         const valoracion = tipoValoracion;
 
-        setTipoValoracion(element === 'val-positiva' ? true : false);
+        setTipoValoracion(element === 'val-positiva' ? 'Positiva' : 'Negativa');
     };
 
     //

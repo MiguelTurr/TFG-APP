@@ -179,7 +179,7 @@ function Nav({ isLogged, changeLogged, isAdmin }) {
                                 <Dropdown.Item eventKey="2" href="/perfil/mis-alojamientos">Mis alojamientos</Dropdown.Item>
                                 <Dropdown.Item eventKey="4" href="/perfil/mis-reservas">Mis reservas</Dropdown.Item>
 
-                                <Dropdown.Item eventKey="5" href="/perfil/mis-valoraciones">
+                                <Dropdown.Item eventKey="5" href="/perfil/mis-valoraciones/alojamientos">
                                     Mis valoraciones
                                     <span style={valoraciones > 0 ? {} : { display: 'none' }}>
                                         &nbsp;

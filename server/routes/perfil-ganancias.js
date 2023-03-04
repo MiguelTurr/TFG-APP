@@ -24,7 +24,7 @@ router.get('/:id', (req, res) => {
 
     var fecha = new Date();
 
-    if(mesBuscar !== 'undefined') {
+    if(mesBuscar != 'undefined') {
         var [crearMes, crearYear] = mesBuscar.split('-');
         fecha = new Date(crearYear, crearMes, 0);
     }
@@ -41,7 +41,7 @@ router.get('/:id', (req, res) => {
     queryStr += 'INNER JOIN usuarios as usu ON usu.ID=alo.usuarioID ';
 
     queryStr += 'WHERE res.creadoEn BETWEEN "' +year+ '-' +mes+ '-1" AND "' +year+ '-' +mes+ '-' +ultimoDia.getDate()+ '" ';
-    queryStr += 'AND usu.ID=' +req.userId+ ' AND estado>0';
+    queryStr += 'AND usu.ID=' +req.userId+ ' AND res.estado="Aceptado"';
 
     mysql.query(queryStr, function(err, result) {
         if (err) {
@@ -92,7 +92,6 @@ router.get('/:id', (req, res) => {
                 };
                 reservasArray.push(objeto);
             }
-
         }
 
         //

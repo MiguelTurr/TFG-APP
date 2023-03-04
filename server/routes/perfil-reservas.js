@@ -21,11 +21,10 @@ router.get('/activas', (req, res) => {
     mysql.query(`SELECT res.*,alo.ubicacion,alo.valoracionMedia,alo.vecesValorado,alo.usuarioID,usu.nombre FROM usuarios_reservas as res 
         INNER JOIN alojamientos as alo ON res.alojamientoID=alo.ID
         INNER JOIN usuarios as usu ON alo.usuarioID=usu.ID
-        WHERE res.usuarioID=? AND res.valoraEstancia=-1 AND res.estado!=-1 ORDER BY res.creadoEn DESC`, req.userId, function (err, result) {
+        WHERE res.usuarioID=? AND res.valoraEstancia=-1 AND res.estado!='Cancelado' ORDER BY res.creadoEn DESC`, req.userId, function (err, result) {
 
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
-
             console.log(err.message);
             return;
         }
@@ -85,7 +84,7 @@ router.get('/antiguas', (req, res) => {
 
     mysql.query(`SELECT res.*,alo.ubicacion,alo.valoracionMedia,alo.vecesValorado FROM usuarios_reservas as res 
         INNER JOIN alojamientos as alo ON res.alojamientoID=alo.ID
-        WHERE res.usuarioID=? AND (res.valoraEstancia!=-1 OR res.estado=-1) ORDER BY res.creadoEn DESC`, req.userId, function (err, result) {
+        WHERE res.usuarioID=? AND (res.valoraEstancia!=-1 OR res.estado='Cancelado') ORDER BY res.creadoEn DESC`, req.userId, function (err, result) {
 
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
@@ -147,7 +146,7 @@ router.get('/alojamientos/activas', (req, res) => {
     mysql.query(`SELECT res.*,alo.ubicacion,alo.valoracionMedia,alo.vecesValorado,usu.nombre,usu.residencia,usu.fechaReg FROM usuarios_reservas as res 
         INNER JOIN alojamientos as alo ON res.alojamientoID=alo.ID AND alo.usuarioID=?
         INNER JOIN usuarios as usu ON usu.ID=res.usuarioID
-        WHERE res.valoraHospedador=-1 AND res.estado!=-1 ORDER BY res.creadoEn DESC`, req.userId, function (err, result) {
+        WHERE res.valoraHospedador=-1 AND res.estado!='Cancelado' ORDER BY res.creadoEn DESC`, req.userId, function (err, result) {
 
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
@@ -213,7 +212,7 @@ router.get('/alojamientos/antiguas', (req, res) => {
     mysql.query(`SELECT res.*,alo.ubicacion,alo.valoracionMedia,alo.vecesValorado,usu.nombre,usu.residencia,usu.fechaReg FROM usuarios_reservas as res 
         INNER JOIN alojamientos as alo ON res.alojamientoID=alo.ID AND alo.usuarioID=?
         INNER JOIN usuarios as usu ON usu.ID=res.usuarioID
-        WHERE res.valoraHospedador!=-1 OR res.estado=-1 ORDER BY res.creadoEn DESC`, req.userId, function (err, result) {
+        WHERE res.valoraHospedador!=-1 OR res.estado='Cancelado' ORDER BY res.creadoEn DESC`, req.userId, function (err, result) {
 
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
@@ -280,7 +279,7 @@ router.get('/alojamientos/cancelar/:id', (req, res) => {
 
     const reservaID = req.params.id;
 
-    mysql.query('UPDATE usuarios_reservas SET estado=-1 WHERE ID=? LIMIT 1', reservaID, function (err) {
+    mysql.query("UPDATE usuarios_reservas SET estado='Cancelado' WHERE ID=? LIMIT 1", reservaID, function (err) {
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
             console.log(err.message);
@@ -338,7 +337,7 @@ router.get('/alojamientos/aceptar/:id', (req, res) => {
 
     const reservaID = req.params.id;
 
-    mysql.query('UPDATE usuarios_reservas SET estado=1 WHERE ID=? LIMIT 1', reservaID, function (err) {
+    mysql.query("UPDATE usuarios_reservas SET estado='Aceptado' WHERE ID=? LIMIT 1", reservaID, function (err) {
         if (err) {
             res.status(500).json({ respuesta: 'err_db' });
             console.log(err.message);
@@ -391,8 +390,7 @@ router.get('/valoracion-hospedador/:id', (req, res) => {
 
     const valoracionId = req.params.id;
 
-    mysql.query(`SELECT val.creadoEn,val.mensaje,usu.fechaReg,usu.ID,usu.nombre,usu.residencia
-        FROM usuarios_valoraciones as val 
+    mysql.query(`SELECT val.creadoEn,val.mensaje,usu.fechaReg,usu.ID,usu.nombre,usu.residencia FROM usuarios_valoraciones as val 
         INNER JOIN usuarios as usu ON val.usuarioID=usu.ID 
         WHERE val.ID=? LIMIT 1`, valoracionId,
 
@@ -414,8 +412,7 @@ router.get('/valoracion-cliente/:id', (req, res) => {
     const valoracionId = req.params.id;
 
     //mysql.query(`SELECT val.creadaEn,val.mensaje,val.valLlegada,val.valVeracidad,val.valComunicacion,val.valUbicacion,val.valLimpieza,val.valCalidad,usu.fechaReg,usu.ID,usu.nombre,usu.residencia
-    mysql.query(`SELECT val.creadaEn,val.mensaje,usu.fechaReg,usu.ID,usu.nombre,usu.residencia
-        FROM alojamientos_valoraciones as val 
+    mysql.query(`SELECT val.creadaEn,val.mensaje,usu.fechaReg,usu.ID,usu.nombre,usu.residencia FROM alojamientos_valoraciones as val 
         INNER JOIN usuarios as usu ON val.usuarioID=usu.ID 
         WHERE val.ID=? LIMIT 1`, valoracionId,
 

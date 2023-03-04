@@ -237,11 +237,17 @@ function CrearAlojamiento({ changeLogged }) {
             for (var i = 0; i < len; i++) {
                 if (!['image/jpeg', 'image/png'].includes(inputImagenes.files[i].type)) {
                     erroresEncontrados.imagenes = '¡Una imagen no tiene el formato correcto!';
+
+                    setImagenPreview([]);
+                    inputImagenes.value = '';
                     break;
                 }
 
                 if (inputImagenes.files[i].size > maxSize) {
                     erroresEncontrados.imagenes = '¡El tamaño máximo por imagen es de 2 MB!';
+
+                    setImagenPreview([]);
+                    inputImagenes.value = '';
                     break;
                 }
             }
@@ -276,7 +282,7 @@ function CrearAlojamiento({ changeLogged }) {
 
         if(ubicacion.localidad === undefined || ubicacion.comunidad === undefined || ubicacion.pais === undefined) {
             window.scrollTo(0, 0);
-            return crearAlerta('error', '¡Se debe expecificar mejor la ubicación!');
+            return crearAlerta('error', '¡Expecifica la ubicación en el mapa!');
         }
 
         //

@@ -5,7 +5,7 @@ const totalServicios = serviciosCasas.length - 1;
 
 const fontsDisponibles = ['Segoe UI', 'Arial', 'Times New Roman', 'Helvetica', 'Calibri', 'Georgia', 'Cambria', 'Veranda'];
 
-var opcFecha = { year: 'numeric', month: 'short', day: '2-digit' };
+const opcFecha = { year: 'numeric', month: 'short', day: '2-digit' };
 
 //
 
@@ -24,15 +24,15 @@ function boolToInt(value) {
 function estadoReserva(estado, fechaFinal, valoracion) {
     var resultado = {};
 
-    if(estado === -1) {
+    if(estado === 'Cancelado') {
         resultado.texto = 'Cancelado';
         resultado.color = '#ff2c2c'; // ROJO
 
-    } else if(estado === 0) {
+    } else if(estado === 'Revision') {
         resultado.texto = 'Revisión';
         resultado.color = '#ff962c'; // NARANJA
 
-    } else if(estado === 1) {
+    } else if(estado === 'Aceptado') {
 
         const fechaHoy = new Date().getTime();
 
@@ -58,16 +58,16 @@ function estadoReserva(estado, fechaFinal, valoracion) {
 function estadoAlojamientoReserva(estado, fechaFinal, valoracion) {
     var resultado = {};
 
-    if(estado === -1) {
+    if(estado === 'Cancelado') {
         resultado.texto = 'Cancelado';
         resultado.color = '#ff2c2c'; // ROJO
 
-    }  else if(estado === 0) {
+    }  else if(estado === 'Revision') {
         resultado.texto = 'Revisión';
         resultado.color = '#ff962c'; // NARANJA
         resultado.puedeModificar = true;
 
-    } else if(estado === 1) {
+    } else if(estado === 'Aceptado') {
 
         const fechaHoy = new Date().getTime();
 

@@ -15,7 +15,11 @@ import VerAlojamiento from './components/Alojamiento/VerAlojamiento';
 import PerfilPublico from './components/Usuario/PerfilPublico';
 
 import ReservarAlojamiento from './components/Reservas/ReservarAlojamiento';
+
 import UserReservas from './components/User/UserReservas';
+import UserReservasAlojamientos from './components/User/UserReservasAlojamientos';
+import UserReservasGanancias from './components/User/UserReservasGanancias';
+
 import UserChats from './components/Mensajes/UserChats';
 
 import RegistroValidar from './components/Sesion/RegistroValidar';
@@ -26,7 +30,11 @@ import UserAlojamientos from './components/User/UserAlojamientos';
 import EditarAlojamiento from './components/User/EditarAlojamiento';
 import CrearAlojamiento from './components/User/CrearAlojamiento';
 
-import UserValoraciones from './components/User/UserValoraciones';
+import ValoracionesAlojamientos from './components/User/ValoracionesAlojamientos';
+import ValoracionesUsuarios from './components/User/ValoracionesUsuarios';
+import ValoracionesRecibidasAlojamientos from './components/User/ValoracionesRecibidasAlojamientos';
+import ValoracionesRecibidasUsuarios from './components/User/ValoracionesRecibidasUsuarios';
+
 import Favoritos from './components/User/Favoritos';
 import Recomendaciones from './components/User/Recomendados';
 
@@ -78,8 +86,15 @@ function App() {
             <Route path="/perfil/mis-alojamientos/editar/:id" element={ <EditarAlojamiento changeLogged={setAutorizado} /> }/>
             <Route path="/perfil/mis-alojamientos/crear" element={ <CrearAlojamiento changeLogged={setAutorizado} /> }/>
 
-            <Route path="/perfil/mis-valoraciones" element={ <UserValoraciones changeLogged={setAutorizado} /> }/>
             <Route path='/perfil/mis-reservas' element={ <UserReservas changeLogged={setAutorizado} /> }/>
+            <Route path='/perfil/mis-reservas/alojamientos' element={ <UserReservasAlojamientos changeLogged={setAutorizado} /> }/>
+            <Route path='/perfil/mis-reservas/ganancias' element={ <UserReservasGanancias changeLogged={setAutorizado} /> }/>
+
+            <Route path="/perfil/mis-valoraciones/alojamientos" element={ <ValoracionesAlojamientos changeLogged={setAutorizado} /> }/>
+            <Route path="/perfil/mis-valoraciones/usuarios" element={ <ValoracionesUsuarios changeLogged={setAutorizado} /> }/>
+            <Route path="/perfil/mis-valoraciones/recibidas-alojamientos" element={ <ValoracionesRecibidasAlojamientos changeLogged={setAutorizado} /> }/>
+            <Route path="/perfil/mis-valoraciones/recibidas-usuarios" element={ <ValoracionesRecibidasUsuarios changeLogged={setAutorizado} /> }/>
+
             <Route path='/perfil/mis-chats' element={ <UserChats changeLogged={setAutorizado} /> }/>
             <Route path="/perfil/favoritos" element={ <Favoritos changeLogged={setAutorizado} /> }/>
             <Route path="/perfil/recomendados" element={ <Recomendaciones changeLogged={setAutorizado} /> }/>
