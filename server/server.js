@@ -78,7 +78,7 @@ server.use('/perfil/mis-chats', comprobarToken, require('./routes/perfil-chats')
 
 server.use('/usuario', require('./routes/usuario-ver'));
 server.use('/usuario/denunciar', comprobarToken, require('./routes/usuario-denunciar'));
-server.use('/usuario/valorar', require('./routes/usuario-valorar'));
+server.use('/usuario/valorar', comprobarToken, require('./routes/usuario-valorar'));
 
 server.use('/alojamiento', comprobarToken, require('./routes/alojamiento-ver'));
 server.use('/alojamiento/imagen', require('./routes/alojamiento-imagen'));

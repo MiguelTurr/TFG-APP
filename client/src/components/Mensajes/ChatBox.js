@@ -16,14 +16,14 @@ var fechaComparar = null;
 const horaOpc = { hour: '2-digit', minute: '2-digit' };
 
 function ChatBox({ seleccionado, cambiarSeleccionado, chatInfo, chatImagen, updateMessage, updateSinLeer }) {
-    
+
     const navigate = useNavigate();
 
     //
 
     const [chatMensajes, setChatMensajes] = useState([]);
 
-    const enviarChatMensaje = useRef(); 
+    const enviarChatMensaje = useRef();
     const enviarChatImagen = useRef();
 
     const [showIcon, setShowIcon] = useState(false);
@@ -33,7 +33,7 @@ function ChatBox({ seleccionado, cambiarSeleccionado, chatInfo, chatImagen, upda
     //
 
     useEffect(() => {
-        if(seleccionado === null) return;
+        if (seleccionado === null) return;
 
         fechaComparar = null;
         cargarMensajesChat();
@@ -41,17 +41,17 @@ function ChatBox({ seleccionado, cambiarSeleccionado, chatInfo, chatImagen, upda
     }, [seleccionado]);
 
     useEffect(() => {
-        if(seleccionado === null) return;
+        if (seleccionado === null) return;
 
         var element = document.getElementById('mensajes-chat');
         element.scrollTo(element.scrollHeight, element.scrollHeight);
     }, [chatMensajes])
 
-    if(seleccionado === null) {
-        if(window.innerWidth > 600) {
+    if (seleccionado === null) {
+        if (window.innerWidth > 600) {
             return (
                 <h5 style={{ fontWeight: 'bold', fontSize: '15px', textAlign: 'center', marginTop: '25%' }}>
-                    <span style={{backgroundColor: '#494949', padding: '10px', borderRadius: '25px', color: 'white' }}>
+                    <span style={{ backgroundColor: '#494949', padding: '10px', borderRadius: '25px', color: 'white' }}>
                         Selecciona un chat para empezar a hablar.
                     </span>
                 </h5>
@@ -62,10 +62,10 @@ function ChatBox({ seleccionado, cambiarSeleccionado, chatInfo, chatImagen, upda
 
     const cargarMensajesChat = async () => {
 
-        const data = await fetch('/perfil/mis-chats/chat/' +chatInfo.chatID, { method: 'GET' });
+        const data = await fetch('/perfil/mis-chats/chat/' + chatInfo.chatID, { method: 'GET' });
         const items = await data.json();
 
-        if(items.respuesta === 'correcto') {
+        if (items.respuesta === 'correcto') {
             setChatMensajes(items.mensajes);
             updateSinLeer(seleccionado);
         }
@@ -78,7 +78,7 @@ function ChatBox({ seleccionado, cambiarSeleccionado, chatInfo, chatImagen, upda
 
         const mensaje = enviarChatMensaje.current.value;
 
-        if(mensaje === '') return;
+        if (mensaje === '') return;
 
         enviarChatMensaje.current.value = '';
 
@@ -89,7 +89,7 @@ function ChatBox({ seleccionado, cambiarSeleccionado, chatInfo, chatImagen, upda
                 chatID: chatInfo.chatID,
                 mensaje: mensaje,
             }),
-            
+
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -97,15 +97,16 @@ function ChatBox({ seleccionado, cambiarSeleccionado, chatInfo, chatImagen, upda
 
         const items = await data.json();
 
-        if(items.respuesta === 'err_db') {
+        if (items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
-        } else if(items.respuesta === 'correcto') {
+        } else if (items.respuesta === 'correcto') {
 
-            setChatMensajes([...chatMensajes, { 
+            setChatMensajes([...chatMensajes, {
                 mensaje: mensaje,
                 propio: true,
-                creadoEn: new Date()}
+                creadoEn: new Date()
+            }
             ]);
 
             //
@@ -117,7 +118,7 @@ function ChatBox({ seleccionado, cambiarSeleccionado, chatInfo, chatImagen, upda
     const enviarImagen = async () => {
 
         const len = enviarChatImagen.current.files.length;
-        if(len === 0) return;
+        if (len === 0) return;
 
         if (!['image/jpeg', 'image/png'].includes(enviarChatImagen.current.files[0].type)) {
             return crearAlerta('error', '¡Ese formato de imagen no es válido!');
@@ -141,17 +142,18 @@ function ChatBox({ seleccionado, cambiarSeleccionado, chatInfo, chatImagen, upda
 
         const items = await data.json();
 
-        if(items.respuesta === 'err_db') {
+        if (items.respuesta === 'err_db') {
             crearAlerta('error', '¡Ha ocurrido un error con la base de datos!');
 
-        } else if(items.respuesta === 'correcto') {
+        } else if (items.respuesta === 'correcto') {
 
-            setChatMensajes([...chatMensajes, { 
+            setChatMensajes([...chatMensajes, {
                 ID: items.imagenId,
                 propio: true,
                 imagen: true,
-                mensaje: 'Foto.' +enviarChatImagen.current.files[0].type.split('/')[1],
-                creadoEn: new Date()}
+                mensaje: 'Foto.' + enviarChatImagen.current.files[0].type.split('/')[1],
+                creadoEn: new Date()
+            }
             ]);
 
             //
@@ -175,11 +177,11 @@ function ChatBox({ seleccionado, cambiarSeleccionado, chatInfo, chatImagen, upda
 
         const fechaAsDate = new Date(fecha);
 
-        if(fechaComparar === null || fechaComparar.getDate() !== fechaAsDate.getDate() || (fechaComparar.getDate() === fechaAsDate.getDate() && fechaComparar.getMonth() !== fechaAsDate.getMonth())) {
+        if (fechaComparar === null || fechaComparar.getDate() !== fechaAsDate.getDate() || (fechaComparar.getDate() === fechaAsDate.getDate() && fechaComparar.getMonth() !== fechaAsDate.getMonth())) {
             fechaComparar = fechaAsDate;
             return (
                 <div className="mensaje-fecha">
-                    {fechaComparar.toLocaleDateString('es-ES', {day: '2-digit',  month: 'long' })}
+                    {fechaComparar.toLocaleDateString('es-ES', { day: '2-digit', month: 'long' })}
                 </div>
             );
         }
@@ -187,27 +189,27 @@ function ChatBox({ seleccionado, cambiarSeleccionado, chatInfo, chatImagen, upda
     };
 
     const colocarUltimaConexion = (conexion) => {
-        if(conexion === null) return 'Desconocida';
+        if (conexion === null) return 'Desconocida';
 
         const fechaHoy = new Date();
 
         const ultimaConexion = new Date(conexion);
         const ultimaVez = fechaHoy.getDate() - ultimaConexion.getDate();
 
-        if(ultimaVez === 0) {
+        if (ultimaVez === 0) {
             return 'Hoy a las ' + ultimaConexion.toLocaleTimeString('es-Es', horaOpc);
 
-        } else if(ultimaVez === 1 && fechaHoy.getMonth() === ultimaConexion.getMonth()) {
+        } else if (ultimaVez === 1 && fechaHoy.getMonth() === ultimaConexion.getMonth()) {
             return 'Ayer a las ' + ultimaConexion.toLocaleTimeString('es-Es', horaOpc);
 
         } else {
-            return ultimaConexion.toLocaleDateString('es-Es', { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit'});
+            return ultimaConexion.toLocaleDateString('es-Es', { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' });
         }
     }
 
     const comprobarRol = (esAdmin) => {
 
-        if(esAdmin === false) return (<td style={{ width: '10px' }}> </td>);
+        if (esAdmin === false) return (<td style={{ width: '10px' }}> </td>);
 
         return (
             <>
@@ -230,10 +232,10 @@ function ChatBox({ seleccionado, cambiarSeleccionado, chatInfo, chatImagen, upda
 
     const mostrarChatImagen = async (index) => {
 
-        const param = chatInfo.chatID+ '-' +chatMensajes[index].ID+ '-' +chatMensajes[index].mensaje.split('.')[1];
-        const imagen = await fetch('/perfil/mis-chats/chat-foto/' +param, { method: 'GET' });
-    
-        if(imagen.status === 200) {
+        const param = chatInfo.chatID + '-' + chatMensajes[index].ID + '-' + chatMensajes[index].mensaje.split('.')[1];
+        const imagen = await fetch('/perfil/mis-chats/chat-foto/' + param, { method: 'GET' });
+
+        if (imagen.status === 200) {
             setModalImagen(imagen.url);
         }
     };
@@ -242,92 +244,88 @@ function ChatBox({ seleccionado, cambiarSeleccionado, chatInfo, chatImagen, upda
 
     return (
         <>
-            <div>
+            <div className="row">
+                <div className="col-sm-6">
 
-                <div className="row">
-                    <div className="col-sm-6">
+                    <table style={{ verticalAlign: 'middle' }}>
 
-                        <table style={{ verticalAlign: 'middle' }}>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <FontAwesomeIcon icon={faArrowLeft} style={{ cursor: 'pointer', fontSize: '20px' }} onClick={cerrarChat} />
+                                    &nbsp;&nbsp;&nbsp;
+                                </td>
 
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <FontAwesomeIcon icon={faArrowLeft} style={{ cursor: 'pointer', fontSize: '20px' } } onClick={cerrarChat}/>
-                                        &nbsp;&nbsp;&nbsp;
-                                    </td>
+                                <td style={{ width: '70px' }}>
+                                    <img
+                                        className="rounded-pill img-fluid"
+                                        src={chatImagen}
+                                        alt="Imagen de perfil del usuario" />
+                                </td>
 
-                                    <td style={{ width: '70px' }}>
-                                        <img
-                                            className="rounded-pill img-fluid"
-                                            src={chatImagen}
-                                            alt="Imagen de perfil del usuario" />
-                                    </td>
+                                {comprobarRol(chatInfo?.esAdmin)}
 
-                                    {comprobarRol(chatInfo?.esAdmin)}
-
-                                    <td className="chat-titulo">
-                                        {chatInfo?.nombre.toUpperCase()}
-                                        <br/>
-                                        <small className="text-muted">
-                                            {colocarUltimaConexion(chatInfo?.ultimaConexion)}
-                                        </small>
-                                    </td>
-
-                                    <td style={{ width: '10px' }}>
-                                    </td>
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <hr/>
-
-                <div className="chat-mensajes" id="mensajes-chat">
-
-                    {
-                        chatMensajes.map((x, index) => (
-                            <span key={index}>
-
-                                {comprobarDia(x.creadoEn)}
-
-                                <div className={x.propio === false ? 'mensaje' : 'mensaje mensaje-propio' }>
-
-                                    {x.imagen === true ? <FontAwesomeIcon icon={faImage} className="mensaje-img" onClick={() => mostrarChatImagen(index) }/> : x.mensaje}
-
-                                    <small className="mensaje-hora">
-                                        &nbsp; { new Date(x.creadoEn).toLocaleTimeString('es-ES', horaOpc) }&nbsp;
+                                <td className="chat-titulo">
+                                    {chatInfo?.nombre.toUpperCase()}
+                                    <br />
+                                    <small className="text-muted">
+                                        {colocarUltimaConexion(chatInfo?.ultimaConexion)}
                                     </small>
-                                </div>
-                            </span>
-                        ))
-                    }
+                                </td>
 
+                                <td style={{ width: '10px' }}>
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
-                <ChatIconos show={showIcon} pulsarIcono={addNewIcon} />
+            <hr />
 
-                <hr/>
+            <div className="chat-mensajes" id="mensajes-chat">
 
-                <Form className="chat-input mt-2" onSubmit={enviarMensaje}>
+                {
+                    chatMensajes.map((x, index) => (
+                        <span key={index}>
 
-                    <FontAwesomeIcon className="chat-icon" icon={faCamera} onClick={() => { enviarChatImagen.current.click() }} />
+                            {comprobarDia(x.creadoEn)}
 
-                    <FontAwesomeIcon className="chat-icon" icon={faFaceLaughBeam} onClick={() => setShowIcon(!showIcon) }/>
+                            <div className={x.propio === false ? 'mensaje' : 'mensaje mensaje-propio'}>
 
-                    <Form.Control type="text" placeholder="Escribe tu mensaje aquí!" maxLength="150" ref={enviarChatMensaje} />
+                                {x.imagen === true ? <FontAwesomeIcon icon={faImage} className="mensaje-img" onClick={() => mostrarChatImagen(index)} /> : x.mensaje}
 
-                    <FontAwesomeIcon className="chat-icon" style={{ color: '#6060f8' }} icon={faPaperPlane} onClick={enviarMensaje} />
-                </Form>
-
-                <input type="file" accept="image/*" ref={enviarChatImagen} onChange={enviarImagen} style={{ display: 'none' }} />
+                                <small className="mensaje-hora">
+                                    &nbsp;&nbsp;{new Date(x.creadoEn).toLocaleTimeString('es-ES', horaOpc)}&nbsp;
+                                </small>
+                            </div>
+                        </span>
+                    ))
+                }
 
             </div>
 
+            <ChatIconos show={showIcon} pulsarIcono={addNewIcon} />
+
+            <hr />
+
+            <Form className="chat-input mt-2" onSubmit={enviarMensaje}>
+
+                <FontAwesomeIcon className="chat-icon" icon={faCamera} onClick={() => { enviarChatImagen.current.click() }} />
+
+                <FontAwesomeIcon className="chat-icon" icon={faFaceLaughBeam} onClick={() => setShowIcon(!showIcon)} />
+
+                <Form.Control type="text" placeholder="Escribe tu mensaje aquí!" maxLength="150" ref={enviarChatMensaje} />
+
+                <FontAwesomeIcon className="chat-icon" style={{ color: '#6060f8' }} icon={faPaperPlane} onClick={enviarMensaje} />
+            </Form>
+
+            <input type="file" accept="image/*" ref={enviarChatImagen} onChange={enviarImagen} style={{ display: 'none' }} />
+
             <MensajeImagen imagen={modalImagen} funcionCerrar={cerrarImagenChat} />
         </>
-    );  
+    );
 }
 
 export default ChatBox;

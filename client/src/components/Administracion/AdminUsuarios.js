@@ -7,6 +7,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faBan, faCheckDouble, faArrowDown, faScrewdriverWrench, faUnlock, faArrowRight, faClose, faMessage } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+
 
 var totalUsuarios = [];
 const conexionOptions = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -85,9 +88,13 @@ function Adminusuarios({ changeLogged }) {
         if(estado === 'Sin verificar') {
             return (
                 <>
-                    <FontAwesomeIcon className="admin-icon" icon={faCheckDouble} style={{ color: 'green' }} onClick={() => modificarDato('verificar', index) }/>
+                    <OverlayTrigger placement='left' overlay={ <Tooltip>Verificar cuenta</Tooltip> }>
+                        <FontAwesomeIcon className="admin-icon" icon={faCheckDouble} style={{ color: 'green' }} onClick={() => modificarDato('verificar', index) }/>
+                    </OverlayTrigger> 
                     &nbsp;
-                    <FontAwesomeIcon className="admin-icon" icon={faBan} style={{ color: 'red' }} onClick={() => modificarDato('ban', index) }/>
+                    <OverlayTrigger placement='left' overlay={ <Tooltip>Bloquear cuenta</Tooltip> }>
+                        <FontAwesomeIcon className="admin-icon" icon={faBan} style={{ color: 'red' }} onClick={() => modificarDato('ban', index) }/>
+                    </OverlayTrigger>
                 </>
             );
  
@@ -96,25 +103,39 @@ function Adminusuarios({ changeLogged }) {
             if(rol === 'Admin') {
                 return (
                     <>
-                        <FontAwesomeIcon className="admin-icon" icon={faArrowDown} style={{ color: 'purple' }} onClick={() => modificarDato('quitar_admin', index) }/>
+                        <OverlayTrigger placement='left' overlay={ <Tooltip>Quitar rol</Tooltip> }>
+                            <FontAwesomeIcon className="admin-icon" icon={faArrowDown} style={{ color: 'purple' }} onClick={() => modificarDato('quitar_admin', index) }/>
+                        </OverlayTrigger>
                         &nbsp;
-                        <FontAwesomeIcon className="admin-icon" icon={faMessage} style={{ color: 'violet' }} onClick={() => enviarMensaje(index) }/>
+                        <OverlayTrigger placement='left' overlay={ <Tooltip>Enviar mensaje</Tooltip> }>
+                            <FontAwesomeIcon className="admin-icon" icon={faMessage} style={{ color: 'violet' }} onClick={() => enviarMensaje(index) }/>
+                        </OverlayTrigger>
                     </>
                 );
             }
 
             return (
                 <>
-                    <FontAwesomeIcon className="admin-icon" icon={faBan} style={{ color: 'red' }} onClick={() => modificarDato('ban', index) }/>
+                    <OverlayTrigger placement='left' overlay={ <Tooltip>Bloquear cuenta</Tooltip> }>
+                        <FontAwesomeIcon className="admin-icon" icon={faBan} style={{ color: 'red' }} onClick={() => modificarDato('ban', index) }/>
+                    </OverlayTrigger>
                     &nbsp;
-                    <FontAwesomeIcon className="admin-icon" icon={faScrewdriverWrench} style={{ color: 'blue' }} onClick={() => modificarDato('dar_admin', index) }/>
+                    <OverlayTrigger placement='left' overlay={ <Tooltip>Dar admin</Tooltip> }>
+                        <FontAwesomeIcon className="admin-icon" icon={faScrewdriverWrench} style={{ color: 'blue' }} onClick={() => modificarDato('dar_admin', index) }/>
+                    </OverlayTrigger>
                     &nbsp;
-                    <FontAwesomeIcon className="admin-icon" icon={faMessage} style={{ color: 'violet' }} onClick={() => enviarMensaje(index) }/>
+                    <OverlayTrigger placement='left' overlay={ <Tooltip>Enviar mensaje</Tooltip> }>
+                        <FontAwesomeIcon className="admin-icon" icon={faMessage} style={{ color: 'violet' }} onClick={() => enviarMensaje(index) }/>
+                    </OverlayTrigger>
                 </>
             );
  
         } else if(estado === 'Bloqueada') {
-            return <FontAwesomeIcon className="admin-icon" icon={faUnlock} style={{ color: 'orange' }}  onClick={() => modificarDato('desban', index) }/>;
+            return (
+                <OverlayTrigger placement='left' overlay={ <Tooltip>Desbloquear cuenta</Tooltip> }>
+                    <FontAwesomeIcon className="admin-icon" icon={faUnlock} style={{ color: 'orange' }} onClick={() => modificarDato('desban', index) }/>
+                </OverlayTrigger>
+            );
         } 
     };
 
@@ -244,7 +265,7 @@ function Adminusuarios({ changeLogged }) {
                     </Button>
 
                     <span className={window.innerWidth < 600 ? "elements-user-mobile" : "elements-user"}>
-                        <Button className="borrar-botones" onClick={borrarBusqueda}>
+                        <Button className="borrar-botones" onClick={borrarBusqueda} style={ buscarMensaje.current.value === '' ? { display: 'none' } : {} }>
                             <FontAwesomeIcon icon={faClose} />
                         </Button>
 

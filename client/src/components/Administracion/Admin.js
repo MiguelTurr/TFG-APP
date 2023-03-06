@@ -131,8 +131,6 @@ function Admin({ changeLogged }) {
                         </div>
                     </div>
 
-                    <hr/>
-
                     <div className="row">
                         <div className="col mb-3">
                             <div className="cuadro-normal">
