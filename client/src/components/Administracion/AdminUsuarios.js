@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { crearAlerta } from '../Toast/Toast.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faBan, faCheckDouble, faArrowDown, faScrewdriverWrench, faUnlock, faArrowRight, faClose } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faBan, faCheckDouble, faArrowDown, faScrewdriverWrench, faUnlock, faArrowRight, faClose, faMessage } from '@fortawesome/free-solid-svg-icons';
 
 import Button from "react-bootstrap/esm/Button";
 
@@ -93,13 +93,23 @@ function Adminusuarios({ changeLogged }) {
  
         } else if(estado === 'Activa') {
 
-            if(rol === 'Admin') return <FontAwesomeIcon className="admin-icon" icon={faArrowDown} style={{ color: 'purple' }} onClick={() => modificarDato('quitar_admin', index) }/>;
+            if(rol === 'Admin') {
+                return (
+                    <>
+                        <FontAwesomeIcon className="admin-icon" icon={faArrowDown} style={{ color: 'purple' }} onClick={() => modificarDato('quitar_admin', index) }/>
+                        &nbsp;
+                        <FontAwesomeIcon className="admin-icon" icon={faMessage} style={{ color: 'violet' }} onClick={() => enviarMensaje(index) }/>
+                    </>
+                );
+            }
 
             return (
                 <>
                     <FontAwesomeIcon className="admin-icon" icon={faBan} style={{ color: 'red' }} onClick={() => modificarDato('ban', index) }/>
                     &nbsp;
                     <FontAwesomeIcon className="admin-icon" icon={faScrewdriverWrench} style={{ color: 'blue' }} onClick={() => modificarDato('dar_admin', index) }/>
+                    &nbsp;
+                    <FontAwesomeIcon className="admin-icon" icon={faMessage} style={{ color: 'violet' }} onClick={() => enviarMensaje(index) }/>
                 </>
             );
  
@@ -157,6 +167,10 @@ function Adminusuarios({ changeLogged }) {
             setUserList(array);
             crearAlerta('exito', '¡Usuario editado!');
         }
+    };
+
+    const enviarMensaje = (index) => {
+        window.open('/perfil/mis-chats/' +userList[index].ID, '_blank');
     };
 
     const restarPagina = () => {

@@ -213,7 +213,7 @@ function VerAlojamiento({ isLogged, changeLogged }) {
         if(isLogged === false) {
             return setShowLogin(true);
         }
-        window.location.href = '/perfil/mis-chats?user=' +alojamientoUsuario.ID+ '&nombre=' +alojamientoUsuario.nombre;
+        window.location.href = '/perfil/mis-chats/' +alojamientoUsuario.ID;
     };
 
     var [valoracionesModal, setShowValoraciones] = useState(false);

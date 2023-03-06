@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Navigate } from "react-router-dom";
+import NoProfileImg from './img/no-profile-img.png';
 
 import Nav from './components/Navegacion/Nav';
 import Footer from './components/Home/Footer';
@@ -20,7 +22,7 @@ import UserReservas from './components/User/UserReservas';
 import UserReservasAlojamientos from './components/User/UserReservasAlojamientos';
 import UserReservasGanancias from './components/User/UserReservasGanancias';
 
-import UserChats from './components/Mensajes/UserChats';
+import ChatList from './components/Mensajes/ChatList';
 
 import RegistroValidar from './components/Sesion/RegistroValidar';
 import RecordarPassword from './components/Sesion/RecordarPassword';
@@ -53,7 +55,11 @@ function App() {
   var { isLogged, setAutorizado } = useToken();
 
   var isAdmin = window.localStorage.getItem('isAdmin');
-  isAdmin = isAdmin === null || isAdmin === 0 ? false : true;
+  isAdmin = (isAdmin === null || isAdmin === '0') ? false : true;
+  
+  //
+
+  const [fotoPerfil, setFotoPerfil] = useState(NoProfileImg);
 
   //
 
@@ -63,9 +69,9 @@ function App() {
 
       <div className="App">
 
-        <div style={{ position: 'fixed', top: '20%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1000000000 }} id="alertasInfo"></div>
+        <div className="alerta-style" id="alertasInfo"></div>
 
-        <Nav isLogged={isLogged} changeLogged={setAutorizado} isAdmin={isAdmin} />
+        <Nav isLogged={isLogged} changeLogged={setAutorizado} isAdmin={isAdmin} fotoPerfil={fotoPerfil} setFotoPerfil={setFotoPerfil}/>
 
         <Routes>
           <Route path="/" element={ <Home /> }/>
@@ -81,7 +87,8 @@ function App() {
           </>}
 
           {isLogged === true && <>
-            <Route path="/perfil" element={ <Perfil changeLogged={setAutorizado} /> }/>
+            <Route path="/perfil" element={ <Perfil changeLogged={setAutorizado} setFotoPerfil={setFotoPerfil} /> }/>
+
             <Route path="/perfil/mis-alojamientos" element={ <UserAlojamientos changeLogged={setAutorizado} /> }/>
             <Route path="/perfil/mis-alojamientos/editar/:id" element={ <EditarAlojamiento changeLogged={setAutorizado} /> }/>
             <Route path="/perfil/mis-alojamientos/crear" element={ <CrearAlojamiento changeLogged={setAutorizado} /> }/>
@@ -95,7 +102,9 @@ function App() {
             <Route path="/perfil/mis-valoraciones/recibidas-alojamientos" element={ <ValoracionesRecibidasAlojamientos changeLogged={setAutorizado} /> }/>
             <Route path="/perfil/mis-valoraciones/recibidas-usuarios" element={ <ValoracionesRecibidasUsuarios changeLogged={setAutorizado} /> }/>
 
-            <Route path='/perfil/mis-chats' element={ <UserChats changeLogged={setAutorizado} /> }/>
+            <Route path='/perfil/mis-chats' element={ <ChatList changeLogged={setAutorizado} /> }/>
+            <Route path='/perfil/mis-chats/:id' element={ <ChatList changeLogged={setAutorizado} /> }/>
+
             <Route path="/perfil/favoritos" element={ <Favoritos changeLogged={setAutorizado} /> }/>
             <Route path="/perfil/recomendados" element={ <Recomendaciones changeLogged={setAutorizado} /> }/>
 

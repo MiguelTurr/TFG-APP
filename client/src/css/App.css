@@ -177,3 +177,15 @@
 .btn-top:hover {
     background-color: #555;
 }
+
+/*
+    ALERTA
+*/
+
+.alerta-style {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    z-index: 1000000000;
+}

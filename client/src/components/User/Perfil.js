@@ -20,7 +20,7 @@ const trabajoCaracteres = 70;
 const passwordCaracteres = 70;
 const correoCaracteres = 200;
 
-function Perfil({ changeLogged }) {
+function Perfil({ changeLogged, setFotoPerfil }) {
 
     // CARGAR PERFIL INFO
 
@@ -131,7 +131,6 @@ function Perfil({ changeLogged }) {
         } else if(opcionId === 'imagen') {
             opciones.modificado = true;
             opciones.puedeBorrar = userImg === NoProfileImg ? false : true;
-
         }
 
         setModDatos(opciones);
@@ -321,6 +320,8 @@ function Perfil({ changeLogged }) {
 
             } else if(modDatos.modId === 'imagen') {
                 setUserInfo({ ...userInfo, imagenPerfil: items.devolverDato });
+
+                setFotoPerfil(URL.createObjectURL(imagenAvatar));
 
                 setUserImg(URL.createObjectURL(imagenAvatar));
                 setFotoCargada(null);

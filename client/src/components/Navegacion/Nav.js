@@ -9,14 +9,13 @@ import RegistroModal from '../Sesion/RegistroModal';
 import NavFiltros from './NavFiltros';
 
 import Logo from '../../img/logo.png';
-import NoProfileImg from '../../img/no-profile-img.png';
 
 import Dropdown from 'react-bootstrap/Dropdown';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faScrewdriverWrench } from '@fortawesome/free-solid-svg-icons';
 
-function Nav({ isLogged, changeLogged, isAdmin }) {
+function Nav({ isLogged, changeLogged, isAdmin, fotoPerfil, setFotoPerfil }) {
     
     const [isMobile, setIsMobile] = useState(window.innerWidth < 600);
 
@@ -64,8 +63,6 @@ function Nav({ isLogged, changeLogged, isAdmin }) {
     };
 
     // FOTO PERFIL
-
-    const [fotoPerfil, setFotoPerfil] = useState(NoProfileImg);
 
     const cargarFotoPerfil = async () => {
         

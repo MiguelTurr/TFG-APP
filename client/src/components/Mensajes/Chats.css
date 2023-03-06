@@ -1,12 +1,12 @@
 .chat-titulo {
     font-weight: bold;
-    text-align: center;
     font-size: 1em;
+    text-align: left;
 }
 
 .chat-mensajes {
     height: 250px;
-    overflow: scroll;
+    overflow-y: auto;
     color: white;
 }
 
