@@ -1,6 +1,12 @@
 
 server/services/config.js
-server/imagenes/casas/
-server/imagenes/chats/
-server/imagenes/perfil/
+server/imagenes/casas/*.jpg
+server/imagenes/casas/*.png
+server/imagenes/casas/*.jpeg
+server/imagenes/chats/*.jpg
+server/imagenes/chats/*.png
+server/imagenes/chats/*.jpeg
+server/imagenes/perfil/*.jpg
+server/imagenes/perfil/*.jpeg
+server/imagenes/perfil/*.png
 web_scraper/imagenes/
