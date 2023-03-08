@@ -16,7 +16,7 @@ const datos_login = {
 
 //
 
-describe.skip('Loguear una cuenta', function () {
+describe('Loguear una cuenta', function () {
 
     var driver;
     this.timeout(10000);

@@ -1,3 +1,8 @@
+const email = require('./email.js');
+const { dev_state } = require('./config.js');
+
+//
+
 const columnasPorPagina = 12;
 
 const serviciosCasas = ['Cocina', 'Wifi', 'Mascotas', 'Aparcamiento', 'Piscina', 'Lavadora', 'Aire', 'Calefaccion', 'Television'];
@@ -186,6 +191,20 @@ function queryLimit(contador) {
     return 'LIMIT ' +(contador * columnasPorPagina)+ ',' +columnasPorPagina;
 }
 
+function enviarCorreo(titulo, mensaje, email) {
+    
+    if(dev_state == true) return;
+
+    //const probarCorreo = (dev_state == true) ? 'pepecortezri@gmail.com' : req.body.email;
+
+    email.sendMail({
+        from: 'FastForHolidays',
+        to: email,
+        subject: titulo,
+        text: mensaje
+    });
+}
+
 module.exports = {
     nombreFotoPerfil,
     nombreFotoAlojamiento,
@@ -204,4 +223,6 @@ module.exports = {
     queryOrdenar,
     queryLimit,
     queryFiltros,
+
+    enviarCorreo,
 }

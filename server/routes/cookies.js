@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/aceptar', (req, res) => {
+router.get('/aceptar', (_, res) => {
 
     res.status(200).cookie('cookiesAceptadas', true, {
         httpOnly: false,

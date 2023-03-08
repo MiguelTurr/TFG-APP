@@ -4,10 +4,9 @@ const router = express.Router();
 //
 
 const mysql = require('../services/mysql.js');
-const email = require('../services/email.js');
-const { paypal, paypalClient } = require("../services/paypal.js");
 
-const { dev_state } = require('../services/config.js');
+const { paypal, paypalClient } = require("../services/paypal.js");
+const { enviarCorreo } = require('../services/utils.js');
 
 //
 
@@ -157,13 +156,8 @@ router.post('/aceptada', async (req, res) => {
                         textoEmail += 'Reserva: ' +req.body.noches+ ' noches x ' +req.body.precioBase+'€\n';
                         textoEmail += 'Coste total: ' +req.body.costeTotal+ '€\n';
                         textoEmail += '\n\nUn saludo desde 2FH.'
-        
-                        email.sendMail({
-                            from: 'FastForHolidays',
-                            to: (dev_state === true) ? 'pepecortezri@gmail.com' : result[0].email,
-                            subject: '¡Uno de tus alojamientos ha sido reservado!',
-                            text: textoEmail
-                        });
+
+                        enviarCorreo('¡Uno de tus alojamientos ha sido reservado!', textoEmail, result[0].email);
         
                     } catch (err) {
                         console.log(err);

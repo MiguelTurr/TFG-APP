@@ -273,7 +273,7 @@ describe('Registrar una cuenta', function () {
         driver.quit();
     });
 
-    afte(() => {
+    after(() => {
         mysql.query('DELETE FROM usuarios WHERE email="prueba@gmail.com"');
     });
 });

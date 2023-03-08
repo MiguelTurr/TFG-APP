@@ -8,7 +8,7 @@ const { crearDriver, obtenerTextoAlerta, crearCuentaDePrueba, borrarCuentaDePrue
 
 //
 
-describe.skip('Control de reservas', function () {
+describe('Control de reservas', function () {
 
     var driver;
     this.timeout(10000);

@@ -93,7 +93,6 @@ router.post('/editar', (req, res) => {
         mysql.query(query, function (err, result) {
             if (err) {
                 res.status(500).json({ respuesta: 'err_db' });
-
                 console.log(err.message);
                 return;
             }
@@ -112,7 +111,10 @@ router.post('/editar', (req, res) => {
 
                 if(req.body.imagenAnterior !== 'default.png' && extensionEditado !== extensionAnterior) {
                     fs.unlink('./imagenes/perfil/' +req.body.imagenAnterior, (err) => {
-                        if(err) throw err;
+                        if(err) {
+                            res.status(500).json({ respuesta: 'err_db' });
+                            return console.log(err);
+                        }
                         console.log('Archivo borrado');
                     });
                 }
@@ -240,7 +242,6 @@ router.get('/foto', (req, res) => {
         res.status(500).json({ respuesta: 'err_user' });
         return;
     }
-
 
     mysql.query("SELECT imgPerfil FROM usuarios WHERE ID=? LIMIT 1", req.userId, (err, result) => {
 

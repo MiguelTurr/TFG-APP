@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 import { crearAlerta } from '../Toast/Toast.js';
-import CasaCard from '../../items/CasaCard';
+import CasaCard from '../../components/CasaCard';
 
 import { getGeocode, getLatLng } from 'use-places-autocomplete';
 

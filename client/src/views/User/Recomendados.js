@@ -3,7 +3,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 
 import { crearAlerta } from '../Toast/Toast.js';
-import CasaCard from '../../items/CasaCard';
+import CasaCard from '../../components/CasaCard';
 import ToolTipRec from './ToolTipRec';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

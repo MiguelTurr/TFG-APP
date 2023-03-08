@@ -4,12 +4,12 @@ const router = express.Router();
 //
 
 const mysql = require('../services/mysql.js');
-const email = require("../services/email.js");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const randomstring = require("randomstring");
 
-const { bcrypt_salt, cookie_secret, dev_state } = require('../services/config.js');
+const { bcrypt_salt, cookie_secret } = require('../services/config.js');
+const { enviarCorreo } = require('../services/utils.js');
 
 //
 
@@ -59,12 +59,7 @@ router.post('/registrar', async (req, res) => {
                 texto += 'http://localhost:3000/validar/' + validarEmail;
                 texto += '\n\nUn saludo desde 2FH.'
 
-                email.sendMail({
-                    from: 'FastForHolidays',
-                    to: (dev_state === true) ? 'pepecortezri@gmail.com' : req.body.email,
-                    subject: 'Código de verificación - 2FH',
-                    text: texto
-                });
+                enviarCorreo('Código de verificación - 2FH', texto, req.body.email);
 
                 res.status(201).json({ respuesta: 'correcto' });
 
@@ -109,7 +104,7 @@ router.post('/login', (req, res) => {
             res.status(401).json({ respuesta: 'err_ban' });
             return;
 
-        } else if (result[0].estado == 'Inactiva') { // QUITAR COMO CUENTA DESACTIVADA
+        } else if (result[0].estado == 'Inactiva') { // QUITA COMO CUENTA DESACTIVADA
             mysql.query('UPDATE usuarios SET estado="Activa" WHERE ID=?', result[0].ID);
         }
 
@@ -189,11 +184,7 @@ router.post('/recordar-password', (req, res) => {
                 texto += 'Nueva contraseña: ' +nuevaPassword;
                 texto += '\n\nUn saludo desde 2FH.'
 
-                email.sendMail({
-                    to: (dev_state === true) ? 'pepecortezri@gmail.com' : emailRequest,
-                    subject: 'Cambio de contraseña - 2FH',
-                    text: texto
-                });
+                enviarCorreo('Cambio de contraseña - 2FH', texto, emailRequest);
 
                 res.status(201).json({ respuesta: 'correcto' });
 

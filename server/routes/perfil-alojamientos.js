@@ -4,12 +4,10 @@ const router = express.Router();
 //
 
 const mysql = require('../services/mysql.js');
-const email = require("../services/email.js");
-const utils = require('../services/utils.js');
 const bcrypt = require('bcrypt');
 const fs = require("fs");
 
-const { dev_state } = require('../services/config.js');
+const { nombreFotoAlojamiento, serviciosCasas, totalServicios, fontsDisponibles, boolToInt, enviarCorreo } = require('../services/utils.js');
 
 //
 
@@ -54,14 +52,14 @@ router.get('/:id', (req, res) => {
         // SERVICIOS
 
         const servicios = result[0].servicios;
-        const lenServicios = utils.serviciosCasas.length;
+        const lenServicios = serviciosCasas.length;
 
         var arrayServicios = [];
 
         for(var i = 0; i < lenServicios; i++) {
 
-            var value = servicios >> (utils.totalServicios-i) & 0x1;
-            const servicioNombre = utils.serviciosCasas[i];
+            var value = servicios >> (totalServicios-i) & 0x1;
+            const servicioNombre = serviciosCasas[i];
 
             result[0][servicioNombre.toLowerCase()] = value;
             if(value > 0) arrayServicios.push(servicioNombre);
@@ -71,9 +69,9 @@ router.get('/:id', (req, res) => {
 
         // FUENTES
 
-        const lenFonts = utils.fontsDisponibles.length;
+        const lenFonts = fontsDisponibles.length;
         for(var i = 0; i < lenFonts; i++) {
-            if(utils.fontsDisponibles[i] === result[0].defaultFont) {
+            if(fontsDisponibles[i] === result[0].defaultFont) {
                 result[0].fontIndex = i;
                 break;
             }
@@ -94,15 +92,15 @@ router.post('/crear', (req, res) => {
 
     var servicios_final = 0;
 
-    servicios_final |= utils.boolToInt(req.body.cocina) << 8;
-    servicios_final |= utils.boolToInt(req.body.wifi) << 7;
-    servicios_final |= utils.boolToInt(req.body.animales) << 6;
-    servicios_final |= utils.boolToInt(req.body.aparcamiento) << 5;
-    servicios_final |= utils.boolToInt(req.body.piscina) << 4;
-    servicios_final |= utils.boolToInt(req.body.lavadora) << 3;
-    servicios_final |= utils.boolToInt(req.body.aire) << 2;
-    servicios_final |= utils.boolToInt(req.body.calefaccion) << 1;
-    servicios_final |= utils.boolToInt(req.body.television);
+    servicios_final |= boolToInt(req.body.cocina) << 8;
+    servicios_final |= boolToInt(req.body.wifi) << 7;
+    servicios_final |= boolToInt(req.body.animales) << 6;
+    servicios_final |= boolToInt(req.body.aparcamiento) << 5;
+    servicios_final |= boolToInt(req.body.piscina) << 4;
+    servicios_final |= boolToInt(req.body.lavadora) << 3;
+    servicios_final |= boolToInt(req.body.aire) << 2;
+    servicios_final |= boolToInt(req.body.calefaccion) << 1;
+    servicios_final |= boolToInt(req.body.television);
 
     const horaEntrada = req.body.horaEntrada === 'undefined' ? null : req.body.horaEntrada;
     const horaSalida = req.body.horaSalida === 'undefined' ? null : req.body.horaSalida;
@@ -129,8 +127,8 @@ router.post('/crear', (req, res) => {
                 parseInt(req.body.aseos),
                 horaEntrada,
                 horaSalida,
-                utils.boolToInt(req.body.puedeFumar),
-                utils.boolToInt(req.body.puedeFiestas),
+                boolToInt(req.body.puedeFumar),
+                boolToInt(req.body.puedeFiestas),
                 servicios_final,
                 req.body.imgTotal,
             ]
@@ -151,7 +149,7 @@ router.post('/crear', (req, res) => {
                 const file = req.files.imagen;
 
                 const extension = file.mimetype.split('/')[1];
-                const nombreFile = utils.nombreFotoAlojamiento(alojamientoId, 0, extension);
+                const nombreFile = nombreFotoAlojamiento(alojamientoId, 0, extension);
 
                 file.mv('./imagenes/casas/' + nombreFile);
 
@@ -164,7 +162,7 @@ router.post('/crear', (req, res) => {
                     const file = req.files.imagen[i];
 
                     const extension = file.mimetype.split('/')[1];
-                    const nombreFile = utils.nombreFotoAlojamiento(alojamientoId, i, extension);
+                    const nombreFile = nombreFotoAlojamiento(alojamientoId, i, extension);
 
                     file.mv('./imagenes/casas/' + nombreFile);
 
@@ -195,15 +193,15 @@ router.post('/editar', (req, res) => {
 
         var servicios_final = 0;
 
-        servicios_final |= utils.boolToInt(req.body.cocina) << 8;
-        servicios_final |= utils.boolToInt(req.body.wifi) << 7;
-        servicios_final |= utils.boolToInt(req.body.mascotas) << 6;
-        servicios_final |= utils.boolToInt(req.body.aparcamiento) << 5;
-        servicios_final |= utils.boolToInt(req.body.piscina) << 4;
-        servicios_final |= utils.boolToInt(req.body.lavadora) << 3;
-        servicios_final |= utils.boolToInt(req.body.aire) << 2;
-        servicios_final |= utils.boolToInt(req.body.calefaccion) << 1;
-        servicios_final |= utils.boolToInt(req.body.television);
+        servicios_final |= boolToInt(req.body.cocina) << 8;
+        servicios_final |= boolToInt(req.body.wifi) << 7;
+        servicios_final |= boolToInt(req.body.mascotas) << 6;
+        servicios_final |= boolToInt(req.body.aparcamiento) << 5;
+        servicios_final |= boolToInt(req.body.piscina) << 4;
+        servicios_final |= boolToInt(req.body.lavadora) << 3;
+        servicios_final |= boolToInt(req.body.aire) << 2;
+        servicios_final |= boolToInt(req.body.calefaccion) << 1;
+        servicios_final |= boolToInt(req.body.television);
 
         queryStr += 'viajeros=' +req.body.viajeros+ ',habitaciones=' +req.body.habitaciones+ ',camas=' +req.body.camas+ ',aseos=' +req.body.aseos;
         queryStr += ',puedeFumar=' +req.body.puedeFumar+ ',puedeFiestas=' +req.body.puedeFiestas;
@@ -217,7 +215,7 @@ router.post('/editar', (req, res) => {
         queryStr += 'precio=' +req.body.precio+ ',precioAnterior=' +req.body.precioAnterior+ ' ';
 
     } else if(req.body.tipo === 'fuente') {
-        queryStr += 'defaultFont="' +utils.fontsDisponibles[parseInt(req.body.fontIndex)]+ '" ';
+        queryStr += 'defaultFont="' +fontsDisponibles[parseInt(req.body.fontIndex)]+ '" ';
 
     } else {
         queryStr += req.body.tipo+ '="' +req.body.editado+ '" ';
@@ -267,13 +265,7 @@ router.post('/editar', (req, res) => {
                     for(var i = 0; i < len; i++) {
 
                         try {
-
-                            email.sendMail({
-                                from: 'FastForHolidays',
-                                to: (dev_state === true) ? 'pepecortezri@gmail.com' : result[i].email,
-                                subject: '¡Uno de tus alojamientos en favoritos está en oferta!',
-                                text: textoEmail
-                            });
+                            enviarCorreo('¡Uno de tus alojamientos en favoritos está en oferta!', textoEmail, result[i].email);
 
                         } catch (err) {
                             console.log(err);
@@ -359,7 +351,7 @@ router.post('/editar', (req, res) => {
                     const file = req.files.imagen;
 
                     const extension = file.name.split('.')[1];
-                    const nombreFile = utils.nombreFotoAlojamiento(alojamientoId, indexInicio, extension);
+                    const nombreFile = nombreFotoAlojamiento(alojamientoId, indexInicio, extension);
 
                     file.mv('./imagenes/casas/' + nombreFile);
 
@@ -372,7 +364,7 @@ router.post('/editar', (req, res) => {
                         const file = req.files.imagen[i];
 
                         const extension = file.name.split('.')[1];
-                        const nombreFile = utils.nombreFotoAlojamiento(alojamientoId, indexInicio+i, extension);
+                        const nombreFile = nombreFotoAlojamiento(alojamientoId, indexInicio+i, extension);
 
                         console.log('Creado: ' +nombreFile);
 

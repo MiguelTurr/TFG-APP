@@ -4,7 +4,7 @@ const router = express.Router();
 //
 
 const mysql = require('../services/mysql.js');
-const utils = require('../services/utils.js');
+const { queryFiltros, queryOrdenar, queryLimit } = require('../services/utils.js');
 
 //
 
@@ -24,15 +24,15 @@ router.post('/', (req, res) => {
 
     // FILTROS
 
-    queryStr += utils.queryFiltros(req.body.filtros);
+    queryStr += queryFiltros(req.body.filtros);
 
     // ORDENAR
 
-    queryStr += utils.queryOrdenar(req.body.ordenar);
+    queryStr += queryOrdenar(req.body.ordenar);
 
     // LIMIT
 
-    queryStr += utils.queryLimit(req.body.contador);
+    queryStr += queryLimit(req.body.contador);
 
     //
 

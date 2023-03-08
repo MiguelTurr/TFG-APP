@@ -2,48 +2,48 @@ import { useState } from 'react';
 import { Navigate } from "react-router-dom";
 import NoProfileImg from './img/no-profile-img.png';
 
-import Nav from './components/Navegacion/Nav';
-import Footer from './components/Home/Footer';
-import Home from './components/Home';
+import Nav from './views/Navegacion/Nav';
+import Footer from './views/Home/Footer';
+import Home from './views/Home';
 
-import Ayuda from './components/General/Ayuda';
-import Condiciones from './components/General/Condiciones';
-import Privacidad from './components/General/Privacidad';
+import Ayuda from './views/General/Ayuda';
+import Condiciones from './views/General/Condiciones';
+import Privacidad from './views/General/Privacidad';
 
-import Cookies from './components/General/Cookies';
+import Cookies from './views/General/Cookies';
 
-import Buscar from './components/Buscar/Buscar';
-import VerAlojamiento from './components/Alojamiento/VerAlojamiento';
-import PerfilPublico from './components/Usuario/PerfilPublico';
+import Buscar from './views/Buscar/Buscar';
+import VerAlojamiento from './views/Alojamiento/VerAlojamiento';
+import PerfilPublico from './views/Usuario/PerfilPublico';
 
-import ReservarAlojamiento from './components/Reservas/ReservarAlojamiento';
+import ReservarAlojamiento from './views/Reservas/ReservarAlojamiento';
 
-import UserReservas from './components/User/UserReservas';
-import UserReservasAlojamientos from './components/User/UserReservasAlojamientos';
-import UserReservasGanancias from './components/User/UserReservasGanancias';
+import UserReservas from './views/User/UserReservas';
+import UserReservasAlojamientos from './views/User/UserReservasAlojamientos';
+import UserReservasGanancias from './views/User/UserReservasGanancias';
 
-import ChatList from './components/Mensajes/ChatList';
+import ChatList from './views/Mensajes/ChatList';
 
-import RegistroValidar from './components/Sesion/RegistroValidar';
-import RecordarPassword from './components/Sesion/RecordarPassword';
-import Perfil from './components/User/Perfil';
+import RegistroValidar from './views/Sesion/RegistroValidar';
+import RecordarPassword from './views/Sesion/RecordarPassword';
+import Perfil from './views/User/Perfil';
 
-import UserAlojamientos from './components/User/UserAlojamientos';
-import EditarAlojamiento from './components/User/EditarAlojamiento';
-import CrearAlojamiento from './components/User/CrearAlojamiento';
+import UserAlojamientos from './views/User/UserAlojamientos';
+import EditarAlojamiento from './views/User/EditarAlojamiento';
+import CrearAlojamiento from './views/User/CrearAlojamiento';
 
-import ValoracionesAlojamientos from './components/User/ValoracionesAlojamientos';
-import ValoracionesUsuarios from './components/User/ValoracionesUsuarios';
-import ValoracionesRecibidasAlojamientos from './components/User/ValoracionesRecibidasAlojamientos';
-import ValoracionesRecibidasUsuarios from './components/User/ValoracionesRecibidasUsuarios';
+import ValoracionesAlojamientos from './views/User/ValoracionesAlojamientos';
+import ValoracionesUsuarios from './views/User/ValoracionesUsuarios';
+import ValoracionesRecibidasAlojamientos from './views/User/ValoracionesRecibidasAlojamientos';
+import ValoracionesRecibidasUsuarios from './views/User/ValoracionesRecibidasUsuarios';
 
-import Favoritos from './components/User/Favoritos';
-import Recomendaciones from './components/User/Recomendados';
+import Favoritos from './views/User/Favoritos';
+import Recomendaciones from './views/User/Recomendados';
 
-import Admin from './components/Administracion/Admin';
-import AdminAlojamientos from './components/Administracion/AdminAlojamientos';
-import AdminReportes from './components/Administracion/AdminReportes';
-import AdminUsuarios from './components/Administracion/AdminUsuarios';
+import Admin from './views/Administracion/Admin';
+import AdminAlojamientos from './views/Administracion/AdminAlojamientos';
+import AdminReportes from './views/Administracion/AdminReportes';
+import AdminUsuarios from './views/Administracion/AdminUsuarios';
 
 import useToken from './js/autorizado';
 import './css/App.css';

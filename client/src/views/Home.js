@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useState } from 'react';
 
 import { crearAlerta } from './Toast/Toast.js';
-import CasaCard from '../items/CasaCard';
+import CasaCard from '../components/CasaCard';
 import BotonTop from './Navegacion/BotonTop';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

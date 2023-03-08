@@ -14,7 +14,7 @@ const datos_email = {
 
 //
 
-describe.skip('Recuperar contraseña', function () {
+describe('Recuperar contraseña', function () {
 
     var driver;
     this.timeout(10000);

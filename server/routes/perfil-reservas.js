@@ -4,10 +4,7 @@ const router = express.Router();
 //
 
 const mysql = require('../services/mysql.js');
-const email = require('../services/email.js');
-const utils = require('../services/utils.js');
-
-const { dev_state } = require('../services/config.js');
+const { diasEntreFechas, rangoFechas, estadoReserva, estadoAlojamientoReserva, enviarCorreo } = require('../services/utils.js');
 
 //
 
@@ -39,7 +36,7 @@ router.get('/activas', (req, res) => {
             const inicio = new Date(element.fechaEntrada);
             const final = new Date(element.fechaSalida);
 
-            var dias = utils.diasEntreFechas(inicio, final);
+            var dias = diasEntreFechas(inicio, final);
 
             var objeto = {
 
@@ -48,13 +45,13 @@ router.get('/activas', (req, res) => {
                 reservaID: element.ID,
                 alojamientoID: element.alojamientoID,
 
-                fechas: utils.rangoFechas(inicio, final),
+                fechas: rangoFechas(inicio, final),
                 dias: dias,
                 viajeros: element.numeroViajeros,
                 mascotas: element.numeroMascotas,
                 precioBase: element.precioBase,
                 costeTotal: element.costeTotal,
-                estado: utils.estadoReserva(element.estado, final, element.valoraEstancia),
+                estado: estadoReserva(element.estado, final, element.valoraEstancia),
 
                 // DUEÑO
 
@@ -102,7 +99,7 @@ router.get('/antiguas', (req, res) => {
             const inicio = new Date(element.fechaEntrada);
             const final = new Date(element.fechaSalida);
 
-            var dias = utils.diasEntreFechas(inicio, final);
+            var dias = diasEntreFechas(inicio, final);
 
             var objeto = {
 
@@ -113,13 +110,13 @@ router.get('/antiguas', (req, res) => {
                 userValoracion: element.valoraEstancia,
                 hospedadorValoracion: element.valoraHospedador,
                 
-                fechas: utils.rangoFechas(inicio, final, element.valoraEstancia),
+                fechas: rangoFechas(inicio, final, element.valoraEstancia),
                 dias: dias,
                 viajeros: element.numeroViajeros,
                 mascotas: element.numeroMascotas,
                 precioBase: element.precioBase,
                 costeTotal: element.costeTotal,
-                estado: utils.estadoReserva(element.estado, final),
+                estado: estadoReserva(element.estado, final),
 
                 // ALOJAMIENTO
 
@@ -164,7 +161,7 @@ router.get('/alojamientos/activas', (req, res) => {
             const inicio = new Date(element.fechaEntrada);
             const final = new Date(element.fechaSalida);
 
-            var dias = utils.diasEntreFechas(inicio, final);
+            var dias = diasEntreFechas(inicio, final);
 
             var objeto = {
 
@@ -174,13 +171,13 @@ router.get('/alojamientos/activas', (req, res) => {
                 alojamientoID: element.alojamientoID,
                 usuarioID: element.usuarioID,
 
-                fechas: utils.rangoFechas(inicio, final),
+                fechas: rangoFechas(inicio, final),
                 dias: dias,
                 viajeros: element.numeroViajeros,
                 mascotas: element.numeroMascotas,
                 precioBase: element.precioBase,
                 costeTotal: element.costeTotal,
-                estado: utils.estadoAlojamientoReserva(element.estado, final, element.valoraHospedador),
+                estado: estadoAlojamientoReserva(element.estado, final, element.valoraHospedador),
 
                 // ALOJAMIENTO
 
@@ -230,7 +227,7 @@ router.get('/alojamientos/antiguas', (req, res) => {
             const inicio = new Date(element.fechaEntrada);
             const final = new Date(element.fechaSalida);
 
-            var dias = utils.diasEntreFechas(inicio, final);
+            var dias = diasEntreFechas(inicio, final);
 
             var objeto = {
 
@@ -242,13 +239,13 @@ router.get('/alojamientos/antiguas', (req, res) => {
                 userValoracion: element.valoraEstancia,
                 hospedadorValoracion: element.valoraHospedador,
 
-                fechas: utils.rangoFechas(inicio, final),
+                fechas: rangoFechas(inicio, final),
                 dias: dias,
                 viajeros: element.numeroViajeros,
                 mascotas: element.numeroMascotas,
                 precioBase: element.precioBase,
                 costeTotal: element.costeTotal,
-                estado: utils.estadoAlojamientoReserva(element.estado, final, element.valoraHospedador),
+                estado: estadoAlojamientoReserva(element.estado, final, element.valoraHospedador),
 
                 // ALOJAMIENTO
 
@@ -311,15 +308,10 @@ router.get('/alojamientos/cancelar/:id', (req, res) => {
                 var textoEmail = 'Hola, parece que se ha cancelado una de tus reservas.\n\n';
                 textoEmail += 'Título: ' +result[0].titulo+ '\n';
                 textoEmail += 'Ubicación: ' +result[0].ubicacion+ '\n';
-                textoEmail += 'Fechas: ' +utils.rangoFechas(entrada, salida);
+                textoEmail += 'Fechas: ' +rangoFechas(entrada, salida);
                 textoEmail += '\n\nUn saludo desde 2FH.'
 
-                email.sendMail({
-                    from: 'FastForHolidays',
-                    to: (dev_state === true) ? 'pepecortezri@gmail.com' : result[0].email,
-                    subject: '¡Reserva cancelada!',
-                    text: textoEmail
-                });
+                enviarCorreo('¡Reserva cancelada!', textoEmail, result[0].email);
 
             } catch (err) {
                 console.log(err);
@@ -369,15 +361,10 @@ router.get('/alojamientos/aceptar/:id', (req, res) => {
                 var textoEmail = 'Hola, parece que se ha aceptado una de tus reservas.\n\n';
                 textoEmail += 'Título: ' +result[0].titulo+ '\n';
                 textoEmail += 'Ubicación: ' +result[0].ubicacion+ '\n';
-                textoEmail += 'Fechas: ' +utils.rangoFechas(entrada, salida);
+                textoEmail += 'Fechas: ' +rangoFechas(entrada, salida);
                 textoEmail += '\n\nUn saludo desde 2FH.'
 
-                email.sendMail({
-                    from: 'FastForHolidays',
-                    to: (dev_state === true) ? 'pepecortezri@gmail.com' : result[0].email,
-                    subject: '¡Reserva aceptada!',
-                    text: textoEmail
-                });
+                enviarCorreo('¡Reserva aceptada!', textoEmail, result[0].email);
 
             } catch (err) {
                 console.log(err);

@@ -23,7 +23,7 @@ const datos_alojamiento = {
 
 //
 
-describe.skip('Crear un nuevo alojamiento', function () {
+describe('Crear un nuevo alojamiento', function () {
 
     var driver;
     this.timeout(10000);

@@ -8,7 +8,7 @@ const { crearDriver, crearCuentaDePrueba, actualizarEstadoCuenta, borrarCuentaDe
 
 //
 
-describe.skip('Validar una cuenta', function () {
+describe('Validar una cuenta', function () {
 
     var driver;
     this.timeout(10000);

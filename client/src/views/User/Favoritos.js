@@ -1,7 +1,7 @@
 import React, { useEffect, useState }  from 'react';
 
 import { crearAlerta } from '../Toast/Toast.js';
-import CasaCard from '../../items/CasaCard';
+import CasaCard from '../../components/CasaCard';
 import ToolTipFav from './ToolTipFav.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

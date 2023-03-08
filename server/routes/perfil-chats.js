@@ -4,7 +4,7 @@ const router = express.Router();
 //
 
 const mysql = require('../services/mysql.js');
-const utils = require('../services/utils.js');
+const { diasEntreFechas } = require('../services/utils.js');
 const fs = require("fs");
 
 //
@@ -44,7 +44,7 @@ router.get('/', (req, res) => {
             });
 
             var fechaFin = new Date(result[i].nuevoEn).getTime();
-            var diff = utils.diasEntreFechas(fechaFin, fechaHoy.getTime());
+            var diff = diasEntreFechas(fechaFin, fechaHoy.getTime());
 
             var objeto = {
                 chatID: result[i].ID,

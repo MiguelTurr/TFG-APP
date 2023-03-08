@@ -4,7 +4,7 @@ const router = express.Router();
 //
 
 const mysql = require('../services/mysql.js');
-const utils = require('../services/utils.js');
+const { diasEntreFechas } = require('../services/utils.js');
 
 const PDFDocument = require('pdfkit');
 const fs = require("fs");
@@ -88,7 +88,7 @@ router.get('/:id', (req, res) => {
                     ID: result[i].ID,
                     costeTotal: result[i].costeTotal,
                     precioBase: result[i].precioBase,
-                    dias: utils.diasEntreFechas(new Date(result[i].fechaEntrada), new Date(result[i].fechaSalida)),
+                    dias: diasEntreFechas(new Date(result[i].fechaEntrada), new Date(result[i].fechaSalida)),
                 };
                 reservasArray.push(objeto);
             }

@@ -4,7 +4,7 @@ const router = express.Router();
 //
 
 const mysql = require('../services/mysql.js');
-const utils = require('../services/utils.js');
+const { queryFiltros, queryOrdenar } = require('../services/utils.js');
 
 //
 
@@ -24,7 +24,7 @@ router.post('/', (req, res) => {
 
     // FILTROS
 
-    queryStr += utils.queryFiltros(req.body.filtros);
+    queryStr += queryFiltros(req.body.filtros);
 
     // DIRECCIÓN
 
@@ -46,7 +46,7 @@ router.post('/', (req, res) => {
     
     //
 
-    queryStr += utils.queryOrdenar(req.body.ordenar);
+    queryStr += queryOrdenar(req.body.ordenar);
 
     //
 

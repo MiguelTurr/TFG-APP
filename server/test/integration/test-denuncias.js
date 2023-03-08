@@ -8,7 +8,7 @@ const { crearDriver, obtenerTextoAlerta, crearCuentaDePrueba, borrarCuentaDePrue
 
 //
 
-describe.skip('Denunciar usuario', function () {
+describe('Denunciar usuario', function () {
 
     var driver;
     this.timeout(10000);

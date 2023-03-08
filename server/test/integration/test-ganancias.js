@@ -8,7 +8,7 @@ const { crearDriver, obtenerTextoAlerta, crearCuentaDePrueba, crearAlojamientoDe
 
 //
 
-describe.skip('Ganancias', function () {
+describe('Ganancias', function () {
 
     var driver;
     this.timeout(10000);

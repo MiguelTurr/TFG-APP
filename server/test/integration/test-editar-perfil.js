@@ -22,7 +22,7 @@ const datos_editar = {
 
 //
 
-describe.skip('Editar perfil usuario', function () {
+describe('Editar perfil usuario', function () {
 
     var driver;
     this.timeout(10000);
@@ -201,6 +201,6 @@ async function colocarInput(driver, xpath, input) {
     await driver.wait(until.elementLocated(By.xpath(xpath)), 10000);
         
     const element = await driver.findElement(By.xpath(xpath));
-    element.clear();
+    await element.clear();
     await driver.actions().sendKeys(element, input).perform();
 }

@@ -4,9 +4,9 @@ const router = express.Router();
 //
 
 const mysql = require('../services/mysql.js');
-const email = require('../services/email.js');
 
 const { dev_state } = require('../services/config.js');
+const { enviarCorreo } = require('../services/utils.js');
 
 //
 
@@ -80,15 +80,10 @@ router.post('/', (req, res) => {
 
                 try {
 
-                    var texto = 'Hola, nuevas valoraciones sobre su alojamiento en ' + result[0].ubicacion + ' se han hecho, visite su perfil para leerlas.';
-                    texto += '\n\nUn saludo desde 2FH.'
+                    const titulo = result[0].titulo + ' ha recibido una valoración';
+                    const texto = 'Hola, nuevas valoraciones sobre su alojamiento en ' + result[0].ubicacion + ' se han hecho, visite su perfil para leerlas.\n\nUn saludo desde 2FH.';
 
-                    email.sendMail({
-                        from: 'FastForHolidays',
-                        to: (dev_state === true) ? 'pepecortezri@gmail.com' : result[0].email,
-                        subject: result[0].titulo + ' ha recibido una valoración',
-                        text: texto
-                    });
+                    enviarCorreo(titulo, texto, result[0].email);
 
                 } catch (err) {
                     console.log(err);

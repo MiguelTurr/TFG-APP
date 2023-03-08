@@ -4,7 +4,7 @@ const router = express.Router();
 //
 
 const mysql = require('../services/mysql.js');
-const utils = require('../services/utils.js');
+const { serviciosCasas, totalServicios, diasEntreFechas } = require('../services/utils.js');
 
 //
 
@@ -39,10 +39,10 @@ router.get('/ver/:id', (req, res) => {
         // SERVICIOS
 
         const servicios = result[0].servicios;
-        const lenServicios = utils.serviciosCasas.length;
+        const lenServicios = serviciosCasas.length;
 
         for(var i = 0; i < lenServicios; i++) {
-            result[0][utils.serviciosCasas[i].toLowerCase()] = servicios >> (utils.totalServicios-i) & 0x1;
+            result[0][serviciosCasas[i].toLowerCase()] = servicios >> (totalServicios-i) & 0x1;
         }
 
         //
@@ -197,7 +197,7 @@ router.get('/reservas/dias/:id', (req, res) => {
 
                 const final = new Date(result[i].fechaSalida);
 
-                var diff = utils.diasEntreFechas(inicio, final);
+                var diff = diasEntreFechas(inicio, final);
 
                 for (var w = 0; w < diff; w++) {
 

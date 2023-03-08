@@ -17,7 +17,7 @@ const datos_editar = {
 
 //
 
-describe.skip('Editar alojamiento', function () {
+describe('Editar alojamiento', function () {
 
     var driver;
     this.timeout(10000);
