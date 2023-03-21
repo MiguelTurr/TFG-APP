@@ -57,6 +57,24 @@ const comprobarToken = (req, _, next) => {
 };
 
 //
+/*
+const scanner = require('sonarqube-scanner');
+
+scanner(
+  {
+    serverUrl : '',
+    token : "",
+    options: {
+      'sonar.projectName': 'My App',
+      'sonar.projectDescription': 'Description for "My App" project...',
+      'sonar.sources': 'routes',
+      'sonar.tests': 'test'
+    }
+  },
+  () => process.exit()
+)
+*/
+//
 
 server.use('/home', comprobarToken, require('./routes/home'));
 server.use('/buscar', comprobarToken, require('./routes/buscar'));

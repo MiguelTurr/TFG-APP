@@ -10,7 +10,6 @@ import Button from "react-bootstrap/esm/Button";
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-
 var totalUsuarios = [];
 const conexionOptions = { year: 'numeric', month: 'short', day: 'numeric' };
 const totalPagina = 3;

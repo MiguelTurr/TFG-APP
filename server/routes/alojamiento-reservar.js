@@ -7,6 +7,7 @@ const mysql = require('../services/mysql.js');
 
 const { paypal, paypalClient } = require("../services/paypal.js");
 const { enviarCorreo } = require('../services/utils.js');
+const { comision_porcentaje } = require('../services/config.js');
 
 //
 
@@ -30,7 +31,7 @@ router.get('/:id', (req, res) => {
             return res.status(500).json({ respuesta: 'err_reserva' });
         }
 
-        res.status(200).json({ respuesta: 'correcto', alojamiento: result[0] });
+        res.status(200).json({ respuesta: 'correcto', alojamiento: result[0], comision: comision_porcentaje });
     });
 });
 
