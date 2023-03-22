@@ -32,6 +32,8 @@ Aquí dentro crearemos el archivo 'config.js' que tendrá la siguiente informaci
 
     paypal_secret, clave para utilizar el servicio de PayPal.
 
+    comision_porcentaje, por defecto 10, es la comisión que se lleva la aplicación por el alquiler de los alojamientos.
+
     dev_state, por defecto true es para indicar si nos encontramos en desarrollo.
 
 -----------------------------------------------------------------------------------------------------------------------------

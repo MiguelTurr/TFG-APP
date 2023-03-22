@@ -9,6 +9,7 @@ import Home from './views/Home';
 import Ayuda from './views/General/Ayuda';
 import Condiciones from './views/General/Condiciones';
 import Privacidad from './views/General/Privacidad';
+import Empresa from './views/General/Empresa';
 
 import Cookies from './views/General/Cookies';
 
@@ -80,6 +81,7 @@ function App() {
           <Route path="/ayuda" element={ <Ayuda /> }/>
           <Route path="/condiciones" element={ <Condiciones /> }/>
           <Route path="/privacidad" element={ <Privacidad /> }/>
+          <Route path="/empresa" element={ <Empresa /> }/>
 
           {isLogged === false && <>
             <Route path="/validar/:id" element={ <RegistroValidar /> }/>

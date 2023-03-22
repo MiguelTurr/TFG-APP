@@ -36,7 +36,7 @@ function Footer() {
     //
 
     return (
-        <div className="footer" style={{ position: posicion }}>
+        <div className="footer" style={{ position: posicion, zIndex: 999 }}>
 
             <hr/>
 
@@ -51,6 +51,9 @@ function Footer() {
 
                         <span className="punto-style">&middot;</span>
                         <a className="link-style" href="/condiciones">Condiciones</a>
+
+                        <span className="punto-style">&middot;</span>
+                        <a className="link-style" href="/empresa">Datos de la empresa</a>
                     </div>
 
                     <div className="col idioma-col">

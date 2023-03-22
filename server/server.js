@@ -57,7 +57,7 @@ const comprobarToken = (req, _, next) => {
 };
 
 //
-/*
+
 const scanner = require('sonarqube-scanner');
 
 scanner(
@@ -73,7 +73,7 @@ scanner(
   },
   () => process.exit()
 )
-*/
+
 //
 
 server.use('/home', comprobarToken, require('./routes/home'));
